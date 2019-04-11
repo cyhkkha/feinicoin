@@ -10,5 +10,6 @@ public abstract class Account {
     protected String key;
     // 上一次改变引用的区块
     protected long preBlockNum;
-
+    // 账户是否发生过改变
+    protected boolean changed;
 }
