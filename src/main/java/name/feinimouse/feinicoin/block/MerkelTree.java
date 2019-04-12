@@ -1,11 +1,13 @@
 package name.feinimouse.feinicoin.block;
 
 // 默克尔树接口
-public interface MerkelTree <T> {
+public interface MerkelTree <T extends MerkelTreeNode> {
     // 获得树根的hash
     public String getRoot();
     // 加入元素
     public void push(T t);
+    // 添加完所有元素后重新生成树
+    public String createHash();
     // 获取元素
     public T get(String hash);
     public T get(int i);

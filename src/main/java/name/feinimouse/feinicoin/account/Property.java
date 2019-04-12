@@ -1,7 +1,9 @@
 package name.feinimouse.feinicoin.account;
 
+import name.feinimouse.feinicoin.block.MerkelTreeNode;
+
 // 资产由中央节点进行写入
-public abstract class Property extends Account {
+public abstract class Property extends Account implements MerkelTreeNode {
     // 资产名称
     protected String name;
     // 过期时间

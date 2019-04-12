@@ -1,7 +1,9 @@
 package name.feinimouse.feinicoin.account;
 
+import name.feinimouse.feinicoin.block.MerkelTreeNode;
+
 // 交易信息由用户发起，并由检查节点节点进行审核
-public abstract class Transcation {
+public abstract class Transcation implements MerkelTreeNode {
     // 交易的hash编号
     protected String hash;
     // 交易的过期时间
