@@ -7,15 +7,15 @@ public interface MerkelTree <T extends MerkelTreeNode> {
     // 加入元素
     public void push(T t);
     // 添加完所有元素后重新生成树
-    public String createHash();
+    public boolean createHash();
     // 获取元素
     public T get(String hash);
     public T get(int i);
     // 搜索元素
     public int search(String hash);
     // 删除元素
-    public int remove(String hash);
-    public int remove(int i);
+    public T remove(String hash);
+    public T remove(int i);
     // 获取总长度
     public int size();
 }
