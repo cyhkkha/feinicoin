@@ -3,22 +3,14 @@ package name.feinimouse.feinicoin.manager;
 import java.util.List;
 import java.util.Queue;
 
-import name.feinimouse.feinicoin.account.Transcation;
+import name.feinimouse.feinicoin.account.Transaction;
+import name.feinimouse.feinicoin.block.MerkelTreeNode;
 
-public abstract class Enter {
-    // 上传交易的缓冲池
-    protected Queue<Transcation> buffer;
-
-    // verifier节点列表，以做缓冲池的校验
-    protected List<Verifier> verifierList;
-    // order节点列表
-    protected List<Order> orderList;
-
-
+public interface Enter extends MerkelTreeNode, Nameable {
     // 从verifier验证交易
-    protected abstract int verifier(Transcation t);
+    int verifier(Transaction t);
     // 向缓冲池中添加交易
-    protected abstract int addTrans(Transcation t);
+    int addTrans(Transaction t);
     // 向order提交验证后的交易
-    protected abstract int commitTrans(Transcation t);
+    int commitTrans(Transaction t);
 }

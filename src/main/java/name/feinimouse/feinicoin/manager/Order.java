@@ -2,22 +2,19 @@ package name.feinimouse.feinicoin.manager;
 
 import java.util.List;
 
-import name.feinimouse.feinicoin.account.Transcation;
+import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinicoin.block.Block;
+import name.feinimouse.feinicoin.block.MerkelTreeNode;
 
-public abstract class Order {
-    // 调度节点的唯一标识(公钥)
-    protected String hash;
-    // 最新的区块信息，以做已排序交易的筛选
-    protected Block latestBlock;
-
-    // 已排好序的交易
-    protected List<Transcation> order;
-
+public interface Order extends MerkelTreeNode, Nameable {
+    
     // enter提交交易
-    public abstract int commit(Transcation t);
+    int commit(Transaction t);
     // center取出交易
-    public abstract List<Transcation> takeout(int count);
+    List<Transaction> takeout(int count);
     // 根据最新的区块快速验证交易
-    protected abstract void verifyOrder();
+    void verifyOrder();
+    // 导出别名
+    String getName();
+
 }

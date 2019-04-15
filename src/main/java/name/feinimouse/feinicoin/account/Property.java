@@ -3,18 +3,67 @@ package name.feinimouse.feinicoin.account;
 import name.feinimouse.feinicoin.block.MerkelTreeNode;
 
 // 资产由中央节点进行写入
-public abstract class Property extends Account implements MerkelTreeNode {
+public class Property extends Account implements MerkelTreeNode {
     // 资产名称
-    protected String name;
+    private String name;
     // 过期时间
-    protected long expiration;
-
+    private long expiration;
     // 资产持有账户
-    protected String owner;
+    private String owner;
     // 资产担保人的账户
-    protected String agent;
+    private String agent;
     // 签名
-    protected String signature;
+    private String signature;
     // 上一次改变引用的区块
-    protected long preBlockNum;
+    private long preBlockNum;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getExpiration() {
+        return expiration;
+    }
+
+    public void setExpiration(long expiration) {
+        this.expiration = expiration;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getAgent() {
+        return agent;
+    }
+
+    public void setAgent(String agent) {
+        this.agent = agent;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    @Override
+    public long getPreBlockNum() {
+        return preBlockNum;
+    }
+
+    @Override
+    public void setPreBlockNum(long preBlockNum) {
+        this.preBlockNum = preBlockNum;
+    }
 }
