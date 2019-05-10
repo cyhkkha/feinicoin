@@ -1,9 +1,9 @@
 package name.feinimouse.feinicoin.account;
 
-import name.feinimouse.feinicoin.block.MerkelTreeNode;
+import name.feinimouse.feinicoin.block.Hashable;
 
 // 账户信息每次由中央节点进行写入
-public class Account implements MerkelTreeNode {
+public class Account implements Hashable {
     // 账户的hash
     private String hash;
     // 账户的数字货币

@@ -1,9 +1,9 @@
 package name.feinimouse.feinicoin.account;
 
-import name.feinimouse.feinicoin.block.MerkelTreeNode;
+import name.feinimouse.feinicoin.block.Hashable;
 
 // 资产由中央节点进行写入
-public class Property extends Account implements MerkelTreeNode {
+public class Property extends Account implements Hashable {
     // 资产名称
     private String name;
     // 过期时间

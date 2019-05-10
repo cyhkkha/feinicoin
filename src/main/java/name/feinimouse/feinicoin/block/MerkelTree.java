@@ -1,7 +1,7 @@
 package name.feinimouse.feinicoin.block;
 
 // 默克尔树接口
-public interface MerkelTree <T extends MerkelTreeNode> {
+public interface MerkelTree <T extends Hashable> {
     // 获得树根的hash
     String getRoot();
     // 加入元素

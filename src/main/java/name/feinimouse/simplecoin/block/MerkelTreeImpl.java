@@ -1,7 +1,7 @@
 package name.feinimouse.simplecoin.block;
 
 import name.feinimouse.feinicoin.block.MerkelTree;
-import name.feinimouse.feinicoin.block.MerkelTreeNode;
+import name.feinimouse.feinicoin.block.Hashable;
 
 /**
  * Create by 菲尼莫斯 on 2019/4/15
@@ -10,7 +10,7 @@ import name.feinimouse.feinicoin.block.MerkelTreeNode;
  * Program : feinicoin
  * Description :
  */
-public class MerkelTreeImpl <T extends MerkelTreeNode> implements MerkelTree<T> {
+public class MerkelTreeImpl <T extends Hashable> implements MerkelTree<T> {
     @Override
     public String getRoot() {
         return null;

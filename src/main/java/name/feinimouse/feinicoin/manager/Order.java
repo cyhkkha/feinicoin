@@ -3,10 +3,9 @@ package name.feinimouse.feinicoin.manager;
 import java.util.List;
 
 import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.feinicoin.block.Block;
-import name.feinimouse.feinicoin.block.MerkelTreeNode;
+import name.feinimouse.feinicoin.block.Hashable;
 
-public interface Order extends MerkelTreeNode, Nameable {
+public interface Order extends Hashable, Nameable {
     
     // enter提交交易
     int commit(Transaction t);

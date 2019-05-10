@@ -1,14 +1,9 @@
 package name.feinimouse.feinicoin.manager;
 
-import java.util.List;
-
-import name.feinimouse.feinicoin.account.Account;
-import name.feinimouse.feinicoin.account.Property;
-import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinicoin.block.Block;
-import name.feinimouse.feinicoin.block.MerkelTreeNode;
+import name.feinimouse.feinicoin.block.Hashable;
 
-public interface Center extends MerkelTreeNode, Nameable {
+public interface Center extends Hashable, Nameable {
 
     // 激活当前节点的出块状态
     int activate();
