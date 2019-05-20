@@ -1,69 +1,39 @@
 package name.feinimouse.feinicoin.account;
 
+import lombok.Data;
 import name.feinimouse.feinicoin.block.Hashable;
 
 // 资产由中央节点进行写入
-public class Property extends Account implements Hashable {
+@Data
+public class Property implements Hashable {
     // 资产名称
     private String name;
+    // 资产建立的时间戳
+    private long timestamp;
     // 过期时间
     private long expiration;
     // 资产持有账户
-    private String owner;
+    private String[] owners;
     // 资产担保人的账户
-    private String agent;
-    // 签名
+    private String[] agents;
+    // 资产建立签名
     private String signature;
+
+    // 账户的hash
+    private String hash;
+    // 原始资本
+    private double capital;
+    // 账户的当前的价值
+    private double currentValue;
     // 上一次改变引用的区块
     private long preBlockNum;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public long getExpiration() {
-        return expiration;
-    }
-
-    public void setExpiration(long expiration) {
-        this.expiration = expiration;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public String getAgent() {
-        return agent;
-    }
-
-    public void setAgent(String agent) {
-        this.agent = agent;
-    }
-
-    public String getSignature() {
-        return signature;
-    }
-
-    public void setSignature(String signature) {
-        this.signature = signature;
-    }
+    // 账户是否发生过改变
+    private boolean changed;
+    // 资产的附加信息，如智能合约等
+    private ExtFunc extFunc;
 
     @Override
-    public long getPreBlockNum() {
-        return preBlockNum;
-    }
-
-    @Override
-    public void setPreBlockNum(long preBlockNum) {
-        this.preBlockNum = preBlockNum;
+    public String getHash() {
+        return hash;
     }
 }

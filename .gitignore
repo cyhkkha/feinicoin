@@ -9,6 +9,9 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
+# lombok等生成类
+.factorypath
+
 # vim编辑器产生的临时文件
 *.swp
 
