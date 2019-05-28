@@ -1,7 +1,7 @@
 package name.feinimouse.simplecoin.manager;
 
 import name.feinimouse.feinicoin.account.Account;
-import name.feinimouse.feinicoin.account.Property;
+import name.feinimouse.feinicoin.account.Assets;
 import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinicoin.block.Block;
 import name.feinimouse.feinicoin.manager.Center;
@@ -35,7 +35,7 @@ public class CenterImpl implements Center, Cloneable {
     // 当前缓存的的账户列表
     private List<Account> accountList;
     // 当前缓存的的资产列表
-    private List<Property> properList;
+    private List<Assets> properList;
 
 
     @Override

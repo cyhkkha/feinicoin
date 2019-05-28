@@ -1,7 +1,7 @@
 package name.feinimouse.feinicoin.block;
 
 import name.feinimouse.feinicoin.account.Account;
-import name.feinimouse.feinicoin.account.Property;
+import name.feinimouse.feinicoin.account.Assets;
 import name.feinimouse.feinicoin.account.Transaction;
 
 public class Block {
@@ -9,7 +9,7 @@ public class Block {
     private long number;
     private Header header;
     private MerkelTree<Account> accounts;
-    private MerkelTree<Property> properties;
+    private MerkelTree<Assets> properties;
     private MerkelTree<Transaction> transactions;
 
     public long getNumber() {
@@ -36,11 +36,11 @@ public class Block {
         this.accounts = accounts;
     }
 
-    public MerkelTree<Property> getProperties() {
+    public MerkelTree<Assets> getProperties() {
         return properties;
     }
 
-    public void setProperties(MerkelTree<Property> properties) {
+    public void setProperties(MerkelTree<Assets> properties) {
         this.properties = properties;
     }
 

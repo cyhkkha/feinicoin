@@ -8,5 +8,8 @@ package name.feinimouse.feinicoin.account;
  * Description :
  */
 public interface ExtFunc {
-    String getType();
+    default int length() {
+        return 0;
+    }
+    String get();
 }
