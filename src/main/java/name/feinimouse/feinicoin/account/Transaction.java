@@ -16,8 +16,6 @@ public class Transaction implements Hashable {
     private String receiver;
     // 金额
     private double coin;
-    // 关联信息
-    private String relate;
     // 签名
     private String[] signature;
     

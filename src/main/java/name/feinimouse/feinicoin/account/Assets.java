@@ -22,7 +22,8 @@ public class Assets implements Hashable {
     private String[] signature;
     // 状态：如已完成、过期等
     private String status;
-    
+    // 操作历史关联的交易
+    private String[] history;
     // 可用coin资本
     private double coin;
 
