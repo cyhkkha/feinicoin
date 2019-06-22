@@ -15,9 +15,9 @@ public class Transaction implements Hashable {
     // 接收者
     private String receiver;
     // 金额
-    private double coin;
+    private float coin;
     // 签名
-    private String[] signature;
+    private String signature;
     
     // 交易的附加信息
     private TransExtFunc extFunc;
