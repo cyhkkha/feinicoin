@@ -1,13 +1,13 @@
-package name.feinimouse.crypt;
+package name.feinimouse.testcoin;
 
 import lombok.Data;
-import name.feinimouse.feinicoin.account.TransExtFunc;
-import name.feinimouse.feinicoin.block.Hashable;
+import name.feinimouse.feinicoin.account.ExtFunc;
+import name.feinimouse.feinicoin.account.Transaction;
 import org.json.JSONObject;
 
 // 交易信息由用户发起，并由检查节点节点进行审核
 @Data
-public class Transaction implements Hashable {
+public class TransactionTest implements Transaction {
     // 交易时间戳
     private long timestamp;
     // 发起者
@@ -15,14 +15,15 @@ public class Transaction implements Hashable {
     // 接收者
     private String receiver;
     // 金额
-    private int coin;
+    private Integer coin;
     // 签名
-    private SM2.Signature signature;
-    
-    private String summary;
-    public Transaction() {}
+    private SignTest sign;
 
-    public Transaction(
+    private String summary;
+    
+    public TransactionTest() {}
+
+    public TransactionTest(
         String sender, String receiver,
         int coin, long timestamp
     ) {
@@ -30,12 +31,23 @@ public class Transaction implements Hashable {
         this.receiver = receiver;
         this.coin = coin;
         this.timestamp = timestamp;
-        this.summary = new JSONObject()
+        resetSummary();
+    }
+    
+    public String resetSummary() {
+        var summary = new JSONObject()
             .put("sender", sender)
             .put("receiver", receiver)
             .put("coin", coin)
             .put("timestamp", timestamp)
             .toString();
+        this.summary = summary;
+        return summary;
+    }
+
+    @Override
+    public ExtFunc getExtFunc() {
+        return null;
     }
     
 }

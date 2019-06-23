@@ -8,7 +8,7 @@ package name.feinimouse.feinicoin.account;
  * Description :
  */
 public interface Identity {
-    default String getType() {
+    default String getSummary() {
         return "default";
     }
 }

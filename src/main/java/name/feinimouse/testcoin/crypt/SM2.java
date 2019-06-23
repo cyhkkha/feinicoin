@@ -1,4 +1,4 @@
-package name.feinimouse.crypt;
+package name.feinimouse.testcoin.crypt;
 
 import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.bouncycastle.math.ec.ECCurve;
@@ -531,7 +531,7 @@ public class SM2 {
 	 *            签名方密钥对
 	 * @return 签名
 	 */
-	public Signature sign(String M, String IDA, SM2KeyPair keyPair) {
+	public SM2Signature sign(String M, String IDA, SM2KeyPair keyPair) {
 		byte[] ZA = ZA(IDA, keyPair.getPublicKey());
 		byte[] M_ = join(ZA, M.getBytes());
 		BigInteger e = new BigInteger(1, sm3hash(M_));
@@ -551,7 +551,7 @@ public class SM2 {
 		BigInteger s = ((keyPair.getPrivateKey().add(BigInteger.ONE).modInverse(n))
 				.multiply((k.subtract(r.multiply(keyPair.getPrivateKey()))).mod(n))).mod(n);
 
-		return new Signature(r, s);
+		return new SM2Signature(r, s);
 	}
 
 	/**
@@ -567,7 +567,7 @@ public class SM2 {
 	 *            签名方公钥
 	 * @return true or false
 	 */
-	public boolean verify(String M, Signature signature, String IDA, ECPoint aPublicKey) {
+	public boolean verify(String M, SM2Signature signature, String IDA, ECPoint aPublicKey) {
 		if (!between(signature.r, BigInteger.ONE, n))
 			return false;
 		if (!between(signature.s, BigInteger.ONE, n))
@@ -813,7 +813,7 @@ public class SM2 {
 		System.out.println("-----------------签名与验签-----------------");
 		String IDA = "Heartbeats";
 		String M = "要签名的信息";
-		Signature signature = sm02.sign(M, IDA, new SM2KeyPair(publicKey, privateKey));
+		SM2Signature signature = sm02.sign(M, IDA, new SM2KeyPair(publicKey, privateKey));
 		System.out.println("用户标识:" + IDA);
 		System.out.println("签名信息:" + M);
 		System.out.println("数字签名:" + signature);
@@ -832,18 +832,5 @@ public class SM2 {
 		TransportEntity entity3 = aKeyExchange.keyExchange_3(entity2);
 		bKeyExchange.keyExchange_4(entity3);
 	}
-
-	public static class Signature {
-		BigInteger r;
-		BigInteger s;
-
-		public Signature(BigInteger r, BigInteger s) {
-			this.r = r;
-			this.s = s;
-		}
-
-		public String toString() {
-			return r.toString(16) + "," + s.toString(16);
-		}
-	}
+	
 }

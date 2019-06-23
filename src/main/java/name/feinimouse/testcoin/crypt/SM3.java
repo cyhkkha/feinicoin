@@ -1,4 +1,4 @@
-package name.feinimouse.crypt;
+package name.feinimouse.testcoin.crypt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

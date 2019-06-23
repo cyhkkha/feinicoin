@@ -1,12 +1,11 @@
 package name.feinimouse.feinicoin.account;
 
 /**
- * Create by 菲尼莫斯 on 2019/5/20
+ * Create by 菲尼莫斯 on 2019/6/23
  * Email: cyhkkha@gmail.com
- * File name: ExtFunc
+ * File name: History
  * Program : feinicoin
  * Description :
  */
-public interface ExtFunc {
-    String getSummary();
+public interface History {
 }

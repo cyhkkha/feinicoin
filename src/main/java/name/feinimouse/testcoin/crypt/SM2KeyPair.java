@@ -1,4 +1,4 @@
-package name.feinimouse.crypt;
+package name.feinimouse.testcoin.crypt;
 
 import org.bouncycastle.math.ec.ECPoint;
 
