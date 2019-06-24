@@ -11,21 +11,23 @@ import java.security.*;
 /**
  * Create by 菲尼莫斯 on 2019/6/23
  * Email: cyhkkha@gmail.com
- * File name: Feinism2
+ * File name: SM2Generator
  * Program : feinicoin
  * Description :
  */
-public class Feinism2 {
+public class SM2Generator {
     // 单例
-    private static Feinism2 sm2;
+    private static SM2Generator sm2;
     // 秘钥生成器
     private KeyPairGenerator generator;
     // 国密标准SM2的椭圆曲线的生成参数
     private X9ECParameters sm2ECParams;
     // 椭圆曲线实例
     private ECNamedCurveParameterSpec sm2EC;
+    // 是否错误
+    private static boolean isError = false;
     
-    private Feinism2() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    private SM2Generator() {
         sm2ECParams = GMNamedCurves.getByName("sm2p256v1");
         sm2EC = new ECNamedCurveParameterSpec(
             // 椭圆曲线的OID
@@ -37,37 +39,23 @@ public class Feinism2 {
             // 大整数N
             sm2ECParams.getN()
         );
-        generator = KeyPairGenerator.getInstance("EC", new BouncyCastleProvider());
-        generator.initialize(sm2EC, new SecureRandom());
-        
-    }
-    public static Feinism2 getInstance() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        if (sm2 == null) {
-            sm2 = new Feinism2();
+        try {
+            generator = KeyPairGenerator.getInstance("EC", new BouncyCastleProvider());
+            generator.initialize(sm2EC, new SecureRandom());
+        } catch (Exception e) {
+            e.printStackTrace();
+            isError = true;
         }
-        return sm2;
+    }
+    public static SM2Generator getInstance() {
+        if (sm2 == null) {
+            sm2 = new SM2Generator();
+        }
+        return  isError ? null : sm2;
     }
     // 生成密钥对
     public KeyPair generateKeys() {
         return generator.generateKeyPair();
-    }
-    // 获取签名器
-    public SM2Signer getSigner(PrivateKey key) throws NoSuchAlgorithmException, InvalidKeyException {
-        Signature sm3 = Signature.getInstance(
-            GMObjectIdentifiers.sm2sign_with_sm3.toString(),
-            new BouncyCastleProvider()
-        );
-        sm3.initSign(key);
-        return new SM2Signer(sm3);
-    }
-    // 获取验签器
-    public SM2Verifier getVerifer(PublicKey key) throws NoSuchAlgorithmException, InvalidKeyException {
-        Signature sm3 = Signature.getInstance(
-            GMObjectIdentifiers.sm2sign_with_sm3.toString(),
-            new BouncyCastleProvider()
-        );
-        sm3.initVerify(key);
-        return new SM2Verifier(sm3);
     }
     
 }

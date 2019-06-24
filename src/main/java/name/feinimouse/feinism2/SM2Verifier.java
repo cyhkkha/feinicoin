@@ -1,8 +1,10 @@
 package name.feinimouse.feinism2;
 
+import org.bouncycastle.asn1.gm.GMObjectIdentifiers;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import java.nio.charset.StandardCharsets;
-import java.security.Signature;
-import java.security.SignatureException;
+import java.security.*;
 
 /**
  * Create by 菲尼莫斯 on 2019/6/23
@@ -13,10 +15,18 @@ import java.security.SignatureException;
  */
 public class SM2Verifier {
     private Signature signature;
-    private byte[] result;
 
-    public SM2Verifier(Signature signature) {
-        this.signature = signature;
+    public SM2Verifier(PublicKey key) throws InvalidKeyException {
+        try {
+            signature = Signature.getInstance(
+                GMObjectIdentifiers.sm2sign_with_sm3.toString(),
+                new BouncyCastleProvider()
+            );
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return;
+        }
+        signature.initVerify(key);
     }
 
     public boolean verify(String msg, String sign) throws SignatureException {
