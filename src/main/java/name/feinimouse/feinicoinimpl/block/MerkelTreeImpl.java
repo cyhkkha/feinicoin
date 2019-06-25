@@ -1,4 +1,4 @@
-package name.feinimouse.freamcoin.block;
+package name.feinimouse.feinicoinimpl.block;
 
 import name.feinimouse.feinicoin.block.MerkelTree;
 import name.feinimouse.feinicoin.block.Hashable;

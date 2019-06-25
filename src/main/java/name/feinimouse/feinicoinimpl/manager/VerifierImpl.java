@@ -1,4 +1,4 @@
-package name.feinimouse.freamcoin.manager;
+package name.feinimouse.feinicoinimpl.manager;
 
 import name.feinimouse.feinicoin.account.Account;
 import name.feinimouse.feinicoin.account.Transaction;

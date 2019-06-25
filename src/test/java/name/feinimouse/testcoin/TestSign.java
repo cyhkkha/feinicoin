@@ -1,7 +1,6 @@
 package name.feinimouse.testcoin;
 
 import name.feinimouse.testcoin.crypt.SM2;
-import name.feinimouse.testcoin.crypt.SM2KeyPair;
 import org.junit.Before;
 import org.junit.Test;
 

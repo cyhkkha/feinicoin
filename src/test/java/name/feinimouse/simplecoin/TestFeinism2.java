@@ -1,13 +1,13 @@
 package name.feinimouse.simplecoin;
 
 import name.feinimouse.feinism2.SM2Generator;
-import name.feinimouse.feinism2.SM2Signer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.security.InvalidKeyException;
 import java.security.SignatureException;
+import java.util.Arrays;
 
 /**
  * Create by 菲尼莫斯 on 2019/6/23
@@ -38,14 +38,29 @@ public class TestFeinism2 {
     @Test
     public void testSign() throws InvalidKeyException, SignatureException {
         String msg = "I Love Liuchang";
-        var key = gen.generateKeys();
-        var key2 = gen.generateKeys();
-        var signer = new SM2Signer(key.getPrivate());
-        var signer2 = new SM2Signer(key2.getPrivate());
-        var res1 = signer.sign(msg).toString();
-        var res2 = signer2.sign(msg).toString();
-        System.out.println(res1);
-        System.out.println(res2);
+        var sm2Obj1 = gen.generateSM2();
+        var sm2Obj2 = gen.generateSM2();
+        var res1 = sm2Obj1.signToByte(msg);
+        var res2 = sm2Obj2.signToByte(msg);
+
+        System.out.println("------signer1--------");
+        System.out.println(Arrays.toString(res1));
+        System.out.println("------signer2--------");
+        System.out.println(Arrays.toString(res2));
+
         Assert.assertNotEquals(res1, res2);
     }
+
+    @Test
+    public void testVerify() throws SignatureException {
+        String msg = "I Love Liuchang";
+        var sm2Obj1 = gen.generateSM2();
+        var sm2Obj2 = gen.generateSM2();
+        var res1 = sm2Obj1.signToByte(msg);
+        var res2 = sm2Obj2.signToByte(msg);
+        Assert.assertTrue(sm2Obj1.verify(msg, res1));
+        Assert.assertTrue(sm2Obj2.verify(msg, res2));
+        Assert.assertFalse(sm2Obj1.verify(msg, res2));
+    }
+
 }

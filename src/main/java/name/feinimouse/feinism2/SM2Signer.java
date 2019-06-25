@@ -39,9 +39,4 @@ public class SM2Signer {
     public byte[] getByte() {
         return result;
     }
-
-    @Override
-    public String toString() {
-        return new String(result);
-    }
 }

@@ -11,4 +11,7 @@ public interface Sign {
     default byte[] getByte(String name) {
         return null;
     }
+    default String toString(String name) {
+        return null;
+    }
 }

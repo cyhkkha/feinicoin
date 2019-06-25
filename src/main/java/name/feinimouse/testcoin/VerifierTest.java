@@ -20,7 +20,6 @@ public class VerifierTest implements Verifier {
     private Random random = new Random();
     private SM2 sm2;
     private String[] users;
-    private VerifierTest verifier;
     private String nodeName;
     private SM2KeyPair nodeKeys;
     private List<Long> verifyTimes= new ArrayList<>();
