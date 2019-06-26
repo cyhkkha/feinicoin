@@ -6,6 +6,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SignatureException;
 
+import org.bouncycastle.util.encoders.Hex;
+
 import lombok.Getter;
 
 /**
@@ -38,23 +40,11 @@ public class SM2 {
 
     public String signToString(String msg) throws SignatureException {
         var bytes = signer.sign(msg).getByte();
-        var buf = new StringBuilder();
-        for(byte b : bytes) {
-            String hex = Integer.toHexString(b & 0xFF);
-            if (hex.length() < 2) {
-                buf.append("0");
-            }
-            buf.append(hex);
-        }
-        return buf.toString();
+        return Hex.toHexString(bytes);
     }
 
     public boolean verify(String msg, String sign) throws SignatureException {
-        var bytes = new byte[sign.length() / 2];
-        for (int i = 0; i < sign.length() / 2; i++) {
-            var sub = sign.substring(2 * i, 2 * i + 2);
-            bytes[i] = (byte)Integer.parseInt(sub, 16);
-        }
+        var bytes = Hex.decode(sign);
         return verifier.verify(msg, bytes);
     }
 
