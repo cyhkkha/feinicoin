@@ -17,13 +17,24 @@ public class SimpleTrans implements Transaction {
     @Getter @Setter
     private String receiver;
     @Getter @Setter
-    private Number coin;
-    @Getter @Setter
     private Sign sign;
     @Getter
     private String summary;
+    private int coin;
 
-    public SimpleTrans(long timestamp, String sender, String receiver, Number coin) {
+    public void setCoin(int coin) {
+        this.coin = coin;
+    }
+
+    public Number getCoin() {
+        return this.coin;
+    }
+
+    public int getCoinInt() {
+        return this.coin;
+    }
+
+    public SimpleTrans(long timestamp, String sender, String receiver, int coin) {
         this.timestamp = timestamp;
         this.sender = sender;
         this.receiver = receiver;
@@ -45,10 +56,4 @@ public class SimpleTrans implements Transaction {
     public ExtFunc getExtFunc() {
         return null;
     }
-
-    @Override
-    public void sign(Sign sign) {
-        this.setSign(sign);
-    }
-
 }

@@ -30,6 +30,13 @@
             <version>1.62</version>
         </dependency>
 
+        <!--开源零分配哈希算法依赖包-->
+        <dependency>
+            <groupId>net.openhft</groupId>
+            <artifactId>zero-allocation-hashing</artifactId>
+            <version>0.9</version>
+        </dependency>
+
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>

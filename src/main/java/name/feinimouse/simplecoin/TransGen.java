@@ -7,7 +7,6 @@ import java.util.Random;
 
 import lombok.Getter;
 import lombok.NonNull;
-import name.feinimouse.feinicoin.account.Transaction;
 
 public class TransGen {
     private Random random;
@@ -21,7 +20,7 @@ public class TransGen {
         this.signTimes = new ArrayList<>();
     }
 
-    public Transaction genTransaction() {
+    public SimpleTrans genTransaction() {
         var sender = userManager.getRandomUser();
         var receiver = userManager.getRandomUser(sender);
         var coin = random.nextInt(1000);
@@ -29,7 +28,7 @@ public class TransGen {
         return new SimpleTrans(timestamp, sender, receiver, coin);
     }
 
-    public Transaction sign(@NonNull Transaction t) throws SignatureException {
+    public SimpleTrans sign(@NonNull SimpleTrans t) throws SignatureException {
         var signer = userManager.getSM2(t.getSender());
 
         long before = System.nanoTime();
@@ -42,11 +41,11 @@ public class TransGen {
             signObj = new SimpleSign();
         }
         signObj.setSign("sender", signRes);
-        t.sign(signObj);
+        t.setSign(signObj);
         return t;
     }
 
-    public Transaction genSignedTrans() {
+    public SimpleTrans genSignedTrans() {
         try {
             return sign(genTransaction());
         } catch (SignatureException e) {
