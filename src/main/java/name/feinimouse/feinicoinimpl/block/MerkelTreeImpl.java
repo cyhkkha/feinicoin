@@ -11,43 +11,19 @@ import name.feinimouse.feinicoin.block.Hashable;
  * Description :
  */
 public class MerkelTreeImpl <T extends Hashable> implements MerkelTree<T> {
+
     @Override
     public String getRoot() {
         return null;
     }
 
     @Override
-    public void push(T t) {
+    public void addChild(T t) {
 
     }
 
     @Override
-    public boolean createHash() {
-        return false;
-    }
-
-    @Override
-    public T get(String hash) {
-        return null;
-    }
-
-    @Override
-    public T get(int i) {
-        return null;
-    }
-
-    @Override
-    public int search(String hash) {
-        return 0;
-    }
-
-    @Override
-    public T remove(String hash) {
-        return null;
-    }
-
-    @Override
-    public T remove(int i) {
+    public String resetRoot() {
         return null;
     }
 
@@ -55,4 +31,10 @@ public class MerkelTreeImpl <T extends Hashable> implements MerkelTree<T> {
     public int size() {
         return 0;
     }
+
+    @Override
+    public void clear() {
+
+    }
+    
 }

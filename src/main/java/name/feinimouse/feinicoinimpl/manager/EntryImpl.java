@@ -8,6 +8,8 @@ import name.feinimouse.feinicoin.manager.Verifier;
 import java.util.List;
 import java.util.Queue;
 
+import lombok.Data;
+
 /**
  * Create by 菲尼莫斯 on 2019/4/15
  * Email: cyhkkha@gmail.com
@@ -15,6 +17,7 @@ import java.util.Queue;
  * Program : feinicoin
  * Description :
  */
+@Data
 public class EntryImpl implements Enter, Cloneable {
     // 节点唯一标识
     private String hash;

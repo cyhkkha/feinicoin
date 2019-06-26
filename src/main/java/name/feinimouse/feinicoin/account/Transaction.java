@@ -14,8 +14,6 @@ public interface Transaction extends Hashable {
     Number getCoin();
     // 获取签名
     Sign getSign();
-    // 签名
-    void sign(Sign sign);
     // 交易的摘要
     String getSummary();
     // 附加功能

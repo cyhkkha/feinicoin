@@ -44,10 +44,4 @@ public class TransactionTest implements Transaction {
     public ExtFunc getExtFunc() {
         return null;
     }
-
-    @Override
-    public void sign(Sign sign) {
-        this.setSign((SignTest)sign);
-    }
-    
 }

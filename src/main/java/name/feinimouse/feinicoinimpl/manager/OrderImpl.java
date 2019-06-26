@@ -6,6 +6,8 @@ import name.feinimouse.feinicoin.manager.Order;
 
 import java.util.List;
 
+import lombok.Data;
+
 /**
  * Create by 菲尼莫斯 on 2019/4/15
  * Email: cyhkkha@gmail.com
@@ -13,6 +15,7 @@ import java.util.List;
  * Program : feinicoin
  * Description :
  */
+@Data
 public class OrderImpl implements Order, Cloneable {
     // 调度节点的唯一标识(公钥)
     private String hash;
