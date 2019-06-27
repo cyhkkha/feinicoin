@@ -3,6 +3,7 @@ package name.feinimouse.simplecoin;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.NonNull;
 import org.json.JSONObject;
 
 import lombok.Getter;
@@ -11,16 +12,15 @@ import lombok.Setter;
 public class TransBundle {
     @Getter @Setter
     private SimpleSign sign;
-    @Getter @Setter
-    private byte[] merkelRoot;
+    private SimpleMerkelTree merkelTree;
     @Getter
     private String transSummary;
-    @Getter
-    private SimpleTrans[] transes;
+    
     private Map<String, Integer> summaryMap;
 
     public TransBundle() {
         this.summaryMap = new HashMap<String, Integer>();
+        this.merkelTree = new SimpleMerkelTree();
     }
 
     public TransBundle(SimpleTrans[] trans) {
@@ -28,7 +28,7 @@ public class TransBundle {
         addTranses(trans);
     }
     
-    public void addTrans(SimpleTrans t) {
+    public void addTrans(@NonNull SimpleTrans t) {
         var sender = t.getSender();
         var receiver = t.getReceiver();
         var coin = t.getCoinInt();
@@ -42,6 +42,7 @@ public class TransBundle {
         }
         summaryMap.put(sender, senderCoin - coin);
         summaryMap.put(receiver, receiverCoin + coin);
+        merkelTree.addChild(t);
     }
 
     public void addTranses(SimpleTrans[] ts) {
