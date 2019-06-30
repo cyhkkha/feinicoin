@@ -1,11 +1,12 @@
 package name.feinimouse.simplecoin;
 
 import name.feinimouse.feinism2.SM2Generator;
+import net.openhft.hashing.LongHashFunction;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.security.InvalidKeyException;
 import java.security.SignatureException;
 import java.util.Arrays;
 
@@ -36,7 +37,7 @@ public class TestFeinism2 {
     }
     
     @Test
-    public void testSign() throws InvalidKeyException, SignatureException {
+    public void testSign() throws SignatureException {
         String msg = "I Love Liuchang";
         var sm2Obj1 = gen.generateSM2();
         var sm2Obj2 = gen.generateSM2();
@@ -61,6 +62,20 @@ public class TestFeinism2 {
         Assert.assertTrue(sm2Obj1.verify(msg, res1));
         Assert.assertTrue(sm2Obj2.verify(msg, res2));
         Assert.assertFalse(sm2Obj1.verify(msg, res2));
+    }
+    
+    @Test
+    public void testHash() {
+        var xxHash = LongHashFunction.xx();
+        var hash1 = xxHash.hashChars("test");
+        var hash2 = xxHash.hashChars("test");
+        var hash3 = xxHash.hashChars("tesj");
+        var json = new JSONObject().put("test", 111).put("test2","333");
+        var hash4 = xxHash.hashChars(json.toString());
+        Assert.assertEquals(hash1, hash2);
+        Assert.assertNotEquals(hash1, hash3);
+        System.out.println(hash1);
+        System.out.println(hash4);
     }
 
 }

@@ -1,40 +1,44 @@
 package name.feinimouse.simplecoin;
 
+import lombok.Getter;
+import lombok.NonNull;
+import net.openhft.hashing.LongHashFunction;
+
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import lombok.Getter;
-import lombok.NonNull;
-
-public class TransGen {
+public class TransactionGen {
     private Random random;
     private UserManager userManager;
+    private LongHashFunction xxHash;
     @Getter
     private List<Long> signTimes;
 
-    public TransGen(@NonNull UserManager userManager) {
+    public TransactionGen(@NonNull UserManager userManager) {
         this.userManager = userManager;
         this.random = new Random();
+        this.xxHash = LongHashFunction.xx();
         this.signTimes = new ArrayList<>();
     }
 
-    public SimpleTrans genTransaction() {
+    public SimpleTransaction genTransaction() {
         var sender = userManager.getRandomUser();
         var receiver = userManager.getRandomUser(sender);
         var coin = random.nextInt(1000);
         var timestamp = System.currentTimeMillis();
-        return new SimpleTrans(timestamp, sender, receiver, coin);
+        var trans = new SimpleTransaction(timestamp, sender, receiver, coin);
+        trans.setHash(String.valueOf(xxHash.hashChars(trans.getSummary())));
+        return trans;
     }
 
-    public SimpleTrans sign(@NonNull SimpleTrans t) throws SignatureException {
+    public SimpleTransaction sign(@NonNull SimpleTransaction t) throws SignatureException {
         var signer = userManager.getSM2(t.getSender());
 
-        long before = System.nanoTime();
+        var before = System.nanoTime();
         var signRes = signer.signToByte(t.getSummary());
-        long after = System.nanoTime();
-        signTimes.add(after - before);
+        signTimes.add(System.nanoTime() - before);
 
         var signObj = t.getSign();
         if (signObj == null) {
@@ -45,12 +49,12 @@ public class TransGen {
         return t;
     }
 
-    public SimpleTrans genSignedTrans() {
+    public SimpleTransaction genSignedTrans() {
         try {
             return sign(genTransaction());
         } catch (SignatureException e) {
             e.printStackTrace();
-            return null;
+            throw new RuntimeException("签名错误，交易生成失败！");
         }
     }
     

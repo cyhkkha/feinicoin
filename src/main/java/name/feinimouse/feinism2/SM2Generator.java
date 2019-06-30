@@ -21,8 +21,6 @@ public class SM2Generator {
     private X9ECParameters sm2ECParams;
     // 椭圆曲线实例
     private ECNamedCurveParameterSpec sm2EC;
-    // 是否错误
-    private static boolean isError = false;
 
     private SM2Generator() {
         sm2ECParams = GMNamedCurves.getByName("sm2p256v1");
@@ -40,7 +38,7 @@ public class SM2Generator {
             generator.initialize(sm2EC, new SecureRandom());
         } catch (Exception e) {
             e.printStackTrace();
-            isError = true;
+            throw new SM2Exception("椭圆曲线生成失败！");
         }
     }
 
@@ -48,7 +46,7 @@ public class SM2Generator {
         if (sm2 == null) {
             sm2 = new SM2Generator();
         }
-        return isError ? null : sm2;
+        return sm2;
     }
 
     // 生成密钥对

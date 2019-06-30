@@ -8,7 +8,7 @@ import name.feinimouse.feinicoin.account.ExtFunc;
 import name.feinimouse.feinicoin.account.Sign;
 import name.feinimouse.feinicoin.account.Transaction;
 
-public class SimpleTrans implements Transaction {
+public class SimpleTransaction implements Transaction {
 
     @Getter @Setter
     private long timestamp;
@@ -18,6 +18,8 @@ public class SimpleTrans implements Transaction {
     private String receiver;
     @Getter @Setter
     private Sign sign;
+    @Getter @Setter
+    private String hash;
     @Getter
     private String summary;
     private int coin;
@@ -34,7 +36,7 @@ public class SimpleTrans implements Transaction {
         return this.coin;
     }
 
-    public SimpleTrans(long timestamp, String sender, String receiver, int coin) {
+    public SimpleTransaction(long timestamp, String sender, String receiver, int coin) {
         this.timestamp = timestamp;
         this.sender = sender;
         this.receiver = receiver;

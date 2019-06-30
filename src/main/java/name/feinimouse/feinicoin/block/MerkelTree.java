@@ -9,7 +9,7 @@ public interface MerkelTree <T extends Hashable> extends Hashable {
     void addChild(T t);
 
     // 刷新树根的哈希
-    String resetRoot();
+    void resetRoot();
 
     // 获取孩子的个数
     int size();

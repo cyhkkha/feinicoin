@@ -28,17 +28,6 @@ public class VerifierImpl implements Verifier, Cloneable {
     // 缓存了所有资产的实时状态
     private Map<String, Account> properties;
 
-
-    @Override
-    public int syncBlock(Block b) {
-        return 0;
-    }
-
-    @Override
-    public int verifyTrans(Transaction t) {
-        return 0;
-    }
-
     @Override
     public String getName() {
         return null;
@@ -47,5 +36,10 @@ public class VerifierImpl implements Verifier, Cloneable {
     @Override
     public String getHash() {
         return this.hash;
+    }
+
+    @Override
+    public boolean verify(Transaction t) {
+        return false;
     }
 }

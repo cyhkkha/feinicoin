@@ -6,6 +6,7 @@ import name.feinimouse.feinicoin.manager.Verifier;
 import name.feinimouse.testcoin.crypt.SM2;
 import name.feinimouse.testcoin.crypt.SM2KeyPair;
 
+import java.security.SignatureException;
 import java.util.*;
 
 /**
@@ -85,20 +86,15 @@ public class VerifierTest implements Verifier {
     public List<Long> getVerifyTimes() {
         return verifyTimes;
     }
-
-
-    @Override
-    public int syncBlock(Block b) {
-        return 0;
-    }
-
-    @Override
-    public int verifyTrans(Transaction t) {
-        return verifyTransaction((TransactionTest) t) ? 0 : -1;
-    }
+    
 
     @Override
     public String getName() {
         return null;
+    }
+
+    @Override
+    public boolean verify(Transaction t) throws SignatureException {
+        return verifyTransaction((TransactionTest) t);
     }
 }

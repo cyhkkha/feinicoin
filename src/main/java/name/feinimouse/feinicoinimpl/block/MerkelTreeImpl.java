@@ -23,8 +23,7 @@ public class MerkelTreeImpl <T extends Hashable> implements MerkelTree<T> {
     }
 
     @Override
-    public String resetRoot() {
-        return null;
+    public void resetRoot() {
     }
 
     @Override
