@@ -6,14 +6,14 @@ import name.feinimouse.feinicoin.block.Hashable;
 public interface Center extends Hashable, Nameable {
 
     // 激活当前节点的出块状态
-    int activate();
+    void activate();
     // 生产区块
     Block createBlock();
     // 将区块写入数据库
-    int write();
+    void write();
     // 广播生成的区块
-    int broadcast();
+    void broadcast();
     // 接收并同步一个区块
-    int syncBlock(Block b);
+    void syncBlock(Block b);
 
 }

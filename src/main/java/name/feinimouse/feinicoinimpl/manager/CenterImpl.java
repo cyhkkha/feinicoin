@@ -42,8 +42,8 @@ public class CenterImpl implements Center, Cloneable {
 
 
     @Override
-    public int activate() {
-        return 0;
+    public void activate() {
+        
     }
 
     @Override
@@ -52,18 +52,18 @@ public class CenterImpl implements Center, Cloneable {
     }
 
     @Override
-    public int write() {
-        return 0;
+    public void write() {
+
     }
 
     @Override
-    public int broadcast() {
-        return 0;
+    public void broadcast() {
+
     }
 
     @Override
-    public int syncBlock(Block b) {
-        return 0;
+    public void syncBlock(Block b) {
+
     }
 
     @Override

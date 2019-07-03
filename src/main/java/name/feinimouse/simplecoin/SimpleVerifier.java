@@ -3,12 +3,12 @@ package name.feinimouse.simplecoin;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.feinicoin.block.Block;
 import name.feinimouse.feinicoin.manager.Verifier;
 import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
@@ -32,7 +32,7 @@ public class SimpleVerifier implements Verifier {
         this.bundleTimes = new ArrayList<>();
     }
 
-    public boolean verify(@NonNull Transaction t) throws SignatureException {
+    public boolean verify(@NonNull Transaction t) {
         var verifier = userManager.getSM2(t.getSender());
         var sign = t.getSign().getByte("sender");
         if (sign == null) {
@@ -40,32 +40,49 @@ public class SimpleVerifier implements Verifier {
         }
 
         long before = System.nanoTime();
-        var signRes = verifier.verify(t.getSummary(), sign);
+        var signRes = false;
+        try {
+            signRes = verifier.verify(t.getSummary(), sign);
+        } catch (SignatureException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
         long after = System.nanoTime();
         verifyTimes.add(after - before);
 
         return signRes;
     }
 
-    public TransBundle signBundle(TransBundle tb) throws SignatureException {
+    public TransBundle signBundle(@NonNull TransBundle tb) {
             var sign = new SimpleSign();
-            var before = System.nanoTime();
-            sign.setSign("verifier", sm2.signToByte(tb.getHash()));
-            this.bundleTimes.add(tb.getBundleTime() + (System.nanoTime() - before)); 
-            tb.setSign(sign);
-        return tb;
-        
-    }
-    
-    public TransBundle verifyBundle(List<Transaction> ts) {
+            var hash = tb.getHash();
+            if (hash == null) {
+                throw new NullPointerException("该包为空或者没有初始化");
+            }
         try {
-
-            var bundle = new TransBundle(ts);
-            return signBundle(bundle);
+            var before = System.nanoTime();
+            sign.setSign("verifier", sm2.signToByte(hash));
+            this.bundleTimes.add(tb.getBundleTime() + (System.nanoTime() - before)); 
         } catch (SignatureException e) {
             e.printStackTrace();
-            throw new RuntimeException("打包签名交易失败！");
+            throw new RuntimeException(e);
         }
+            tb.setSign(sign);
+        return tb;
+    }
+    
+    public List<Transaction> verifyList(@NonNull List<Transaction> ts) {
+        return ts.stream().filter(this::verify).collect(Collectors.toList());
+    }
+    
+    public TransBundle bundle(@NonNull List<Transaction> ts) {
+        var verifiedList = verifyList(ts);
+        var bundle = new TransBundle(verifiedList);
+        return signBundle(bundle);
+    }
+    
+    public void clearTime() {
+        this.verifyTimes.clear();
     }
     
 }

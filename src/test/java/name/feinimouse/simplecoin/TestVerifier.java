@@ -24,30 +24,24 @@ public class TestVerifier extends TestTransactionGen {
     }
     
     @Test
-    public void testVerify() throws SignatureException {
+    public void testVerify() {
         var trans = transGen.genSignedTrans();
         Assert.assertTrue(verifier.verify(trans));
     }
     @Test
     public void testVerifyTime() {
-        LoopUtils.loop(100, () -> {
-            try {
-                verifier.verify(transGen.genSignedTrans());
-            } catch (SignatureException e) {
-                e.printStackTrace();
-                throw new RuntimeException("验签错误");
-            }
-        });
+        LoopUtils.loop(100, () -> verifier.verify(transGen.genSignedTrans()));
         collectTime(verifier.getVerifyTimes(), "验签");
     }
     @Test
     public void testBundle() {
         var transList = LoopUtils.loopToList(100, () -> (Transaction)transGen.genSignedTrans());
         Assert.assertTrue(transList.size() > 0);
-        var bundle = verifier.verifyBundle(transList);
+        var bundle = verifier.bundle(transList);
         System.out.println(bundle.getSummaryJson().toString());
         System.out.println(bundle.getSign().toString("verifier"));
-        System.out.printf("打包时间：%f s \n", bundle.getBundleTime() / 1000000f);
-        System.out.printf("总计打包时间：%f s \n", verifier.getBundleTimes().get(0) / 1000000f);
+        System.out.printf("打包时间：%f s \n", bundle.getBundleTime() / 1000000000f);
+        collectTime(verifier.getVerifyTimes(), "验签");
+        System.out.printf("签名和打包时间：%f s \n", verifier.getBundleTimes().get(0) / 1000000000f);
     }
 }
