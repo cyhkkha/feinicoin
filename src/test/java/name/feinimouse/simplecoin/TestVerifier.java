@@ -15,13 +15,7 @@ import java.security.SignatureException;
  * Program : feinicoin
  * Description :
  */
-public class TestVerifier extends TestTransactionGen {
-    protected SimpleVerifier verifier;
-    
-    @Before
-    public void setUp2() {
-        verifier = new SimpleVerifier(userManager);
-    }
+public class TestVerifier extends SetupTest {
     
     @Test
     public void testVerify() {

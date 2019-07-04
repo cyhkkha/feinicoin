@@ -17,16 +17,7 @@ import java.util.List;
  * Program : feinicoin
  * Description :
  */
-public class TestTransactionGen {
-    protected final static String[] USERS = {"kasumi", "arisa", "tae", "rimi", "saaya", "yukina", "sayo", "risa", "rinko", "ako"};
-    protected UserManager userManager;
-    protected TransactionGen transGen;
-    
-    @Before
-    public void setup() {
-        userManager = new UserManager(USERS);
-        transGen = new TransactionGen(userManager);
-    }
+public class TestTransactionGen extends SetupTest {
     
     @Test
     public void testUserManager() {
@@ -59,9 +50,4 @@ public class TestTransactionGen {
         collectTime(transGen.getSignTimes(), "签名");
     }
     
-    public void collectTime(List<Long> timeList, String name) {
-        var count = timeList.stream().reduce((a, b) -> a + b).orElse(0L);
-        System.out.printf("%s总计运行时间: %f s \n", name, (count / 1000000000f));
-        System.out.printf("%s平均运行时间: %f s \n", name, count / timeList.size() / 1000000000f);
-    }
 }
