@@ -1,5 +1,6 @@
 package name.feinimouse.simplecoin;
 
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.junit.Before;
 
 import java.util.List;
@@ -16,12 +17,7 @@ public class SetupTest {
     UserManager userManager;
     TransactionGen transGen;
     SimpleVerifier verifier;
-
-    @Before
-    public void setUpLog() {
-        
-    }
-
+    
     @Before
     public void setupUserManager() {
         userManager = new UserManager(USERS);

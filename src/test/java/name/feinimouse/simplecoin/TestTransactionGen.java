@@ -3,12 +3,10 @@ package name.feinimouse.simplecoin;
 import name.feinimouse.utils.LoopUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.security.SignatureException;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Create by 菲尼莫斯 on 2019/6/30
