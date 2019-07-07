@@ -15,15 +15,15 @@ import name.feinimouse.feinism2.SM2Generator;
 
 public class SimpleVerifier implements Verifier {
     
-    private UserManager userManager;
+    protected UserManager userManager;
     @Getter @Setter
-    private String name;
+    protected String name;
     @Getter
-    private SM2 sm2;
+    protected SM2 sm2;
     @Getter
-    private List<Long> verifyTimes;
+    protected List<Long> verifyTimes;
     @Getter
-    private List<Long> bundleTimes;
+    protected List<Long> bundleTimes;
 
     public SimpleVerifier(@NonNull UserManager userManager) {
         this.sm2 = SM2Generator.getInstance().generateSM2();
