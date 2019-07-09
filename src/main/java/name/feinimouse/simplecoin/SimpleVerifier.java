@@ -14,7 +14,7 @@ import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
 
 public class SimpleVerifier implements Verifier {
-    
+    @Getter
     protected UserManager userManager;
     @Getter @Setter
     protected String name;

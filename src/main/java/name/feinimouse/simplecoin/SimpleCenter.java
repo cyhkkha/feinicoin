@@ -13,14 +13,18 @@ import name.feinimouse.feinicoin.manager.Center;
  * Description :
  */
 public class SimpleCenter implements Center {
+    private enum Model{ BCBDC, UTXO, Account, BCBDC_Mix }
+    @Setter @Getter
+    private Model model;
+    
     private SimpleOrder order;
     private UserManager manager;
     
     @Getter
-    private boolean hasRunning = false;
+    private boolean running = false;
     
-    @Getter
-    private String name = "simple center";
+    @Getter @Setter
+    private String name;
     // 出块时间限制，默认1s
     @Getter @Setter
     private long outTime = 1000L * 1000000L;
@@ -31,20 +35,42 @@ public class SimpleCenter implements Center {
     // 总运行时间
     private long runTime = 0L;
     
-    public SimpleCenter(UserManager manager, SimpleOrder order) {
+    public SimpleCenter(SimpleOrder order, Model model) {
         this.order = order;
-        this.manager = manager;
+        this.manager = order.getUserManager();
+        this.model = model;
     }
     
     @Override
     public void activate() {
-        hasRunning = true;
+        running = true;
         startTime = System.nanoTime();
+        switch (model) {
+            case UTXO: runUTXO();
+                break;
+            case BCBDC: runBCBDC();
+                break;
+            case Account: runAccount();
+                break;
+            case BCBDC_Mix: runMix();
+                break;
+             default: stop();
+                 throw new RuntimeException("No Running Model !!");
+        }
+        stop();
     }
     
     private void stop() {
-        hasRunning = false;
+        if (running) {
+            runTime = System.nanoTime() - startTime;
+            running = false;
+        }
     }
+    
+    private void runUTXO() {}
+    private void runBCBDC() {}
+    private void runAccount() {}
+    private void runMix() {}
 
     @Override
     public Block createBlock() {

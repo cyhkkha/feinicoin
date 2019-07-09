@@ -1,6 +1,6 @@
 package name.feinimouse.utils;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,8 +21,26 @@ public class LoopUtils {
             lf.doLoop(j);
         }
     }
-    public static <T> List<T> loopToList(int i, LoopClassFunction<T> lf) {
-        List<T> list = new ArrayList<>();
+
+    public static void loopBreak(int i, LoopIndexClassFunction lf) {
+        for(var j = 0; j < i; j++) {
+            var res = lf.doLoop(j);
+            if (res == null || !(Boolean) res) {
+                break;
+            }
+        }
+    }
+    public static void loop(int i, LoopClassFunction lf) {
+        for(var j = 0; j < i; j++) {
+            var res = lf.doLoop();
+            if (res == null || !(Boolean) res) {
+                break;
+            }
+        }
+    }
+    
+    public static <T> LinkedList<T> loopToList(int i, LoopClassFunction<T> lf) {
+        LinkedList<T> list = new LinkedList<>();
         for(var j = 0; j < i; j++) {
             T t = lf.doLoop();
             list.add(t);
@@ -30,10 +48,34 @@ public class LoopUtils {
         return list;
     }
 
-    public static <T> List<T> loopToList(int i, LoopIndexClassFunction<T> lf) {
-        List<T> list = new ArrayList<>();
+    public static <T> LinkedList<T> loopToList(int i, LoopIndexClassFunction<T> lf) {
+        LinkedList<T> list = new LinkedList<>();
         for(var j = 0; j < i; j++) {
             T t = lf.doLoop(j);
+            list.add(t);
+        }
+        return list;
+    }
+
+    public static <T> LinkedList<T> loopToListBreak(int i, LoopClassFunction<T> lf) {
+        LinkedList<T> list = new LinkedList<>();
+        for(var j = 0; j < i; j++) {
+            T t = lf.doLoop();
+            if (t == null) {
+                break;
+            }
+            list.add(t);
+        }
+        return list;
+    }
+
+    public static <T> LinkedList<T> loopToListBreak(int i, LoopIndexClassFunction<T> lf) {
+        LinkedList<T> list = new LinkedList<>();
+        for(var j = 0; j < i; j++) {
+            T t = lf.doLoop(j);
+            if (t == null) {
+                break;
+            }
             list.add(t);
         }
         return list;
