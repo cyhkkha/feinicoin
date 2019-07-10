@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import lombok.Getter;
 import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
 
 public class UserManager {
     private SM2Generator sm2Gen = SM2Generator.getInstance();
     private Map<String, SM2> userMap;
+    @Getter
     private String[] users;
     private Random random;
 

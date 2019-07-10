@@ -1,4 +1,4 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.manager;
 
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -12,6 +12,9 @@ import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinicoin.manager.Verifier;
 import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
+import name.feinimouse.simplecoin.SimpleSign;
+import name.feinimouse.simplecoin.TransBundle;
+import name.feinimouse.simplecoin.UserManager;
 
 public class SimpleVerifier implements Verifier {
     @Getter
@@ -54,11 +57,11 @@ public class SimpleVerifier implements Verifier {
     }
 
     public TransBundle signBundle(@NonNull TransBundle tb) {
-            var sign = new SimpleSign();
-            var hash = tb.getHash();
-            if (hash == null) {
-                throw new NullPointerException("该包为空或者没有初始化");
-            }
+        var sign = new SimpleSign();
+        var hash = tb.getHash();
+        if (hash == null) {
+            throw new NullPointerException("该包为空或者没有初始化");
+        }
         try {
             var before = System.nanoTime();
             sign.setSign("verifier", sm2.signToByte(hash));

@@ -52,7 +52,7 @@ public class CenterImpl implements Center, Cloneable {
     }
 
     @Override
-    public void write() {
+    public void write(Block b) {
 
     }
 

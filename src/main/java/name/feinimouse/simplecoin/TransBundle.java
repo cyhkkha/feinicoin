@@ -8,12 +8,15 @@ import name.feinimouse.feinicoin.block.Hashable;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TransBundle implements Hashable {
     
     private SimpleMerkelTree merkelTree;
     @Getter
     private JSONObject summaryJson;
+    private Map<String, Integer> summary;
     @Getter
     private boolean hasChange = false;
     @Getter
@@ -25,6 +28,7 @@ public class TransBundle implements Hashable {
     public TransBundle() {
         this.summaryJson = new JSONObject();
         this.merkelTree = new SimpleMerkelTree();
+        this.summary = new ConcurrentHashMap<>();
     }
     
     public TransBundle(List<Transaction> ts) {
@@ -42,17 +46,25 @@ public class TransBundle implements Hashable {
     
     public void doBundle() {
         if (this.hasChange) {
-            this.summaryJson = new JSONObject();
             var before = System.nanoTime();
-            for (Transaction t : merkelTree.getTransList()) {
+            summary.clear();
+            merkelTree.getTransList().forEach(t -> {
                 var sender = t.getSender();
                 var receiver = t.getReceiver();
-                var coin = ((SimpleTransaction) t).getCoinInt();
-                var senderCoin = summaryJson.optInt(sender, 0);
-                var receiverCoin = summaryJson.optInt(receiver, 0);
-                summaryJson.put(sender, senderCoin - coin);
-                summaryJson.put(receiver, receiverCoin + coin);
-            }
+                var coin = (Integer)t.getCoin();
+                summary.merge(sender, - coin, Integer::sum);
+                summary.merge(receiver, coin, Integer::sum);
+            });
+//            for (Transaction t : merkelTree.getTransList()) {
+//                var sender = t.getSender();
+//                var receiver = t.getReceiver();
+//                var coin = ((SimpleTransaction) t).getCoinInt();
+//                var senderCoin = summaryJson.optInt(sender, 0);
+//                var receiverCoin = summaryJson.optInt(receiver, 0);
+//                summaryJson.put(sender, senderCoin - coin);
+//                summaryJson.put(receiver, receiverCoin + coin);
+//            }
+            summaryJson = new JSONObject(summary);
             this.merkelTree.resetRoot();
             this.bundleTime = System.nanoTime() - before + merkelTree.getHashTime();
             this.hasChange=false;
