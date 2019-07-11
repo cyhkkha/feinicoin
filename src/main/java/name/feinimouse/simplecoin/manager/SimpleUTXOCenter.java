@@ -2,6 +2,8 @@ package name.feinimouse.simplecoin.manager;
 
 import lombok.NonNull;
 import name.feinimouse.feinicoin.block.Block;
+import name.feinimouse.simplecoin.block.SimpleHashObj;
+import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONObject;
 
 /**
@@ -35,9 +37,11 @@ public class SimpleUTXOCenter extends SimpleCenter {
                 }
             } else  {
                 // 推入交易到缓存
-                JSONObject transJson = new JSONObject().put("summary", t.getSummary())
-                    .put("sign", t.getSign().getByte("sender"));
-                bolckTransactionList.add(transJson.toString());
+                var hashObj = new SimpleHashObj(
+                    t.getSummary(), 
+                    Hex.toHexString(t.getSign().getByte("sender"))
+                );
+                bolckTransactionList.add(hashObj);
 
                 // 更新账户缓存
                 var sender = t.getSender();
@@ -52,15 +56,5 @@ public class SimpleUTXOCenter extends SimpleCenter {
         } while (blockNowTime - blockRunTime <= outBlockTime);
         
     }
-    
-
-    @Override
-    public Block createBlock() {
-        return null;
-    }
-
-    @Override
-    public void write(Block b) {}
-    
     
 }

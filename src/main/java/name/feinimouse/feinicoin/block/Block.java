@@ -5,14 +5,11 @@ import name.feinimouse.feinicoin.account.Assets;
 import name.feinimouse.feinicoin.account.Transaction;
 
 public interface Block {
-    MerkelTree<Account> getAccounts();
+    MerkelTree getAccounts();
     
-    MerkelTree<Assets> getAssets();
+    MerkelTree getAssets();
 
-    MerkelTree<Transaction> getTransactions();
-    
-    // 区块编号
-    long getNumber();
+    MerkelTree getTransactions();
     
     Header getHeader();
 }

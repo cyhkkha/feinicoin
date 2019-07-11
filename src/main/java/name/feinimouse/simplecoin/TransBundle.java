@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinicoin.block.Hashable;
+import name.feinimouse.simplecoin.block.SimpleMerkelTree;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TransBundle implements Hashable {
     
-    private SimpleMerkelTree merkelTree;
+    private SimpleMerkelTree<Transaction> merkelTree;
     @Getter
     private JSONObject summaryJson;
     private Map<String, Integer> summary;
@@ -27,13 +28,13 @@ public class TransBundle implements Hashable {
 
     public TransBundle() {
         this.summaryJson = new JSONObject();
-        this.merkelTree = new SimpleMerkelTree();
+        this.merkelTree = new SimpleMerkelTree<>();
         this.summary = new ConcurrentHashMap<>();
     }
     
     public TransBundle(List<Transaction> ts) {
         this.summaryJson = new JSONObject();
-        this.merkelTree = new SimpleMerkelTree(ts);
+        this.merkelTree = new SimpleMerkelTree<>(ts);
         this.hasChange = true;
         doBundle();
     }
@@ -48,14 +49,14 @@ public class TransBundle implements Hashable {
         if (this.hasChange) {
             var before = System.nanoTime();
             summary.clear();
-            merkelTree.getTransList().forEach(t -> {
+            merkelTree.getList().forEach(t -> {
                 var sender = t.getSender();
                 var receiver = t.getReceiver();
                 var coin = (Integer)t.getCoin();
                 summary.merge(sender, - coin, Integer::sum);
                 summary.merge(receiver, coin, Integer::sum);
             });
-//            for (Transaction t : merkelTree.getTransList()) {
+//            for (Transaction t : merkelTree.getList()) {
 //                var sender = t.getSender();
 //                var receiver = t.getReceiver();
 //                var coin = ((SimpleTransaction) t).getCoinInt();

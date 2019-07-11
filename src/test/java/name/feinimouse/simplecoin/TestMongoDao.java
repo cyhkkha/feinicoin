@@ -1,7 +1,7 @@
 package name.feinimouse.simplecoin;
 
+import name.feinimouse.simplecoin.block.MongoDao;
 import name.feinimouse.utils.LoopUtils;
-import org.junit.After;
 import org.junit.Test;
 
 public class TestMongoDao extends SetupTest {

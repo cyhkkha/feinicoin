@@ -6,6 +6,12 @@ import lombok.Setter;
 import name.feinimouse.feinicoin.block.Block;
 import name.feinimouse.feinicoin.manager.Center;
 import name.feinimouse.simplecoin.UserManager;
+import name.feinimouse.simplecoin.block.SimpleBlock;
+import name.feinimouse.simplecoin.block.SimpleHashObj;
+import name.feinimouse.simplecoin.block.SimpleHeader;
+import name.feinimouse.simplecoin.block.SimpleMerkelTree;
+import net.openhft.hashing.LongHashFunction;
+import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +34,9 @@ public abstract class SimpleCenter implements Center {
     // 账户缓存
     protected Map<String, Integer> blockAccountMap;
     // 交易缓存
-    protected List<String> bolckTransactionList;
+    protected List<SimpleHashObj> bolckTransactionList;
+    // 资产缓存
+    protected List<SimpleHashObj> blockAssetsList;
     
     @Getter @Setter
     protected String name;
@@ -55,6 +63,7 @@ public abstract class SimpleCenter implements Center {
         this.manager = order.getUserManager();
         this.blockAccountMap = new ConcurrentHashMap<>();
         this.bolckTransactionList = new LinkedList<>();
+        this.blockAssetsList = new LinkedList<>();
     }
     
     public void stop() {
@@ -102,7 +111,42 @@ public abstract class SimpleCenter implements Center {
             stop();
         }
     }
-    
+
+    @Override
+    public Block createBlock() {
+        // 生成当前区块的账户数据
+        var blockAccountsList = new LinkedList<SimpleHashObj>();
+        var xxHash = LongHashFunction.xx();
+        blockAccountMap.forEach((key, value) -> {
+            var json = new JSONObject().put("name", key).put("coin", value).toString();
+            var hash = xxHash.hashChars(json);
+            blockAccountsList.add(new SimpleHashObj(json, String.valueOf(hash)));
+        });
+        
+        // 生成默克尔树
+        var accounts = new SimpleMerkelTree<>(blockAccountsList).resetRootAndGet();
+        var transes = new SimpleMerkelTree<>(bolckTransactionList).resetRootAndGet();
+        var assets = new SimpleMerkelTree<>(blockAssetsList).resetRootAndGet();
+        
+        // 生成区块头
+        var header = new SimpleHeader();
+        header.setAccountRoot(accounts.getRoot());
+        header.setAssetRoot(assets.getRoot());
+        header.setTransRoot(assets.getRoot());
+        header.setNumber(0);
+        header.setPreHash("00000000");
+        header.setProducer("UTXO Center");
+        header.setTimestamp(System.currentTimeMillis());
+        
+        // 生成区块
+        return new SimpleBlock(accounts,assets,transes,header);
+    }
+
+    @Override
+    public void write(Block b) {
+        
+    }
+
     @Override
     public void broadcast() {}
 

@@ -1,4 +1,4 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.block;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
