@@ -76,6 +76,7 @@ public abstract class SimpleCenter implements Center {
         }
     }
     
+    // 收集交易的方法
     protected abstract void collectTransaction();
     
     @Override
@@ -137,6 +138,8 @@ public abstract class SimpleCenter implements Center {
         header.setPreHash("00000000");
         header.setProducer("UTXO Center");
         header.setTimestamp(System.currentTimeMillis());
+        
+        // TODO 签名部分有待完善
         
         // 生成区块
         return new SimpleBlock(accounts,assets,transes,header);
