@@ -32,6 +32,7 @@ public class MongoDao {
     private static MongoCollection<Document> transaction;
     private static MongoCollection<Document> account;
     private static MongoCollection<Document> assets;
+    private static MongoCollection<Document> block;
     
     static {
         // var credential = MongoCredential.createCredential(USERNAME, DATABASE, PASSWORD);
@@ -47,6 +48,7 @@ public class MongoDao {
         transaction = db.getCollection("transaction");
         account = db.getCollection("account");
         assets = db.getCollection("assets");
+        block = db.getCollection("block");
     }
     @NonNull
     public static void insertTransaction(JSONObject json) {
@@ -54,31 +56,61 @@ public class MongoDao {
     }
     @NonNull
     public static void insertTransaction(String json) {
-        transaction.insertOne(Document.parse(json));
+        insertTransaction(Document.parse(json));
+    }
+    @NonNull
+    public static void insertTransaction(Document document) {
+        transaction.insertOne(document);
     }
     public static void dropTransaction() {
         transaction.drop();
     }
-    @NonNull
-    public static void insertAccount(String json) {
-        account.insertOne(Document.parse(json));
-    }
+    
     @NonNull
     public static void insertAccount(JSONObject json) {
         insertAccount(json.toString());
     }
+    @NonNull
+    public static void insertAccount(String json) {
+        insertAccount(Document.parse(json));
+    }
+    @NonNull
+    public static void insertAccount(Document document) {
+        account.insertOne(document);
+    }
     public static void dropAccount() {
         account.drop();
     }
+    
     @NonNull
     public static void insertAssets(JSONObject json) {
         insertAssets(json.toString());
     }
     @NonNull
     public static void insertAssets(String json) {
-        assets.insertOne(Document.parse(json));
+        insertAssets(Document.parse(json));
+    }
+    @NonNull
+    public static void insertAssets(Document document) {
+        assets.insertOne(document);
     }
     public static void dropAssets() {
         assets.drop();
+    }
+
+    @NonNull
+    public static void insertBlock(JSONObject json) {
+        insertBlock(json.toString());
+    }
+    @NonNull
+    public static void insertBlock(String json) {
+        insertBlock(Document.parse(json));
+    }
+    @NonNull
+    public static void insertBlock(Document document) {
+        block.insertOne(document);
+    }
+    public static void dropBlock() {
+        block.drop();
     }
 }

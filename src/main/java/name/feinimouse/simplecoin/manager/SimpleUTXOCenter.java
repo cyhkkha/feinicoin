@@ -1,10 +1,9 @@
 package name.feinimouse.simplecoin.manager;
 
 import lombok.NonNull;
-import name.feinimouse.feinicoin.block.Block;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
-import org.bouncycastle.util.encoders.Hex;
-import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Create by 菲尼莫斯 on 2019/7/3
@@ -20,16 +19,17 @@ public class SimpleUTXOCenter extends SimpleCenter {
     }
     
     @Override
-    protected void collectTransaction() {
+    public void collectTransaction() {
         // 统计出块时间
         var blockRunTime = System.currentTimeMillis();
         var blockNowTime = blockRunTime;
         // 清空当前块的交易列表
         bolckTransactionList.clear();
-         do {// 取队列的交易
+        do {// 取队列的交易
             var t = order.takeTransaction();
             if (t == null) {
                 try {
+//                    System.out.println("wait verify...");
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -39,7 +39,8 @@ public class SimpleUTXOCenter extends SimpleCenter {
                 // 推入交易到缓存
                 var hashObj = new SimpleHashObj(
                     t.getSummary(), 
-                    Hex.toHexString(t.getSign().getByte("sender"))
+                    t.getHash(),
+                    t.getSign()
                 );
                 bolckTransactionList.add(hashObj);
 
@@ -54,7 +55,12 @@ public class SimpleUTXOCenter extends SimpleCenter {
             // 更新下一轮的时间
             blockNowTime = System.currentTimeMillis();
         } while (blockNowTime - blockRunTime <= outBlockTime);
+        System.out.println("collect time out...");
         
+    }
+    
+    public List<SimpleHashObj> getCacheTransList() {
+        return this.bolckTransactionList;
     }
     
 }

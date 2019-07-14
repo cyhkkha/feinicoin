@@ -3,6 +3,8 @@ package name.feinimouse.feinicoinimpl.block;
 import name.feinimouse.feinicoin.block.MerkelTree;
 import name.feinimouse.feinicoin.block.Hashable;
 
+import java.util.List;
+
 /**
  * Create by 菲尼莫斯 on 2019/4/15
  * Email: cyhkkha@gmail.com
@@ -35,5 +37,10 @@ public class MerkelTreeImpl <T extends Hashable> implements MerkelTree<T> {
     public void clear() {
 
     }
-    
+
+    @Override
+    public List<T> getList() {
+        return null;
+    }
+
 }

@@ -1,5 +1,8 @@
 package name.feinimouse.feinicoin.block;
 
+import java.util.Collection;
+import java.util.List;
+
 // 默克尔树接口
 public interface MerkelTree <T extends Hashable> extends Hashable {
     // 获得树根的hash
@@ -16,4 +19,6 @@ public interface MerkelTree <T extends Hashable> extends Hashable {
 
     // 清空
     void clear();
+    
+    List<T> getList();
 }

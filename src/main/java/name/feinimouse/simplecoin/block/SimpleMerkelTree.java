@@ -49,11 +49,6 @@ public class SimpleMerkelTree <T extends Hashable> implements MerkelTree<T> {
             this.hasChange = false;
         }
     }
-    
-    public MerkelTree resetRootAndGet() {
-        this.resetRoot();
-        return this;
-    }
 
     @Override
     public int size() {

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.bouncycastle.util.encoders.Hex;
 
 import name.feinimouse.feinicoin.account.Sign;
+import org.bson.Document;
 
 public class SimpleSign implements Sign {
     private Map<String, byte[]> signMap;
@@ -26,6 +27,12 @@ public class SimpleSign implements Sign {
         return Hex.toHexString(getByte(name));
     }
 
+    public Document toDoc() {
+        var doc = new Document();
+        signMap.forEach(doc::append);
+        return doc;
+    }
+    
     @Override
     public byte[] getByte(String name) throws NullPointerException {
         return signMap.get(name);
