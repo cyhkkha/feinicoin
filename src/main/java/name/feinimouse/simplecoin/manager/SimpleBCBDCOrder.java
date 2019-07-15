@@ -1,6 +1,8 @@
 package name.feinimouse.simplecoin.manager;
 
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.simplecoin.TransBundle;
 import name.feinimouse.simplecoin.UserManager;
@@ -8,8 +10,10 @@ import name.feinimouse.utils.LoopUtils;
 
 import java.util.List;
 
-public class SimpleBCBDCOrder extends SimpleOrder {
-
+public class SimpleBCBDCOrder extends SimpleOrder<TransBundle> {
+    @Getter @Setter
+    protected int bundleLimit = 10;
+    
     public SimpleBCBDCOrder(@NonNull UserManager manager, @NonNull List<Transaction> transactions) {
         super(manager, transactions);
     }
@@ -29,7 +33,7 @@ public class SimpleBCBDCOrder extends SimpleOrder {
                 });
                 var bundle = new TransBundle(bundleSource);
                 var signedBundle = super.signBundle(bundle);
-                bundleOrderQueue.add(signedBundle);
+                orderQueue.add(signedBundle);
             }
             return verifyTimes.stream().reduce(Long::sum).orElse(0L)
                 + bundleTimes.stream().reduce(Long::sum).orElse(0L);
