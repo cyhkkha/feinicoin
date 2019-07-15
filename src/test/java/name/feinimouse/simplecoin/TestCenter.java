@@ -49,11 +49,7 @@ public class TestCenter extends SetupTest {
     @Test
     public void testWrite() {
         var merkelList = transList.stream()
-            .map(t -> new SimpleHashObj(
-                t.getSummary(),
-                t.getHash(),
-                t.getSign()
-            ))
+            .map(SimpleHashObj::new)
             .collect(Collectors.toList());
         var tree = new SimpleMerkelTree<>(merkelList);
         var block = new SimpleBlock(tree, tree, tree, testHeader);
