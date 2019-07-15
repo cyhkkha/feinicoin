@@ -11,7 +11,6 @@ import name.feinimouse.simplecoin.SimpleSign;
 import name.feinimouse.simplecoin.UserManager;
 import name.feinimouse.simplecoin.block.*;
 import net.openhft.hashing.LongHashFunction;
-import org.bouncycastle.util.encoders.Hex;
 import org.bson.Document;
 import org.json.JSONObject;
 
@@ -30,8 +29,8 @@ import java.util.concurrent.Executors;
  * Program : feinicoin
  * Description :
  */
-public abstract class SimpleCenter implements Center {
-    protected SimpleOrder order;
+public abstract class SimpleCenter <T> implements Center {
+    protected SimpleOrder<T> order;
     protected UserManager manager;
     protected SM2 sm2;
     
@@ -66,7 +65,7 @@ public abstract class SimpleCenter implements Center {
     @Getter
     private boolean running = false;
     
-    public SimpleCenter(@NonNull SimpleOrder order) {
+    public SimpleCenter(@NonNull SimpleOrder<T> order) {
         this.order = order;
         this.manager = order.getUserManager();
         this.blockAccountMap = new ConcurrentHashMap<>();

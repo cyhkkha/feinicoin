@@ -1,6 +1,7 @@
 package name.feinimouse.simplecoin.manager;
 
 import lombok.NonNull;
+import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
 
 import java.util.List;
@@ -12,9 +13,9 @@ import java.util.List;
  * Program : feinicoin
  * Description :
  */
-public class SimpleUTXOCenter extends SimpleCenter {
+public class SimplePureAccountCenter extends SimpleCenter<Transaction> {
     
-    public SimpleUTXOCenter(@NonNull SimpleUTXOOrder order) {
+    public SimplePureAccountCenter(@NonNull SimplePureAccountOrder order) {
         super(order);
     }
     
@@ -24,12 +25,13 @@ public class SimpleUTXOCenter extends SimpleCenter {
         var blockRunTime = System.currentTimeMillis();
         var blockNowTime = blockRunTime;
         // 清空当前块的交易列表
-        bolckTransactionList.clear();
+        super.bolckTransactionList.clear();
+        // 清空当前资产块列表
+        super.blockAssetsList.clear();
         do {// 取队列的交易
-            var t = order.takeTransaction();
+            var t = order.pull();
             if (t == null) {
                 try {
-//                    System.out.println("wait verify...");
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -37,12 +39,7 @@ public class SimpleUTXOCenter extends SimpleCenter {
                 }
             } else  {
                 // 推入交易到缓存
-                var hashObj = new SimpleHashObj(
-                    t.getSummary(), 
-                    t.getHash(),
-                    t.getSign()
-                );
-                bolckTransactionList.add(hashObj);
+                bolckTransactionList.add(new SimpleHashObj(t));
 
                 // 更新账户缓存
                 var sender = t.getSender();

@@ -6,9 +6,9 @@ import name.feinimouse.simplecoin.UserManager;
 
 import java.util.List;
 
-public class SimpleUTXOOrder extends SimpleOrder {
+public class SimplePureAccountOrder extends SimpleOrder<Transaction> {
 
-    public SimpleUTXOOrder(@NonNull UserManager manager, @NonNull List<Transaction> transactions) {
+    public SimplePureAccountOrder(@NonNull UserManager manager, @NonNull List<Transaction> transactions) {
         super(manager, transactions);
     }
 
@@ -20,7 +20,7 @@ public class SimpleUTXOOrder extends SimpleOrder {
             while (!allTrans.isEmpty()) {
                 var transaction = allTrans.poll();
                 if (super.verify(transaction)) {
-                    transOrderQueue.add(transaction);
+                    orderQueue.add(transaction);
                 } else {
                     throw new RuntimeException("交易验证失败");
                 }
@@ -30,4 +30,5 @@ public class SimpleUTXOOrder extends SimpleOrder {
             processing = false;
         }
     }
+    
 }

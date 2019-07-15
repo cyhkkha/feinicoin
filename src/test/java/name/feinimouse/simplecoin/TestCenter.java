@@ -5,8 +5,8 @@ import name.feinimouse.simplecoin.block.SimpleBlock;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
 import name.feinimouse.simplecoin.block.SimpleHeader;
 import name.feinimouse.simplecoin.block.SimpleMerkelTree;
-import name.feinimouse.simplecoin.manager.SimpleUTXOCenter;
-import name.feinimouse.simplecoin.manager.SimpleUTXOOrder;
+import name.feinimouse.simplecoin.manager.SimplePureAccountCenter;
+import name.feinimouse.simplecoin.manager.SimplePureAccountOrder;
 import name.feinimouse.utils.LoopUtils;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -19,16 +19,16 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class TestCenter extends SetupTest {
-    private SimpleUTXOCenter center;
-    private SimpleUTXOOrder order;
+    private SimplePureAccountCenter center;
+    private SimplePureAccountOrder order;
     private List<Transaction> transList;
     private SimpleHeader testHeader;
     
     @Before
     public void setUp() throws SignatureException {
         transList = LoopUtils.loopToList(1000, transGen::genSignedTrans);
-        order = new SimpleUTXOOrder(userManager, transList);
-        center = new SimpleUTXOCenter(order);
+        order = new SimplePureAccountOrder(userManager, transList);
+        center = new SimplePureAccountCenter(order);
 
         // 生成区块头
         var summary = new JSONObject();

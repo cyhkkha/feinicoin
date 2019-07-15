@@ -1,5 +1,6 @@
 package name.feinimouse.simplecoin.manager;
 
+import java.security.PublicKey;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,10 @@ public class SimpleVerifier implements Verifier {
     @Getter
     protected List<Long> bundleTimes;
 
+    public PublicKey getPublicKey() {
+        return sm2.getPublicKey();
+    }
+    
     public SimpleVerifier(@NonNull UserManager userManager) {
         this.sm2 = SM2Generator.getInstance().generateSM2();
         this.userManager = userManager;
