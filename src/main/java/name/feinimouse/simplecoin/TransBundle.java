@@ -6,17 +6,15 @@ import lombok.Setter;
 import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinicoin.block.Hashable;
 import name.feinimouse.simplecoin.block.SimpleMerkelTree;
-import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TransBundle implements Hashable {
-    
+    @Getter
     private SimpleMerkelTree<Transaction> merkelTree;
     @Getter
-    private JSONObject summaryJson;
     private Map<String, Integer> summary;
     @Getter
     private boolean hasChange = false;
@@ -27,20 +25,18 @@ public class TransBundle implements Hashable {
     private SimpleSign sign;
 
     public TransBundle() {
-        this.summaryJson = new JSONObject();
         this.merkelTree = new SimpleMerkelTree<>();
         this.summary = new ConcurrentHashMap<>();
     }
     
     public TransBundle(List<Transaction> ts) {
-        this.summaryJson = new JSONObject();
         this.merkelTree = new SimpleMerkelTree<>(ts);
         this.hasChange = true;
         doBundle();
     }
     
     public void clear() {
-        this.summaryJson = new JSONObject();
+        this.summary.clear();
         this.merkelTree.clear();
         this.hasChange = true;
     }
@@ -56,16 +52,6 @@ public class TransBundle implements Hashable {
                 summary.merge(sender, - coin, Integer::sum);
                 summary.merge(receiver, coin, Integer::sum);
             });
-//            for (Transaction t : merkelTree.getList()) {
-//                var sender = t.getSender();
-//                var receiver = t.getReceiver();
-//                var coin = ((SimpleTransaction) t).getCoinInt();
-//                var senderCoin = summaryJson.optInt(sender, 0);
-//                var receiverCoin = summaryJson.optInt(receiver, 0);
-//                summaryJson.put(sender, senderCoin - coin);
-//                summaryJson.put(receiver, receiverCoin + coin);
-//            }
-            summaryJson = new JSONObject(summary);
             this.merkelTree.resetRoot();
             this.bundleTime = System.nanoTime() - before + merkelTree.getHashTime();
             this.hasChange=false;
