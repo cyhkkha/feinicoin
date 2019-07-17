@@ -8,7 +8,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import lombok.NonNull;
 import org.bson.Document;
-import org.json.JSONObject;
 
 import java.util.*;
 
@@ -53,67 +52,11 @@ public class MongoDao {
         block = db.getCollection("block");
     }
     @NonNull
-    public static void insertTransaction(JSONObject json) {
-        insertTransaction(json.toString());
+    public static void insertTest(Document bson) {
+        db.getCollection("test").insertOne(bson);
     }
-    @NonNull
-    public static void insertTransaction(String json) {
-        insertTransaction(Document.parse(json));
-    }
-    @NonNull
-    public static void insertTransaction(Document document) {
-        transaction.insertOne(document);
-    }
-    public static void dropTransaction() {
-        transaction.drop();
-    }
-    
-    @NonNull
-    public static void insertAccount(JSONObject json) {
-        insertAccount(json.toString());
-    }
-    @NonNull
-    public static void insertAccount(String json) {
-        insertAccount(Document.parse(json));
-    }
-    @NonNull
-    public static void insertAccount(Document document) {
-        account.insertOne(document);
-    }
-    public static void dropAccount() {
-        account.drop();
-    }
-    
-    @NonNull
-    public static void insertAssets(JSONObject json) {
-        insertAssets(json.toString());
-    }
-    @NonNull
-    public static void insertAssets(String json) {
-        insertAssets(Document.parse(json));
-    }
-    @NonNull
-    public static void insertAssets(Document document) {
-        assets.insertOne(document);
-    }
-    public static void dropAssets() {
-        assets.drop();
-    }
-
-    @NonNull
-    public static void insertBlock(JSONObject json) {
-        insertBlock(json.toString());
-    }
-    @NonNull
-    public static void insertBlock(String json) {
-        insertBlock(Document.parse(json));
-    }
-    @NonNull
-    public static void insertBlock(Document document) {
-        block.insertOne(document);
-    }
-    public static void dropBlock() {
-        block.drop();
+    public static void dropTest() {
+        db.getCollection("test").drop();
     }
     
     public static Document createNewBlock() {
@@ -133,13 +76,13 @@ public class MongoDao {
 
         var merkelPart = new Document("number", number)
             .append("root", "")
-            .append("list", new Document[]{});
+            .append("list", new ArrayList<>());
         var header = new Document("number", number)
             .append("preHash", preHash);
-        insertAccount(merkelPart);
-        insertAssets(merkelPart);
-        insertTransaction(merkelPart);
-        insertBlock(header);
+        account.insertOne(merkelPart);
+        assets.insertOne(merkelPart);
+        transaction.insertOne(merkelPart);
+        block.insertOne(header);
         return new Document("number", number).append("preHash", preHash);
     }
 
@@ -149,14 +92,15 @@ public class MongoDao {
     
     public static long insertTrans(long number, List<Document> trans) {
         var filter = Filters.eq("number", number);
-        var insert = new Document("$pushAll", new Document("list", trans));
+        var insert = new Document("$push", new Document("list", new Document("$each", trans)));
         return transaction.updateOne(filter, insert).getModifiedCount();
     }
     
+    @SuppressWarnings("unchecked")
     public static List<Document> getTransFromBlock(long number) {
         var filter = Filters.eq("number", number);
         var block = transaction.find(filter).limit(1).first();
-        return block == null ? new ArrayList<>() : block.getList("list", Document.class);
+        return block == null ? new ArrayList<>() : (List<Document>) block.get("list");
     }
 
     public static long insertAssets(long number, Document ass) {
@@ -165,19 +109,20 @@ public class MongoDao {
     
     public static long insertAssets(long number, List<Document> ass) {
         var filter = Filters.eq("number", number);
-        var insert = new Document("$pushAll", new Document("list", ass));
+        var insert = new Document("$push", new Document("list", new Document("$each", ass)));
         return assets.updateOne(filter, insert).getModifiedCount();
     }
 
+    @SuppressWarnings("unchecked")
     public static List<Document> getAssetsFromBlock(long number) {
         var filter = Filters.eq("number", number);
         var block = assets.find(filter).limit(1).first();
-        return block == null ? new ArrayList<>() : block.getList("list", Document.class);
+        return block == null ? new ArrayList<>() : (List<Document>) block.get("list");
     }
     
     public static long insertAccount(long number, List<Document> acc) {
         var filter = Filters.eq("number", number);
-        var insert = new Document("$pushAll", new Document("list", acc));
+        var insert = new Document("$push", new Document("list", new Document("$each", acc)));
         return account.updateOne(filter, insert).getModifiedCount();
     }
     

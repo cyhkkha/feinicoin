@@ -32,7 +32,7 @@ public class TestVerifier extends SetupTest {
         var transList = LoopUtils.loopToList(100, () -> (Transaction)transGen.genSignedTrans());
         Assert.assertTrue(transList.size() > 0);
         var bundle = verifier.bundle(transList);
-        System.out.println(bundle.getSummaryJson().toString());
+        System.out.println(bundle.getSummary().toString());
         System.out.println(bundle.getSign().toString("verifier"));
         System.out.printf("打包时间：%f s \n", bundle.getBundleTime() / 1000000000f);
         collectTime(verifier.getVerifyTimes(), "验签");

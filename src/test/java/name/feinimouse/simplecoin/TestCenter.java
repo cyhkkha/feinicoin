@@ -1,10 +1,7 @@
 package name.feinimouse.simplecoin;
 
 import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.simplecoin.block.SimpleBlock;
-import name.feinimouse.simplecoin.block.SimpleHashObj;
-import name.feinimouse.simplecoin.block.SimpleHeader;
-import name.feinimouse.simplecoin.block.SimpleMerkelTree;
+import name.feinimouse.simplecoin.block.*;
 import name.feinimouse.simplecoin.manager.SimplePureAccountCenter;
 import name.feinimouse.simplecoin.manager.SimplePureAccountOrder;
 import name.feinimouse.utils.LoopUtils;
@@ -49,24 +46,49 @@ public class TestCenter extends SetupTest {
     }
     
     @Test
-    public void testWrite() {
-        var merkelList = transList.stream()
-            .map(SimpleHashObj::new)
-            .collect(Collectors.toList());
-        var tree = new SimpleMerkelTree<>(merkelList);
-        var block = new SimpleBlock(tree, tree, tree, testHeader);
-        center.write(block);
+    public void testOrder() throws InterruptedException, ExecutionException {
+        var startTime = System.nanoTime();
+        var executor = Executors.newSingleThreadExecutor();
+        var orderRes = executor.submit(order::activate);
+        Thread.sleep(500);
+        order.isOutBlock(false);
+        Thread.sleep(500); // 这段时间休眠和验证重合了
+        order.isOutBlock(true);
+        Thread.sleep(500);
+        order.isOutBlock(false);
+        var verifyTime = orderRes.get();
+        var runTime = System.nanoTime() - startTime;
+        System.out.printf("验证 %d 条交易共花费：%f s \n", transList.size(), verifyTime / 1000000000f);
+        System.out.printf("总运行时间：%f s \n", runTime / 1000000000f);
     }
     
     @Test
-    public void testCollect() throws ExecutionException, InterruptedException {
-        var executor = Executors.newFixedThreadPool(2);
-        var orderRes = executor.submit(order::activate);
-        var centerRes = executor.submit(center::collectTransaction);
-        centerRes.get();
-        var verifyTimes = orderRes.get();
-        System.out.printf("验证 %d 条交易共花费：%f s \n", transList.size(), verifyTimes / 1000000000f);
+    public void testPullDB() {
+        var list = MongoDao.getTransFromBlock(3);
+        System.out.println(list.size());
+        list.forEach(System.out::println);
     }
+    
+    @Test
+    public void testWrite() {
+        order.isOutBlock(false);
+        var verifyTime = order.activate();
+        // TODO 此处手动统计时间，检查区块头的生成
+        var block = center.createBlock();
+        center.write(block);
+        System.out.printf("验证 %d 条交易共花费：%f s \n", transList.size(), verifyTime / 1000000000f);
+        collectTime(center.getSaveTimes(), "出块");
+    }
+    
+//    @Test
+//    public void testCollect() throws ExecutionException, InterruptedException {
+//        var executor = Executors.newFixedThreadPool(2);
+//        var orderRes = executor.submit(order::activate);
+//        var centerRes = executor.submit(center::collectTransaction);
+//        centerRes.get();
+//        var verifyTimes = orderRes.get();
+//        System.out.printf("验证 %d 条交易共花费：%f s \n", transList.size(), verifyTimes / 1000000000f);
+//    }
     
     @Test
     public void testCenter() {

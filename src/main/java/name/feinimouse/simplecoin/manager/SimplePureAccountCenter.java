@@ -21,7 +21,7 @@ public class SimplePureAccountCenter extends SimpleCenter<Transaction> {
     }
     
     @Override
-    public void collectTransaction() {
+    protected void collectTransaction() {
         var order = (SimplePureAccountOrder)super.order;
         order.isOutBlock(false);
         // 统计出块时间

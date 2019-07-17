@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import name.feinimouse.feinicoin.block.Block;
 import name.feinimouse.feinicoin.block.Hashable;
+import name.feinimouse.feinicoin.block.Header;
 import name.feinimouse.feinicoin.manager.Center;
 import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
@@ -38,11 +39,6 @@ public abstract class SimpleCenter <T> implements Center {
     
     // 账户缓存
     protected Map<String, Integer> blockAccountMap;
-    private List<SimpleHashObj> blockAccountsList;
-    // 交易缓存
-    // protected List<SimpleHashObj> blockTransactionList;
-    // 资产缓存
-    // protected List<SimpleHashObj> blockAssetsList;
     
     @Getter @Setter
     protected String name;
@@ -75,9 +71,6 @@ public abstract class SimpleCenter <T> implements Center {
         this.order = order;
         this.manager = order.getUserManager();
         this.blockAccountMap = new ConcurrentHashMap<>();
-        // this.blockTransactionList = new LinkedList<>();
-        // this.blockAssetsList = new LinkedList<>();
-        this.blockAccountsList = new LinkedList<>();
         this.saveTimes = new LinkedList<>();
         this.sm2 = SM2Generator.getInstance().generateSM2();
     }
@@ -108,13 +101,7 @@ public abstract class SimpleCenter <T> implements Center {
             // 先让order初始化
             Thread.yield();
             while (!order.isFinish()) {
-                //  初始化新区块
-                var preMsg = MongoDao.createNewBlock();
-                this.blockNumber = preMsg.getInteger("number");
-                this.blockPreHash = preMsg.getString("preHash");
-                // 从order收集交易
-                collectTransaction();
-                // 统计写入时间
+                // 统计出块时间
                 var saveTimeStart = System.nanoTime();
                 // 出块
                 System.out.println("create block...");
@@ -149,41 +136,28 @@ public abstract class SimpleCenter <T> implements Center {
         }
     }
     
-    @Override
-    public Block createBlock() {
-        // 生成当前区块的账户数据
-        blockAccountsList.clear();
+    // 生成当前区块的账户数据
+    private List<SimpleHashObj> createAccountList() {
+        var list = new LinkedList<SimpleHashObj>();
         var xxHash = LongHashFunction.xx();
         blockAccountMap.forEach((key, value) -> {
             var json = new JSONObject().put("name", key).put("coin", value).toString();
             var hash = xxHash.hashChars(json);
-            blockAccountsList.add(new SimpleHashObj(json, String.valueOf(hash), new SimpleSign()));
+            list.add(new SimpleHashObj(json, String.valueOf(hash), new SimpleSign()));
         });
-        
-        // 生成默克尔树
-        var accounts = new SimpleMerkelTree<>(blockAccountsList);
-        accounts.resetRoot();
-        
-        var blockTransactionList = MongoDao.getTransFromBlock(blockNumber)
-            .stream().map(MyHashable::new).collect(Collectors.toList());
-        var transes = new SimpleMerkelTree<>(blockTransactionList);
-        transes.resetRoot();
-        
-        var blockAssetsList = MongoDao.getAssetsFromBlock(blockNumber)
-            .stream().map(MyHashable::new).collect(Collectors.toList());
-        var assets = new SimpleMerkelTree<>(blockAssetsList);
-        assets.resetRoot();
-        
-        // 生成区块头
+        return list;
+    }
+    
+    // 生成区块头
+    private SimpleHeader createHeader(String transRoot, String assetsRoot, String accountRoot) {
         var header = new SimpleHeader();
         header.setTimestamp(System.currentTimeMillis());
         header.setProducer("Simple Center");
-        header.setTransRoot(transes.getRoot());
-        header.setAssetRoot(assets.getRoot());
-        header.setAccountRoot(accounts.getRoot());
+        header.setTransRoot(transRoot);
+        header.setAssetRoot(assetsRoot);
+        header.setAccountRoot(accountRoot);
         header.setVersion("0.0.1");
         header.setPreHash(blockPreHash);
-        
         // 生成hash
         var headerJson = header.toJson();
         header.setHash(String.valueOf(LongHashFunction.xx().hashChars(headerJson.toString())));
@@ -196,26 +170,61 @@ public abstract class SimpleCenter <T> implements Center {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
+        return header;
+    }
+    
+    @Override
+    public Block createBlock() {
+        //  初始化新区块
+        var preMsg = MongoDao.createNewBlock();
+        this.blockNumber = preMsg.getInteger("number");
+        this.blockPreHash = preMsg.getString("preHash");
+        
+        // 从order收集并写入交易
+        collectTransaction();
+        
+        // 生成账户列表
+        var blockAccountsList = createAccountList();
+        // 从数据库统计交易信息
+        var blockTransactionList = MongoDao.getTransFromBlock(blockNumber)
+            .stream().map(MyHashable::new).collect(Collectors.toList());
+        // 从数据库统计资产信息
+        var blockAssetsList = MongoDao.getAssetsFromBlock(blockNumber)
+            .stream().map(MyHashable::new).collect(Collectors.toList());
+        
+        // 写入账户信息
+        MongoDao.insertAccount(
+            blockNumber,
+            blockAccountsList.stream().map(SimpleHashObj::toDocument).collect(Collectors.toList())
+        );
+        
+        // 生成账户、交易、资产三颗默克尔树
+        var accounts = new SimpleMerkelTree<>(blockAccountsList);
+        accounts.resetRoot();
+        var transes = new SimpleMerkelTree<>(blockTransactionList);
+        transes.resetRoot();
+        var assets = new SimpleMerkelTree<>(blockAssetsList);
+        assets.resetRoot();
+        
+        // 生成区块头
+        var header = createHeader(
+            transes.getRoot(),
+            assets.getRoot(),
+            accounts.getRoot()
+        );
+        
         // 生成区块
         return new SimpleBlock(accounts,assets,transes,header);
     }
     
     @Override
-        public void write(Block b) {
-        var block = (SimpleBlock)b;
-        
-        var header = block.getHeader();
+    public void write(Block b) {
+        var header = (SimpleHeader)b.getHeader();
         // 将区块头转化为可写内容
         var headerD = new SimpleHashObj(
             header.toJson().toString(),
             header.getHash(),
             header.getSign()
-        );
-        
-        MongoDao.insertAccount(
-            blockNumber,
-            blockAccountsList.stream().map(SimpleHashObj::toDocument).collect(Collectors.toList())
         );
         MongoDao.insertBlock(blockNumber, headerD.toDocument());
     }

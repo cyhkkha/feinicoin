@@ -1,5 +1,6 @@
 package name.feinimouse.simplecoin.manager;
 
+import lombok.Getter;
 import lombok.NonNull;
 import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.simplecoin.UserManager;
@@ -14,6 +15,8 @@ public class SimplePureAccountOrder extends SimpleOrder<Transaction> {
     }
 
     private AtomicBoolean isOutBlock = new AtomicBoolean(true);
+    @Getter
+    private boolean waiting = false;
     
     public void isOutBlock(boolean bool) {
         isOutBlock.set(bool);
@@ -23,16 +26,24 @@ public class SimplePureAccountOrder extends SimpleOrder<Transaction> {
     public long activate() {
         processing = true;
             verifyTimes.clear();
-            Transaction transaction; 
+            Transaction transaction;
             while ((transaction = allTrans.poll()) != null) {
                 while (isOutBlock.get()) {
+                    if (!waiting) {
+                        waiting = true;
+                        System.out.println("waiting block out...");
+                    }
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         throw new RuntimeException("验签线程意外中断");
                     }
-                } 
+                }
+                if (waiting) {
+                    waiting = false;
+                    System.out.println("verifying trans start...");
+                }
                 if (super.verify(transaction)) {
                     orderQueue.add(transaction);
                 } else {
