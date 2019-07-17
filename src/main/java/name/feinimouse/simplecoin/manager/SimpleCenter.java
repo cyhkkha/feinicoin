@@ -180,8 +180,7 @@ public abstract class SimpleCenter <T> implements Center {
         
         var header = block.getHeader();
         // 将区块头转化为可写内容
-        var headerD = new Document()
-            .append("hash", LongHashFunction.xx().hashChars(header.getSummary()))
+        var headerD = new Document("hash", LongHashFunction.xx().hashChars(header.getSummary()))
             .append("sign", header.getSign().toDoc())
             .append("content", Document.parse(header.getSummary()));
         

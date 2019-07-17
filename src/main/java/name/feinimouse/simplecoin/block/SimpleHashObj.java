@@ -33,8 +33,7 @@ public class SimpleHashObj implements Hashable {
     }
     
     public Document toDocument() {
-        return new Document()
-            .append("hash", hash)
+        return new Document("hash", hash)
             .append("sign", ((SimpleSign)sign).toDoc())
             .append("content", Document.parse(content));
     }

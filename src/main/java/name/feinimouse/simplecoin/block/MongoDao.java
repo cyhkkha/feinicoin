@@ -2,10 +2,10 @@ package name.feinimouse.simplecoin.block;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import lombok.NonNull;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -113,4 +113,53 @@ public class MongoDao {
     public static void dropBlock() {
         block.drop();
     }
+    
+    public static int createNewBlock() {
+        var latest = block.find().limit(1).sort(new Document().append("_id", -1)).first();
+        var number = 0;
+        var preHash = "0000000000";
+        if (latest != null) {
+            var tempN = latest.get("number", Integer.class);
+            if (tempN != null) {
+                number = tempN + 1;
+            }
+            var tempH = latest.get("hash", String.class);
+            if (tempH != null && !tempH.isEmpty()) {
+                preHash = tempH;
+            }
+        }
+
+        var merkelPart = new Document("number", number)
+            .append("root", "")
+            .append("list", new Document[]{});
+        var header = new Document("number", number)
+            .append("preHash", preHash);
+        insertAccount(merkelPart);
+        insertAssets(merkelPart);
+        insertTransaction(merkelPart);
+        insertBlock(header);
+        return number;
+    }
+    
+    public static long insertTrans(int number, Document trans) {
+        var filter = Filters.eq("number", number);
+        var insert = new Document("$pushAll", new Document("list", trans));
+        return transaction.updateOne(filter, insert).getModifiedCount();
+    }
+    public static long insertAssets(int number, Document ass) {
+        var filter = Filters.eq("number", number);
+        var insert = new Document("$pushAll", new Document("list", ass));
+        return assets.updateOne(filter, insert).getModifiedCount();
+    }
+    public static long insertAccount(int number, Document acc) {
+        var filter = Filters.eq("number", number);
+        var insert = new Document("$pushAll", new Document("list", acc));
+        return account.updateOne(filter, insert).getModifiedCount();
+    }
+    public static long insertBlock(int number, Document header) {
+        var filter = Filters.eq("number", number);
+        var insert = new Document("$set", header);
+        return account.updateOne(filter, insert).getModifiedCount();
+    }
+    
 }
