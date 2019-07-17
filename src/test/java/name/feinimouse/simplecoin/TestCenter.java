@@ -8,6 +8,7 @@ import name.feinimouse.simplecoin.block.SimpleMerkelTree;
 import name.feinimouse.simplecoin.manager.SimplePureAccountCenter;
 import name.feinimouse.simplecoin.manager.SimplePureAccountOrder;
 import name.feinimouse.utils.LoopUtils;
+import net.openhft.hashing.LongHashFunction;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,19 +32,20 @@ public class TestCenter extends SetupTest {
         center = new SimplePureAccountCenter(order);
 
         // 生成区块头
-        var summary = new JSONObject();
-        summary.put("number", 0)
-            .put("preHash", "0000000000")
-            .put("timestamp", System.currentTimeMillis())
-            .put("producer", "Simple Center")
-            .put("transRoot", "xxxxxxxx")
-            .put("assetRoot", "xxxxxxxx")
-            .put("accountRoot", "xxxxxxxx")
-            .put("version", "0.0.1");
-        testHeader = new SimpleHeader(summary);
+        testHeader = new SimpleHeader();
+        testHeader.setNumber(0);
+        testHeader.setPreHash("0000000000");
+        testHeader.setTimestamp(System.currentTimeMillis());
+        testHeader.setProducer("Simple Center");
+        testHeader.setTransRoot("xxxxxxxx");
+        testHeader.setAssetRoot("xxxxxxxx");
+        testHeader.setAccountRoot("xxxxxxxx");
+        testHeader.setVersion("0.0.1");
+        
         var sign = new SimpleSign();
-        sign.setSign("center", sm2.signToByte(summary.toString()));
+        sign.setSign("center", sm2.signToByte(testHeader.toJson().toString()));
         testHeader.setSign(sign);
+        testHeader.setHash(String.valueOf(LongHashFunction.xx().hashChars(testHeader.toJson().toString())));
     }
     
     @Test
@@ -64,7 +66,6 @@ public class TestCenter extends SetupTest {
         centerRes.get();
         var verifyTimes = orderRes.get();
         System.out.printf("验证 %d 条交易共花费：%f s \n", transList.size(), verifyTimes / 1000000000f);
-        System.out.printf("共解析交易 %d 条 \n", center.getCacheTransList().size());
     }
     
     @Test

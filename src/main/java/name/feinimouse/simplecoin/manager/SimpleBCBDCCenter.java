@@ -1,9 +1,9 @@
 package name.feinimouse.simplecoin.manager;
 
 import lombok.NonNull;
-import name.feinimouse.feinism2.SM2Signer;
 import name.feinimouse.feinism2.SM2Verifier;
 import name.feinimouse.simplecoin.TransBundle;
+import name.feinimouse.simplecoin.block.MongoDao;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
 
 import java.security.InvalidKeyException;
@@ -41,8 +41,6 @@ public class SimpleBCBDCCenter extends SimpleCenter<TransBundle> {
         // 统计出块时间
         var blockRunTime = System.currentTimeMillis();
         var blockNowTime = blockRunTime;
-        super.bolckTransactionList.clear();
-        super.blockAssetsList.clear();
         
         do {
             var bundle = order.pull();
@@ -57,9 +55,10 @@ public class SimpleBCBDCCenter extends SimpleCenter<TransBundle> {
                 if (verifyBundle(bundle)) {
                     var bundleMap = bundle.getSummary();
                     var transList = bundle.getMerkelTree().getList();
-                    // 将交易列表并入缓存
-                    var hashObjList = transList.stream().map(SimpleHashObj::new).collect(Collectors.toList());
-                    super.bolckTransactionList.addAll(hashObjList);
+                    // 将交易列表存入数据库
+                    var documentList = transList.stream()
+                        .map(t -> new SimpleHashObj(t).toDocument()).collect(Collectors.toList());
+                    MongoDao.insertTrans(super.blockNumber, documentList);
                     // 将账户数据并入缓存
                     bundleMap.forEach((k, v) -> super.blockAccountMap.merge(k, v, Integer::sum));
                 } else {

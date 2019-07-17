@@ -10,6 +10,8 @@ import lombok.NonNull;
 import org.bson.Document;
 import org.json.JSONObject;
 
+import java.util.*;
+
 
 /**
  * Create by 菲尼莫斯 on 2019/7/3
@@ -114,8 +116,8 @@ public class MongoDao {
         block.drop();
     }
     
-    public static int createNewBlock() {
-        var latest = block.find().limit(1).sort(new Document().append("_id", -1)).first();
+    public static Document createNewBlock() {
+        var latest = block.find().limit(1).sort(new Document("_id", -1)).first();
         var number = 0;
         var preHash = "0000000000";
         if (latest != null) {
@@ -138,25 +140,48 @@ public class MongoDao {
         insertAssets(merkelPart);
         insertTransaction(merkelPart);
         insertBlock(header);
-        return number;
+        return new Document("number", number).append("preHash", preHash);
+    }
+
+    public static long insertTrans(long number, Document trans) {
+        return insertTrans(number, Collections.singletonList(trans));
     }
     
-    public static long insertTrans(int number, Document trans) {
+    public static long insertTrans(long number, List<Document> trans) {
         var filter = Filters.eq("number", number);
         var insert = new Document("$pushAll", new Document("list", trans));
         return transaction.updateOne(filter, insert).getModifiedCount();
     }
-    public static long insertAssets(int number, Document ass) {
+    
+    public static List<Document> getTransFromBlock(long number) {
+        var filter = Filters.eq("number", number);
+        var block = transaction.find(filter).limit(1).first();
+        return block == null ? new ArrayList<>() : block.getList("list", Document.class);
+    }
+
+    public static long insertAssets(long number, Document ass) {
+        return insertAssets(number, Collections.singletonList(ass));
+    }
+    
+    public static long insertAssets(long number, List<Document> ass) {
         var filter = Filters.eq("number", number);
         var insert = new Document("$pushAll", new Document("list", ass));
         return assets.updateOne(filter, insert).getModifiedCount();
     }
-    public static long insertAccount(int number, Document acc) {
+
+    public static List<Document> getAssetsFromBlock(long number) {
+        var filter = Filters.eq("number", number);
+        var block = assets.find(filter).limit(1).first();
+        return block == null ? new ArrayList<>() : block.getList("list", Document.class);
+    }
+    
+    public static long insertAccount(long number, List<Document> acc) {
         var filter = Filters.eq("number", number);
         var insert = new Document("$pushAll", new Document("list", acc));
         return account.updateOne(filter, insert).getModifiedCount();
     }
-    public static long insertBlock(int number, Document header) {
+    
+    public static long insertBlock(long number, Document header) {
         var filter = Filters.eq("number", number);
         var insert = new Document("$set", header);
         return account.updateOne(filter, insert).getModifiedCount();

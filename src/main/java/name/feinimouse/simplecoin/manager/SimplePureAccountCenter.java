@@ -2,6 +2,7 @@ package name.feinimouse.simplecoin.manager;
 
 import lombok.NonNull;
 import name.feinimouse.feinicoin.account.Transaction;
+import name.feinimouse.simplecoin.block.MongoDao;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
 
 import java.util.List;
@@ -21,13 +22,12 @@ public class SimplePureAccountCenter extends SimpleCenter<Transaction> {
     
     @Override
     public void collectTransaction() {
+        var order = (SimplePureAccountOrder)super.order;
+        order.isOutBlock(false);
         // 统计出块时间
         var blockRunTime = System.currentTimeMillis();
         var blockNowTime = blockRunTime;
-        // 清空当前块的交易列表
-        super.bolckTransactionList.clear();
-        // 清空当前资产块列表
-        super.blockAssetsList.clear();
+        
         do {// 取队列的交易
             var t = order.pull();
             if (t == null) {
@@ -38,8 +38,8 @@ public class SimplePureAccountCenter extends SimpleCenter<Transaction> {
                     throw new RuntimeException("线程意外终止");
                 }
             } else  {
-                // 推入交易到缓存
-                bolckTransactionList.add(new SimpleHashObj(t));
+                // 存入交易
+                MongoDao.insertTrans(super.blockNumber, new SimpleHashObj(t).toDocument());
 
                 // 更新账户缓存
                 var sender = t.getSender();
@@ -53,11 +53,7 @@ public class SimplePureAccountCenter extends SimpleCenter<Transaction> {
             blockNowTime = System.currentTimeMillis();
         } while (blockNowTime - blockRunTime <= outBlockTime);
         System.out.println("collect time out...");
-        
-    }
-    
-    public List<SimpleHashObj> getCacheTransList() {
-        return this.bolckTransactionList;
+        order.isOutBlock(true);
     }
     
 }
