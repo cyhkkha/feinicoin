@@ -31,6 +31,7 @@ public class TransBundle implements Hashable {
     
     public TransBundle(List<Transaction> ts) {
         this.merkelTree = new SimpleMerkelTree<>(ts);
+        this.summary = new ConcurrentHashMap<>();
         this.hasChange = true;
         doBundle();
     }
