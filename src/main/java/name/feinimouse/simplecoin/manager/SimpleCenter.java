@@ -5,13 +5,16 @@ import lombok.NonNull;
 import lombok.Setter;
 import name.feinimouse.feinicoin.block.Block;
 import name.feinimouse.feinicoin.block.Hashable;
-import name.feinimouse.feinicoin.block.Header;
 import name.feinimouse.feinicoin.manager.Center;
 import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
 import name.feinimouse.simplecoin.SimpleSign;
 import name.feinimouse.simplecoin.UserManager;
 import name.feinimouse.simplecoin.block.*;
+import name.feinimouse.simplecoin.mongodao.AccountDao;
+import name.feinimouse.simplecoin.mongodao.AssetsDao;
+import name.feinimouse.simplecoin.mongodao.MongoDao;
+import name.feinimouse.simplecoin.mongodao.TransDao;
 import net.openhft.hashing.LongHashFunction;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -124,10 +127,10 @@ public abstract class SimpleCenter <T> implements Center {
 
     private class MyHashable implements Hashable {
         private String hash;
-        public MyHashable(Document d) {
+        MyHashable(Document d) {
             this(d.getString("hash"));
         }
-        public MyHashable(String hash) {
+        MyHashable(String hash) {
             this.hash =hash;
         }
         @Override
@@ -158,6 +161,7 @@ public abstract class SimpleCenter <T> implements Center {
         header.setAccountRoot(accountRoot);
         header.setVersion("0.0.1");
         header.setPreHash(blockPreHash);
+        header.setNumber(blockNumber);
         // 生成hash
         var headerJson = header.toJson();
         header.setHash(String.valueOf(LongHashFunction.xx().hashChars(headerJson.toString())));
@@ -186,14 +190,14 @@ public abstract class SimpleCenter <T> implements Center {
         // 生成账户列表
         var blockAccountsList = createAccountList();
         // 从数据库统计交易信息
-        var blockTransactionList = MongoDao.getTransFromBlock(blockNumber)
+        var blockTransactionList = TransDao.getList(blockNumber)
             .stream().map(MyHashable::new).collect(Collectors.toList());
         // 从数据库统计资产信息
-        var blockAssetsList = MongoDao.getAssetsFromBlock(blockNumber)
+        var blockAssetsList = AssetsDao.getList(blockNumber)
             .stream().map(MyHashable::new).collect(Collectors.toList());
         
         // 写入账户信息
-        MongoDao.insertAccount(
+        AccountDao.insertList(
             blockNumber,
             blockAccountsList.stream().map(SimpleHashObj::toDocument).collect(Collectors.toList())
         );
@@ -220,13 +224,22 @@ public abstract class SimpleCenter <T> implements Center {
     @Override
     public void write(Block b) {
         var header = (SimpleHeader)b.getHeader();
+        var headerJson = header.toJson();
+        headerJson.remove("number");
+        headerJson.remove("preHash");
         // 将区块头转化为可写内容
         var headerD = new SimpleHashObj(
-            header.toJson().toString(),
+            headerJson.toString(),
             header.getHash(),
             header.getSign()
         );
-        MongoDao.insertBlock(blockNumber, headerD.toDocument());
+        // 写入交易和资产的头信息
+        AccountDao.setRoot(blockNumber, b.getAccounts().getRoot());
+        TransDao.setRoot(blockNumber, b.getTransactions().getRoot());
+        AssetsDao.setRoot(blockNumber, b.getAssets().getRoot());
+        
+        // 写入头
+        MongoDao.insertHeader(blockNumber, headerD.toDocument());
     }
 
     @Override

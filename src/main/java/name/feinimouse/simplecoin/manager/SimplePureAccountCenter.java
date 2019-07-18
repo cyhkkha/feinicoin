@@ -2,10 +2,8 @@ package name.feinimouse.simplecoin.manager;
 
 import lombok.NonNull;
 import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.simplecoin.block.MongoDao;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
-
-import java.util.List;
+import name.feinimouse.simplecoin.mongodao.TransDao;
 
 /**
  * Create by 菲尼莫斯 on 2019/7/3
@@ -39,7 +37,7 @@ public class SimplePureAccountCenter extends SimpleCenter<Transaction> {
                 }
             } else  {
                 // 存入交易
-                MongoDao.insertTrans(super.blockNumber, new SimpleHashObj(t).toDocument());
+                TransDao.insertList(super.blockNumber, new SimpleHashObj(t).toDocument());
 
                 // 更新账户缓存
                 var sender = t.getSender();

@@ -1,4 +1,4 @@
-package name.feinimouse.simplecoin.block;
+package name.feinimouse.simplecoin.mongodao;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -30,10 +30,10 @@ public class MongoDao {
     
     
     private static MongoDatabase db;
-    private static MongoCollection<Document> transaction;
-    private static MongoCollection<Document> account;
-    private static MongoCollection<Document> assets;
-    private static MongoCollection<Document> block;
+    protected static MongoCollection<Document> transaction;
+    protected static MongoCollection<Document> account;
+    protected static MongoCollection<Document> assets;
+    protected static MongoCollection<Document> block;
     
     static {
         // var credential = MongoCredential.createCredential(USERNAME, DATABASE, PASSWORD);
@@ -86,50 +86,11 @@ public class MongoDao {
         return new Document("number", number).append("preHash", preHash);
     }
 
-    public static long insertTrans(long number, Document trans) {
-        return insertTrans(number, Collections.singletonList(trans));
-    }
     
-    public static long insertTrans(long number, List<Document> trans) {
-        var filter = Filters.eq("number", number);
-        var insert = new Document("$push", new Document("list", new Document("$each", trans)));
-        return transaction.updateOne(filter, insert).getModifiedCount();
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static List<Document> getTransFromBlock(long number) {
-        var filter = Filters.eq("number", number);
-        var block = transaction.find(filter).limit(1).first();
-        return block == null ? new ArrayList<>() : (List<Document>) block.get("list");
-    }
-
-    public static long insertAssets(long number, Document ass) {
-        return insertAssets(number, Collections.singletonList(ass));
-    }
-    
-    public static long insertAssets(long number, List<Document> ass) {
-        var filter = Filters.eq("number", number);
-        var insert = new Document("$push", new Document("list", new Document("$each", ass)));
-        return assets.updateOne(filter, insert).getModifiedCount();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static List<Document> getAssetsFromBlock(long number) {
-        var filter = Filters.eq("number", number);
-        var block = assets.find(filter).limit(1).first();
-        return block == null ? new ArrayList<>() : (List<Document>) block.get("list");
-    }
-    
-    public static long insertAccount(long number, List<Document> acc) {
-        var filter = Filters.eq("number", number);
-        var insert = new Document("$push", new Document("list", new Document("$each", acc)));
-        return account.updateOne(filter, insert).getModifiedCount();
-    }
-    
-    public static long insertBlock(long number, Document header) {
+    public static void insertHeader(long number, Document header) {
         var filter = Filters.eq("number", number);
         var insert = new Document("$set", header);
-        return account.updateOne(filter, insert).getModifiedCount();
+        block.updateOne(filter, insert).getModifiedCount();
     }
     
 }

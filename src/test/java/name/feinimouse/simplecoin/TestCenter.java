@@ -21,10 +21,11 @@ public class TestCenter extends SetupTest {
     private SimplePureAccountOrder order;
     private List<Transaction> transList;
     private SimpleHeader testHeader;
+    private final static int LIST_SIZE = 100;
     
     @Before
     public void setUp() throws SignatureException {
-        transList = LoopUtils.loopToList(1000, transGen::genSignedTrans);
+        transList = LoopUtils.loopToList(LIST_SIZE, transGen::genSignedTrans);
         order = new SimplePureAccountOrder(userManager, transList);
         center = new SimplePureAccountCenter(order);
 
@@ -63,21 +64,25 @@ public class TestCenter extends SetupTest {
     }
     
     @Test
-    public void testPullDB() {
-        var list = MongoDao.getTransFromBlock(3);
-        System.out.println(list.size());
-        list.forEach(System.out::println);
-    }
-    
-    @Test
     public void testWrite() {
+        var startTIme = System.nanoTime();
+        
         order.isOutBlock(false);
         var verifyTime = order.activate();
-        // TODO 此处手动统计时间，检查区块头的生成
+        
+        var createTimeStart = System.nanoTime();
+        
         var block = center.createBlock();
+        var header = (SimpleHeader)block.getHeader();
+        System.out.printf("header: %s \n", header.toJson().toString());
         center.write(block);
-        System.out.printf("验证 %d 条交易共花费：%f s \n", transList.size(), verifyTime / 1000000000f);
-        collectTime(center.getSaveTimes(), "出块");
+        
+        var createTime = System.nanoTime() - createTimeStart;
+        
+        var totalTime = System.nanoTime() - startTIme;
+        System.out.printf("创建区块耗时：%f s \n", createTime / 1000_000_000f);
+        System.out.printf("验证 %d 条交易共花费：%f s \n", transList.size(), verifyTime / 1000_000_000f);
+        System.out.printf("总耗时：%f s \n", totalTime / 1000_000_000f);
     }
     
 //    @Test

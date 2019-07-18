@@ -3,8 +3,8 @@ package name.feinimouse.simplecoin.manager;
 import lombok.NonNull;
 import name.feinimouse.feinism2.SM2Verifier;
 import name.feinimouse.simplecoin.TransBundle;
-import name.feinimouse.simplecoin.block.MongoDao;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
+import name.feinimouse.simplecoin.mongodao.TransDao;
 
 import java.security.InvalidKeyException;
 import java.security.SignatureException;
@@ -58,7 +58,7 @@ public class SimpleBCBDCCenter extends SimpleCenter<TransBundle> {
                     // 将交易列表存入数据库
                     var documentList = transList.stream()
                         .map(t -> new SimpleHashObj(t).toDocument()).collect(Collectors.toList());
-                    MongoDao.insertTrans(super.blockNumber, documentList);
+                    TransDao.insertList(super.blockNumber, documentList);
                     // 将账户数据并入缓存
                     bundleMap.forEach((k, v) -> super.blockAccountMap.merge(k, v, Integer::sum));
                 } else {
