@@ -80,9 +80,11 @@ public class TransactionGen {
             try {
                 if (mode > 0) {
                     var trans = genTransaction(add1, add2);
+                    bundle.addCoin((Integer) trans.getCoin());
                     return sign(trans, add1);
                 } else {
                     var trans = genTransaction(add2, add1);
+                    bundle.addCoin((Integer) trans.getCoin());
                     return sign(trans, add2);
                 }
             } catch (SignatureException e) {
@@ -90,6 +92,10 @@ public class TransactionGen {
                 throw new RuntimeException("生成UTXO交易出错");
             }
         });
+        bundle.setOwner(user);
+        bundle.setIssuer("SimpleCenter");
+        bundle.setType("Test");
+        bundle.setTimestamp(System.currentTimeMillis());
         return bundle;
     }
     

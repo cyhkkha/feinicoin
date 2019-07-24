@@ -1,33 +1,25 @@
 package name.feinimouse.simplecoin.manager;
 
 import lombok.NonNull;
-import name.feinimouse.feinicoin.account.Transaction;
+import name.feinimouse.simplecoin.UTXOBundle;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
+import name.feinimouse.simplecoin.mongodao.AssetsDao;
 import name.feinimouse.simplecoin.mongodao.TransDao;
 
-/**
- * Create by 菲尼莫斯 on 2019/7/3
- * Email: cyhkkha@gmail.com
- * File name: SimpleCenter
- * Program : feinicoin
- * Description :
- */
-public class SimplePureAccountCenter extends SimpleCenter<Transaction> {
-    
-    public SimplePureAccountCenter(@NonNull SimplePureAccountOrder order) {
+public class SimpleUTXOCenter extends SimpleCenter<UTXOBundle> {
+    public SimpleUTXOCenter(@NonNull SimpleUTXOOrder order) {
         super(order);
     }
-    
+
     @Override
     protected void collectTransaction() {
         order.isOutBlock(false);
         // 统计出块时间
         var blockRunTime = System.currentTimeMillis();
         var blockNowTime = blockRunTime;
-        
-        do {// 取队列的交易
-            var t = order.pull();
-            if (t == null) {
+        do {// 取Order队列
+            var utxoBundle = order.pull();
+            if (utxoBundle == null) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -36,21 +28,17 @@ public class SimplePureAccountCenter extends SimpleCenter<Transaction> {
                 }
             } else  {
                 // 存入交易
-                TransDao.insertList(super.blockNumber, new SimpleHashObj(t).toDocument());
-
-                // 更新账户缓存
-                var sender = t.getSender();
-                var receiver = t.getReceiver();
-                var coin = (Integer)t.getCoin();
-                blockAccountMap.merge(sender, - coin, Integer::sum);
-                blockAccountMap.merge(receiver, coin, Integer::sum);
+                while (!utxoBundle.isEmpty()) {
+                    TransDao.insertList(super.blockNumber, new SimpleHashObj(utxoBundle.poll()).toDocument());
+                }
+                // 存入UTXO记录
+                AssetsDao.insertList(super.blockNumber, new SimpleHashObj(utxoBundle).toDocument());
             }
-            
+
             // 更新下一轮的时间
             blockNowTime = System.currentTimeMillis();
         } while (blockNowTime - blockRunTime <= outBlockTime);
         System.out.println("collect time out...");
         order.isOutBlock(true);
     }
-    
 }

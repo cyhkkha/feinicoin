@@ -2,6 +2,7 @@ package name.feinimouse.simplecoin.block;
 
 import lombok.Getter;
 import lombok.NonNull;
+import name.feinimouse.feinicoin.account.Assets;
 import name.feinimouse.feinicoin.account.Sign;
 import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinicoin.block.Hashable;
@@ -20,6 +21,13 @@ public class SimpleHashObj implements Hashable {
             t.getSummary(),
             t.getHash(),
             t.getSign()
+        );
+    }
+    public SimpleHashObj(@NonNull Assets a) {
+        this(
+            a.getSummary(),
+            a.getHash(),
+            new SimpleSign()
         );
     }
     
