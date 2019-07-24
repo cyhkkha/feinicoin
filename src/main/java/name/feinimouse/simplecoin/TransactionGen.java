@@ -2,6 +2,8 @@ package name.feinimouse.simplecoin;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
+import name.feinimouse.utils.LoopUtils;
 import net.openhft.hashing.LongHashFunction;
 
 import java.security.SignatureException;
@@ -15,6 +17,8 @@ public class TransactionGen {
     private LongHashFunction xxHash;
     @Getter
     private List<Long> signTimes;
+    @Getter @Setter
+    private int coinLimit = 1000;
 
     public TransactionGen(@NonNull UserManager userManager) {
         this.userManager = userManager;
@@ -26,16 +30,24 @@ public class TransactionGen {
     public SimpleTransaction genTransaction() {
         var sender = userManager.getRandomUser();
         var receiver = userManager.getRandomUser(sender);
-        var coin = random.nextInt(1000);
+        return genTransaction(sender, receiver);
+    }
+    
+    public SimpleTransaction genTransaction(String sender, String receiver) {
+        var coin = random.nextInt(coinLimit);
         var timestamp = System.currentTimeMillis();
         var trans = new SimpleTransaction(timestamp, sender, receiver, coin);
         trans.setHash(String.valueOf(xxHash.hashChars(trans.getSummary())));
         return trans;
     }
 
-    public SimpleTransaction sign(@NonNull SimpleTransaction t) throws SignatureException {
-        var signer = userManager.getSM2(t.getSender());
-
+    public SimpleTransaction sign(SimpleTransaction t) throws SignatureException {
+        var user = t.getSender();
+        return sign(t, user);
+    }
+    
+    public SimpleTransaction sign(@NonNull SimpleTransaction t, String user) throws SignatureException {
+        var signer = userManager.getSM2(user);
         var before = System.nanoTime();
         var signRes = signer.signToByte(t.getSummary());
         signTimes.add(System.nanoTime() - before);
@@ -56,6 +68,29 @@ public class TransactionGen {
             e.printStackTrace();
             throw new RuntimeException("签名错误，交易生成失败！");
         }
+    }
+    
+    public UTXOBundle genUTXOBundle(int size) {
+        var mode = random.nextInt(2);
+        var bundle = new UTXOBundle();
+        var user = userManager.getRandomUser();
+        LoopUtils.loop(size, () -> {
+            var add1 = userManager.getRandomAddress(user);
+            var add2 = userManager.getRandomAddress(userManager.getRandomUser(user));
+            try {
+                if (mode > 0) {
+                    var trans = genTransaction(add1, add2);
+                    return sign(trans, add1);
+                } else {
+                    var trans = genTransaction(add2, add1);
+                    return sign(trans, add2);
+                }
+            } catch (SignatureException e) {
+                e.printStackTrace();
+                throw new RuntimeException("生成UTXO交易出错");
+            }
+        });
+        return bundle;
     }
     
 }
