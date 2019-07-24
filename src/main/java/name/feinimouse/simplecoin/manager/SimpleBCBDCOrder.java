@@ -10,7 +10,7 @@ import name.feinimouse.utils.LoopUtils;
 
 import java.util.List;
 
-public class SimpleBCBDCOrder extends SimpleOrder<TransBundle> {
+public class SimpleBCBDCOrder extends SimpleOrder<Transaction, TransBundle> {
     @Getter @Setter
     protected int bundleLimit = 10;
     

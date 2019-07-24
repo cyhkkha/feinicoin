@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * Description :
  */
 public abstract class SimpleCenter <T> implements Center {
-    protected SimpleOrder<T> order;
+    protected SimpleOrder<?, T> order;
     protected UserManager manager;
     protected SM2 sm2;
     
@@ -70,7 +70,7 @@ public abstract class SimpleCenter <T> implements Center {
     protected long blockNumber = 0L;
     protected String blockPreHash;
     
-    public SimpleCenter(@NonNull SimpleOrder<T> order) {
+    public SimpleCenter(@NonNull SimpleOrder<?, T> order) {
         this.order = order;
         this.manager = order.getUserManager();
         this.blockAccountMap = new ConcurrentHashMap<>();
