@@ -8,16 +8,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestMixedBCBDC extends TestCenter<MixedBundle> {
-    private final static int TRANS_SIZE = 100;
-    private final static int ASSET_SIZE = 20;
-    private final static int BUNDLE_SIZE = 10;
+    private final static int TRANS_SIZE = 800;
+    private final static int ASSET_SIZE = 200;
+    private final static int BUNDLE_SIZE = 20;
     private final static int UTXO_SIZE = 5;
 
     @Before
     @Override
     public void setUp() {
-        sourceList = LoopUtils.loopToList(TRANS_SIZE, () -> transGen.genMixedBundle());
-        LoopUtils.loop(ASSET_SIZE, () -> sourceList.add(transGen.genMixedBundle(UTXO_SIZE)));
+//        sourceList = LoopUtils.loopToList(TRANS_SIZE, () -> transGen.genMixedBundle());
+//        LoopUtils.loop(ASSET_SIZE, () -> sourceList.add(transGen.genMixedBundle(UTXO_SIZE)));
+        sourceList = LoopUtils.loopToList(TRANS_SIZE, () -> transGen.genMixedBundle(UTXO_SIZE));
         var order = new SimpleMixedBCBDCOrder(userManager, sourceList);
         order.setBundleLimit(BUNDLE_SIZE);
         center = new SimpleMixedBCBDCCenter(order);
