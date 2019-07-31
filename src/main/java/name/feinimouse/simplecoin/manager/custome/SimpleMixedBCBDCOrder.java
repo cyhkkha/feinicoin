@@ -6,7 +6,7 @@ import lombok.Setter;
 import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.simplecoin.account.MixedBundle;
 import name.feinimouse.simplecoin.account.TransBundle;
-import name.feinimouse.simplecoin.UserManager;
+import name.feinimouse.simplecoin.core.UserManager;
 import name.feinimouse.simplecoin.manager.SimpleOrder;
 
 import java.util.LinkedList;

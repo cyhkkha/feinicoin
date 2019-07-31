@@ -2,7 +2,7 @@ package name.feinimouse.simplecoin.manager;
 
 import lombok.Getter;
 import lombok.NonNull;
-import name.feinimouse.simplecoin.UserManager;
+import name.feinimouse.simplecoin.core.UserManager;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;

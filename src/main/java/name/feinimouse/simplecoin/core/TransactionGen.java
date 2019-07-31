@@ -1,8 +1,9 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.core;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.simplecoin.account.MixedBundle;
 import name.feinimouse.simplecoin.account.SimpleSign;
 import name.feinimouse.simplecoin.account.SimpleTransaction;
@@ -72,6 +73,10 @@ public class TransactionGen {
             e.printStackTrace();
             throw new RuntimeException("签名错误，交易生成失败！");
         }
+    }
+    
+    public Transaction genSignedTransFa() {
+        return genSignedTrans();
     }
     
     public UTXOBundle genUTXOBundle(int size) {

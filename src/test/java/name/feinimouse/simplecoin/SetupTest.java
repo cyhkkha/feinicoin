@@ -2,6 +2,8 @@ package name.feinimouse.simplecoin;
 
 import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
+import name.feinimouse.simplecoin.core.TransactionGen;
+import name.feinimouse.simplecoin.core.UserManager;
 import name.feinimouse.simplecoin.manager.SimpleVerifier;
 import org.junit.Before;
 

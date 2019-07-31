@@ -15,7 +15,7 @@ import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
 import name.feinimouse.simplecoin.account.SimpleSign;
 import name.feinimouse.simplecoin.account.TransBundle;
-import name.feinimouse.simplecoin.UserManager;
+import name.feinimouse.simplecoin.core.UserManager;
 
 public class SimpleVerifier implements Verifier {
     @Getter
