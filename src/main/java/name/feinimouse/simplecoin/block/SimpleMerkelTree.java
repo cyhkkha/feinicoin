@@ -26,7 +26,7 @@ public class SimpleMerkelTree <T extends Hashable> implements MerkelTree<T> {
     }
     
     public SimpleMerkelTree(@NonNull List<T> ts) {
-        this();
+        this.xxHash = LongHashFunction.xx();
         this.list = ts;
         this.hasChange = true;
     }
