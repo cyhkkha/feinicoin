@@ -5,17 +5,10 @@ import name.feinimouse.simplecoin.UTXOBundle;
 import name.feinimouse.simplecoin.UserManager;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SimpleUTXOOrder extends SimpleOrder<UTXOBundle, UTXOBundle> {
     public SimpleUTXOOrder(@NonNull UserManager manager, @NonNull List<UTXOBundle> list) {
         super(manager, list);
-    }
-
-    private AtomicBoolean isOutBlock = new AtomicBoolean(true);
-
-    public void isOutBlock(boolean bool) {
-        isOutBlock.set(bool);
     }
     
     @Override
@@ -33,6 +26,7 @@ public class SimpleUTXOOrder extends SimpleOrder<UTXOBundle, UTXOBundle> {
             });
             orderQueue.add(utxoBundle);
         }
+        processing = false;
         return verifyTimes.stream().reduce(Long::sum).orElse(0L);
         
     }
