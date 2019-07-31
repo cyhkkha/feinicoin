@@ -8,6 +8,7 @@ public class SimpleUTXOCenter extends SimpleCenter<UTXOBundle> {
     
     public SimpleUTXOCenter(@NonNull SimpleUTXOOrder order) {
         super(order);
+        setName("纯UTXO模式");
     }
 
     @Override

@@ -8,6 +8,7 @@ public class SimpleMixedBCBDCCenter extends SimpleCenter<MixedBundle> {
     
     public SimpleMixedBCBDCCenter(@NonNull SimpleMixedBCBDCOrder order) {
         super(order);
+        setName("混合型BCBDC");
     }
 
     @Override

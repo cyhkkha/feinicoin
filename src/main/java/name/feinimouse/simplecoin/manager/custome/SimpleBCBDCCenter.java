@@ -8,6 +8,7 @@ public class SimpleBCBDCCenter extends SimpleCenter<TransBundle> {
     
     public SimpleBCBDCCenter(@NonNull SimpleBCBDCOrder order) {
         super(order);
+        setName("纯账户并行模式");
     }
 
     @Override

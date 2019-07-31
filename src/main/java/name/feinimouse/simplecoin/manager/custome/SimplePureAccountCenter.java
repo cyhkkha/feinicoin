@@ -15,6 +15,7 @@ public class SimplePureAccountCenter extends SimpleCenter<Transaction> {
     
     public SimplePureAccountCenter(@NonNull SimplePureAccountOrder order) {
         super(order);
+        setName("纯账户模式");
     }
     
     @Override
