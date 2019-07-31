@@ -40,11 +40,11 @@ public class TestTransactionGen extends SetupTest {
     }
     @Test
     public void testSignTimes() {
-        LoopUtils.loop(10, () -> transGen.genSignedTrans());
+        LoopUtils.loop(10, transGen::genSignedTrans);
         collectTime(transGen.getSignTimes(), "第一次签名");
         transGen.getSignTimes().clear();
         Assert.assertTrue(transGen.getSignTimes().size() < 1);
-        LoopUtils.loop(1000, () -> transGen.genSignedTrans());
+        LoopUtils.loop(1000, transGen::genSignedTrans);
         collectTime(transGen.getSignTimes(), "签名");
     }
     
