@@ -69,6 +69,9 @@ public abstract class SimpleCenter <T> implements Center {
     // 当前区块编号
     protected long blockNumber = 0L;
     protected String blockPreHash;
+    // 出块数量统计
+    @Getter
+    protected int blockCounts = 0;
     
     public SimpleCenter(@NonNull SimpleOrder<?, T> order) {
         this.order = order;
@@ -125,7 +128,7 @@ public abstract class SimpleCenter <T> implements Center {
         }
     }
 
-    private class MyHashable implements Hashable {
+    private static class MyHashable implements Hashable {
         private String hash;
         MyHashable(Document d) {
             this(d.getString("hash"));
@@ -240,6 +243,7 @@ public abstract class SimpleCenter <T> implements Center {
         
         // 写入头
         MongoDao.insertHeader(blockNumber, headerD.toDocument());
+        blockCounts ++;
     }
 
     @Override

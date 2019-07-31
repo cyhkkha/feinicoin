@@ -39,7 +39,7 @@ public abstract class TestCenter <T> extends SetupTest {
     @SuppressWarnings("unchecked")
     public void runCenter() {
         center.activate();
-        System.out.printf("运行总时间：%f \n", center.getRunTime() / 1000000000f);
+        System.out.printf("共出块：%d 个，运行总时间：%f \n", center.getBlockCounts(), center.getRunTime() / 1000000000f);
         System.out.printf("验证总时间：%f \n", center.getVerifyTime() / 1000000000f);
         super.collectTime(center.getSaveTimes(), "出块");
     }
