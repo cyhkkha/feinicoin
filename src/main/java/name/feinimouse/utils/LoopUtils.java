@@ -30,7 +30,7 @@ public class LoopUtils {
             }
         }
     }
-    public static void loop(int i, LoopClassFunction lf) {
+    public static void loopBreak(int i, LoopClassFunction lf) {
         for(var j = 0; j < i; j++) {
             var res = lf.doLoop();
             if (res == null || !(Boolean) res) {
