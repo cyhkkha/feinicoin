@@ -1,4 +1,4 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.account;
 
 import lombok.Getter;
 import lombok.Setter;

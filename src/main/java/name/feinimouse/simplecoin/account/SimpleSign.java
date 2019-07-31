@@ -1,4 +1,4 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.account;
 
 import java.util.HashMap;
 import java.util.Map;

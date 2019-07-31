@@ -1,4 +1,4 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.account;
 
 import org.json.JSONObject;
 

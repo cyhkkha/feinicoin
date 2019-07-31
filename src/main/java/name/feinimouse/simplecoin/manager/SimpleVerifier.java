@@ -13,8 +13,8 @@ import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinicoin.manager.Verifier;
 import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
-import name.feinimouse.simplecoin.SimpleSign;
-import name.feinimouse.simplecoin.TransBundle;
+import name.feinimouse.simplecoin.account.SimpleSign;
+import name.feinimouse.simplecoin.account.TransBundle;
 import name.feinimouse.simplecoin.UserManager;
 
 public class SimpleVerifier implements Verifier {

@@ -1,7 +1,7 @@
 package name.feinimouse.simplecoin.manager.custome;
 
 import lombok.NonNull;
-import name.feinimouse.simplecoin.TransBundle;
+import name.feinimouse.simplecoin.account.TransBundle;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 
 public class SimpleBCBDCCenter extends SimpleCenter<TransBundle> {

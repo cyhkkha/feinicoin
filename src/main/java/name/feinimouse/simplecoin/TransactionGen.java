@@ -3,6 +3,10 @@ package name.feinimouse.simplecoin;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import name.feinimouse.simplecoin.account.MixedBundle;
+import name.feinimouse.simplecoin.account.SimpleSign;
+import name.feinimouse.simplecoin.account.SimpleTransaction;
+import name.feinimouse.simplecoin.account.UTXOBundle;
 import name.feinimouse.utils.LoopUtils;
 import net.openhft.hashing.LongHashFunction;
 

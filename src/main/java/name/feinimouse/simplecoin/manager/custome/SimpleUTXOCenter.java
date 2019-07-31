@@ -1,7 +1,7 @@
 package name.feinimouse.simplecoin.manager.custome;
 
 import lombok.NonNull;
-import name.feinimouse.simplecoin.UTXOBundle;
+import name.feinimouse.simplecoin.account.UTXOBundle;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 
 public class SimpleUTXOCenter extends SimpleCenter<UTXOBundle> {

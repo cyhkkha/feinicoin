@@ -1,7 +1,7 @@
 package name.feinimouse.simplecoin.manager.custome;
 
 import lombok.NonNull;
-import name.feinimouse.simplecoin.MixedBundle;
+import name.feinimouse.simplecoin.account.MixedBundle;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 
 public class SimpleMixedBCBDCCenter extends SimpleCenter<MixedBundle> {

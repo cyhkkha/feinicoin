@@ -4,11 +4,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.simplecoin.MixedBundle;
-import name.feinimouse.simplecoin.TransBundle;
+import name.feinimouse.simplecoin.account.MixedBundle;
+import name.feinimouse.simplecoin.account.TransBundle;
 import name.feinimouse.simplecoin.UserManager;
 import name.feinimouse.simplecoin.manager.SimpleOrder;
-import name.feinimouse.utils.LoopUtils;
 
 import java.util.LinkedList;
 import java.util.List;
