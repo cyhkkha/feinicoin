@@ -15,6 +15,7 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Vector;
 
 public class TransactionGen {
     private Random random;
@@ -29,7 +30,7 @@ public class TransactionGen {
         this.userManager = userManager;
         this.random = new Random();
         this.xxHash = LongHashFunction.xx();
-        this.signTimes = new ArrayList<>();
+        this.signTimes = new Vector<>();
     }
 
     public SimpleTransaction genTransaction() {

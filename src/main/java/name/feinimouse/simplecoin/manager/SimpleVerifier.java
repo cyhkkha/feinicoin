@@ -4,6 +4,7 @@ import java.security.PublicKey;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
@@ -36,8 +37,8 @@ public class SimpleVerifier implements Verifier {
     public SimpleVerifier(@NonNull UserManager userManager) {
         this.sm2 = SM2Generator.getInstance().generateSM2();
         this.userManager = userManager;
-        this.verifyTimes = new ArrayList<>();
-        this.bundleTimes = new ArrayList<>();
+        this.verifyTimes = new Vector<>();
+        this.bundleTimes = new Vector<>();
     }
     
     public boolean verify(@NonNull Transaction t) {
