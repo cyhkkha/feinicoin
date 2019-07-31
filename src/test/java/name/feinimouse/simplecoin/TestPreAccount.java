@@ -14,8 +14,8 @@ public class TestPreAccount extends TestCenter<Transaction> {
     
     @Before @Override
     public void setUp() {
-        transList = LoopUtils.loopToList(LIST_SIZE, transGen::genSignedTrans);
-        var order = new SimplePureAccountOrder(userManager, transList);
+        sourceList = LoopUtils.loopToList(LIST_SIZE, transGen::genSignedTrans);
+        var order = new SimplePureAccountOrder(userManager, sourceList);
         center = new SimplePureAccountCenter(order);
         order.isOutBlock(false);
         super.order = order;
@@ -36,7 +36,7 @@ public class TestPreAccount extends TestCenter<Transaction> {
         order.isOutBlock(false);
         var verifyTime = orderRes.get();
         var runTime = System.nanoTime() - startTime;
-        System.out.printf("验证 %d 条交易共花费：%f s \n", transList.size(), verifyTime / 1000000000f);
+        System.out.printf("验证 %d 条交易共花费：%f s \n", sourceList.size(), verifyTime / 1000000000f);
         System.out.printf("总运行时间：%f s \n", runTime / 1000000000f);
     }
 

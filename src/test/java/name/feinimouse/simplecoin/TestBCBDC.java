@@ -14,8 +14,8 @@ public class TestBCBDC extends TestCenter<Transaction> {
 
     @Before @Override
     public void setUp() {
-        transList = LoopUtils.loopToList(LIST_SIZE, transGen::genSignedTrans);
-        var order = new SimpleBCBDCOrder(userManager, transList);
+        sourceList = LoopUtils.loopToList(LIST_SIZE, transGen::genSignedTrans);
+        var order = new SimpleBCBDCOrder(userManager, sourceList);
         order.setBundleLimit(BUNDLE_SIZE);
         center = new SimpleBCBDCCenter(order);
         super.order = order;
@@ -24,7 +24,7 @@ public class TestBCBDC extends TestCenter<Transaction> {
     @Test @Override
     public void testOrder() {
         var bundleTime = order.activate();
-        System.out.printf("打包 %d 条交易共花费：%f s \n", transList.size(), bundleTime / 1000000000f);
+        System.out.printf("打包 %d 条交易共花费：%f s \n", sourceList.size(), bundleTime / 1000000000f);
     }
 
     @Test

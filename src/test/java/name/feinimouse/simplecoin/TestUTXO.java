@@ -16,8 +16,8 @@ public class TestUTXO extends TestCenter<UTXOBundle> {
 
     @Before @Override
     public void setUp() {
-        transList = LoopUtils.loopToList(LIST_SIZE, () -> transGen.genUTXOBundle(UTXO_SIZE));
-        var order = new SimpleUTXOOrder(userManager, transList);
+        sourceList = LoopUtils.loopToList(LIST_SIZE, () -> transGen.genUTXOBundle(UTXO_SIZE));
+        var order = new SimpleUTXOOrder(userManager, sourceList);
         center = new SimpleUTXOCenter(order);
         order.isOutBlock(false);
         super.order = order;
@@ -29,7 +29,7 @@ public class TestUTXO extends TestCenter<UTXOBundle> {
         var orderRes = executor.submit(order::activate);
         Thread.sleep(500);
         var verifyTime = orderRes.get();
-        System.out.printf("验证 %d 条UTXO共花费：%f s \n", transList.size(), verifyTime / 1000000000f);
+        System.out.printf("验证 %d 条UTXO共花费：%f s \n", sourceList.size(), verifyTime / 1000000000f);
     }
 
     @Test

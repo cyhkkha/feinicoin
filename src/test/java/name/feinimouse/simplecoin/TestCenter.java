@@ -1,6 +1,5 @@
 package name.feinimouse.simplecoin;
 
-import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.simplecoin.block.SimpleHeader;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 import name.feinimouse.simplecoin.manager.SimpleOrder;
@@ -10,7 +9,7 @@ import java.util.List;
 public abstract class TestCenter <T> extends SetupTest {
     SimpleCenter center;
     SimpleOrder order;
-    List<T> transList;
+    List<T> sourceList;
     
     public abstract void setUp();
     
@@ -32,7 +31,7 @@ public abstract class TestCenter <T> extends SetupTest {
 
         var totalTime = System.nanoTime() - startTIme;
         System.out.printf("创建区块耗时：%f s \n", createTime / 1000_000_000f);
-        System.out.printf("验证 %d 条交易共花费：%f s \n", transList.size(), verifyTime / 1000_000_000f);
+        System.out.printf("验证 %d 条交易共花费：%f s \n", sourceList.size(), verifyTime / 1000_000_000f);
         System.out.printf("总耗时：%f s \n", totalTime / 1000_000_000f);
     }
 

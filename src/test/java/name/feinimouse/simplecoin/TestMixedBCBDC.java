@@ -15,9 +15,9 @@ public class TestMixedBCBDC extends TestCenter<MixedBundle> {
     @Before
     @Override
     public void setUp() {
-        transList = LoopUtils.loopToList(TRANS_SIZE, () -> transGen.genMixedBundle());
-        LoopUtils.loop(ASSET_SIZE, () -> transList.add(transGen.genMixedBundle(UTXO_SIZE)));
-        var order = new SimpleMixedBCBDCOrder(userManager, transList);
+        sourceList = LoopUtils.loopToList(TRANS_SIZE, () -> transGen.genMixedBundle());
+        LoopUtils.loop(ASSET_SIZE, () -> sourceList.add(transGen.genMixedBundle(UTXO_SIZE)));
+        var order = new SimpleMixedBCBDCOrder(userManager, sourceList);
         order.setBundleLimit(BUNDLE_SIZE);
         center = new SimpleMixedBCBDCCenter(order);
         super.order = order;
@@ -27,7 +27,7 @@ public class TestMixedBCBDC extends TestCenter<MixedBundle> {
     @Override
     public void testOrder() {
         var bundleTime = order.activate();
-        System.out.printf("打包 %d 条交易共花费：%f s \n", transList.size(), bundleTime / 1000000000f);
+        System.out.printf("打包 %d 条交易共花费：%f s \n", sourceList.size(), bundleTime / 1000000000f);
     }
 
     @Test
