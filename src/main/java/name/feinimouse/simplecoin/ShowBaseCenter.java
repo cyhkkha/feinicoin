@@ -3,15 +3,14 @@ package name.feinimouse.simplecoin;
 import name.feinimouse.simplecoin.manager.custome.*;
 import name.feinimouse.utils.LoopUtils;
 
-public class RunCenter extends Config {
+public class ShowBaseCenter extends Config {
     private static final int TRANS_SIZE = 1000;
     private final static int ASSET_SIZE = 200;
     private static final int UTXO_SIZE = 5;
     private final static int BUNDLE_SIZE = 20;
     
     public static void main(String[] args) {
-        init();
-        clear();
+        preRun();
         
         final var sourceTrans = LoopUtils.loopToList(TRANS_SIZE, transGen::genSignedTransFa);
         final var utxoSource = LoopUtils.loopToList(TRANS_SIZE, () -> transGen.genUTXOBundle(UTXO_SIZE));

@@ -8,9 +8,12 @@ import name.feinimouse.simplecoin.core.TransactionGen;
 import name.feinimouse.simplecoin.core.UserManager;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 import name.feinimouse.simplecoin.manager.SimpleVerifier;
+import name.feinimouse.simplecoin.mongodao.MongoDao;
+import name.feinimouse.simplecoin.mongodao.TransDao;
 import name.feinimouse.utils.LoopUtils;
 import org.bson.Document;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -62,10 +65,35 @@ public abstract class Config {
         System.out.println("---------------------------");
         System.out.println(center.getName());
         System.out.printf("共出块：%d 个\n", center.getBlockCounts());
-        System.out.printf("运行总时间：%f s\n", center.getRunTime() / 1000000000f);
-        System.out.printf("验证总时间：%f s\n", center.getVerifyTime() / 1000000000f);
+        System.out.printf("运行总时间：%f s\n", center.getRunTime() / 1000_000_000f);
+        System.out.printf("验证总时间：%f s\n", center.getVerifyTime() / 1000_000_000f);
         collectTime(center.getSaveTimes(), "出块");
         System.out.println("---------------------------");
+    }
+    
+    public static void preRun() {
+        init();
+        clear();
+
+        var firstList = LoopUtils.loopToList(10, transGen::genSignedTransFa);
+        collectTime(transGen.getSignTimes(), "第一次签名");
+        firstList.forEach(t -> verifier.verify(t));
+        collectTime(verifier.getVerifyTimes(), "第一次验证");
+        verifier.bundle(firstList);
+        collectTime(verifier.getBundleTimes(), "第一次打包");
+        clear();
+
+        var firstUtxoList = transGen.genUTXOBundle(10);
+        firstUtxoList.forEach(t -> verifier.verify(t, firstUtxoList.getOwner()));
+        collectTime(Collections.singletonList(verifier.getVerifyTimes().stream()
+            .reduce(Long::sum).orElse(0L)), "第一次验UTXO");
+        clear();
+
+        var msg = MongoDao.createNewBlock();
+        var number = msg.getInteger("number");
+        TransDao.insertList(number, transform(firstList));
+        TransDao.getList(number);
+        clear();
     }
     
     public interface ConfigRunner {
