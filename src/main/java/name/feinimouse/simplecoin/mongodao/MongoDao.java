@@ -59,6 +59,17 @@ public class MongoDao {
         db.getCollection("test").drop();
     }
     
+    public static int getLatestNumber() {
+        var latest = block.find().limit(1).sort(new Document("_id", -1)).first();
+        if (latest != null) {
+            var number = latest.getInteger("number");
+            if (number != null) {
+                return number;
+            }
+        }
+        return 0;
+    }
+    
     public static Document createNewBlock() {
         var latest = block.find().limit(1).sort(new Document("_id", -1)).first();
         var number = 0;
