@@ -18,16 +18,19 @@ public class SimplePureAccountOrder extends SimpleOrder<Transaction, Transaction
         processing = true;
             verifyTimes.clear();
             Transaction transaction;
-            while ((transaction = allTrans.poll()) != null) {
-                waitOutBlock();
-                if (super.verify(transaction)) {
-                    orderQueue.add(transaction);
-                } else {
-                    throw new RuntimeException("交易验证失败");
+            try {
+                while ((transaction = allTrans.poll()) != null) {
+                    waitOutBlock();
+                    if (super.verify(transaction)) {
+                        orderQueue.add(transaction);
+                    } else {
+                        throw new RuntimeException("交易验证失败");
+                    }
                 }
+                return verifyTimes.stream().reduce(Long::sum).orElse(0L);
+            } finally {
+                processing = false;
             }
-            processing = false;
-            return verifyTimes.stream().reduce(Long::sum).orElse(0L);
     }
     
 }
