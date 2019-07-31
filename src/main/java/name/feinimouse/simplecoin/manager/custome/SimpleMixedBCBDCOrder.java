@@ -11,10 +11,17 @@ import name.feinimouse.simplecoin.manager.SimpleOrder;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SimpleMixedBCBDCOrder extends SimpleOrder<MixedBundle, MixedBundle> {
     @Getter @Setter
     protected int bundleLimit = 10;
+
+    public SimpleMixedBCBDCOrder(@NonNull UserManager manager, @NonNull List<MixedBundle> mixedList, int bundleLimit) {
+        this(manager, mixedList);
+        setBundleLimit(bundleLimit);
+    }
     
     public SimpleMixedBCBDCOrder(@NonNull UserManager manager, @NonNull List<MixedBundle> mixedList) {
         super(manager, mixedList);
@@ -51,7 +58,7 @@ public class SimpleMixedBCBDCOrder extends SimpleOrder<MixedBundle, MixedBundle>
                     var bundle = new TransBundle(bundleSource);
                     var signedBundle = super.signBundle(bundle);
                     orderQueue.add(new MixedBundle(signedBundle));
-                    bundleSource.clear();
+                    bundleSource = new LinkedList<>();
                 }
             }
             // 如果还存在数据则直接打包并添加
