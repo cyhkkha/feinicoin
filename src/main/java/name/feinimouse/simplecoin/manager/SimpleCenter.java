@@ -3,12 +3,15 @@ package name.feinimouse.simplecoin.manager;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinicoin.block.Block;
-import name.feinimouse.feinicoin.block.Hashable;
 import name.feinimouse.feinicoin.manager.Center;
 import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
+import name.feinimouse.feinism2.SM2Verifier;
 import name.feinimouse.simplecoin.SimpleSign;
+import name.feinimouse.simplecoin.TransBundle;
+import name.feinimouse.simplecoin.UTXOBundle;
 import name.feinimouse.simplecoin.UserManager;
 import name.feinimouse.simplecoin.block.*;
 import name.feinimouse.simplecoin.mongodao.AccountDao;
@@ -16,9 +19,9 @@ import name.feinimouse.simplecoin.mongodao.AssetsDao;
 import name.feinimouse.simplecoin.mongodao.MongoDao;
 import name.feinimouse.simplecoin.mongodao.TransDao;
 import net.openhft.hashing.LongHashFunction;
-import org.bson.Document;
 import org.json.JSONObject;
 
+import java.security.InvalidKeyException;
 import java.security.SignatureException;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,13 +38,16 @@ import java.util.stream.Collectors;
  * Program : feinicoin
  * Description :
  */
-public abstract class SimpleCenter <T> implements Center {
-    protected SimpleOrder<?, T> order;
+public abstract class SimpleCenter <IN> implements Center {
+    protected SimpleOrder<?, IN> order;
     protected UserManager manager;
-    protected SM2 sm2;
+    private SM2 sm2;
+
+    // 验证节点的公钥验证器
+    private SM2Verifier orderVerifier;
     
     // 账户缓存
-    protected Map<String, Integer> blockAccountMap;
+    private Map<String, Integer> blockAccountMap;
     
     @Getter @Setter
     protected String name;
@@ -67,18 +73,84 @@ public abstract class SimpleCenter <T> implements Center {
     private boolean running = false;
     
     // 当前区块编号
-    protected long blockNumber = 0L;
-    protected String blockPreHash;
+    private long blockNumber = 0L;
+    private String blockPreHash;
     // 出块数量统计
     @Getter
     protected int blockCounts = 0;
     
-    public SimpleCenter(@NonNull SimpleOrder<?, T> order) {
+    public SimpleCenter(@NonNull SimpleOrder<?, IN> order) {
         this.order = order;
         this.manager = order.getUserManager();
         this.blockAccountMap = new ConcurrentHashMap<>();
         this.saveTimes = new LinkedList<>();
         this.sm2 = SM2Generator.getInstance().generateSM2();
+        // 初始化verifier节点的验证器
+        try {
+            var orderKey = order.getPublicKey();
+            orderVerifier = new SM2Verifier(orderKey);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+            throw new RuntimeException("获取不到Order的公钥");
+        }
+    }
+    
+    // 处理交易集
+    protected void saveBundle(TransBundle bundle) {
+        var bundleSign = bundle.getSign().getByte("verifier");
+        var bundleHash = bundle.getHash();
+        // 交易集验签
+        try {
+            orderVerifier.verify(bundleHash, bundleSign);
+        } catch (SignatureException e) {
+            e.printStackTrace();
+            throw new RuntimeException("验签失败....");
+        }
+        
+        var bundleMap = bundle.getSummary();
+        var transList = bundle.getMerkelTree().getList();
+        // 将交易列表存入数据库
+        var documentList = transList.stream()
+            .map(t -> new SimpleHashObj(t).toDocument()).collect(Collectors.toList());
+        TransDao.insertList(blockNumber, documentList);
+        // 将账户数据并入缓存
+        bundleMap.forEach((k, v) -> blockAccountMap.merge(k, v, Integer::sum));
+    }
+    
+    // 处理UTXO
+    protected void saveUTXOBundle(UTXOBundle utxoBundle) {
+        // 存入交易
+        while (!utxoBundle.isEmpty()) {
+            var trans = utxoBundle.poll();
+            saveTransaction(trans);
+        }
+        // 存入UTXO记录
+        AssetsDao.insertList(blockNumber, new SimpleHashObj(utxoBundle).toDocument());
+    }
+    
+    // 处理单个交易
+    protected void saveTransaction(Transaction t) {
+        TransDao.insertList(blockNumber, new SimpleHashObj(t).toDocument());
+        // 更新账户缓存
+        var sender = t.getSender();
+        var receiver = t.getReceiver();
+        var coin = (Integer)t.getCoin();
+        blockAccountMap.merge(sender, - coin, Integer::sum);
+        blockAccountMap.merge(receiver, coin, Integer::sum);
+    }
+    
+    // 等待验证
+    protected void waitOrRun(IN item, RunCollectTransaction runner) {
+        if (item == null) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                throw new RuntimeException("线程意外终止");
+            }
+        } else  {
+            runner.run();
+        }
     }
     
     public void stop() {
@@ -119,26 +191,13 @@ public abstract class SimpleCenter <T> implements Center {
             }
         });
         try {
+            // 等待线程运行完毕
             centerRes.get();
             verifyTime = orderRes.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         } finally {
             stop();
-        }
-    }
-
-    private static class MyHashable implements Hashable {
-        private String hash;
-        MyHashable(Document d) {
-            this(d.getString("hash"));
-        }
-        MyHashable(String hash) {
-            this.hash =hash;
-        }
-        @Override
-        public String getHash() {
-            return hash;
         }
     }
     
@@ -194,10 +253,10 @@ public abstract class SimpleCenter <T> implements Center {
         var blockAccountsList = createAccountList();
         // 从数据库统计交易信息
         var blockTransactionList = TransDao.getList(blockNumber)
-            .stream().map(MyHashable::new).collect(Collectors.toList());
+            .stream().map(SimpleHashable::new).collect(Collectors.toList());
         // 从数据库统计资产信息
         var blockAssetsList = AssetsDao.getList(blockNumber)
-            .stream().map(MyHashable::new).collect(Collectors.toList());
+            .stream().map(SimpleHashable::new).collect(Collectors.toList());
         
         // 写入账户信息
         AccountDao.insertList(
@@ -251,5 +310,8 @@ public abstract class SimpleCenter <T> implements Center {
 
     @Override
     public void syncBlock(Block b) {}
-    
+
+    protected interface RunCollectTransaction{
+        void run();
+    }
 }
