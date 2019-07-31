@@ -2,9 +2,7 @@ package name.feinimouse.simplecoin.manager.custome;
 
 import lombok.NonNull;
 import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.simplecoin.block.SimpleHashObj;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
-import name.feinimouse.simplecoin.mongodao.TransDao;
 
 /**
  * Create by 菲尼莫斯 on 2019/7/3
@@ -28,25 +26,7 @@ public class SimplePureAccountCenter extends SimpleCenter<Transaction> {
         
         do {// 取队列的交易
             var t = order.pull();
-            if (t == null) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("线程意外终止");
-                }
-            } else  {
-                // 存入交易
-                TransDao.insertList(super.blockNumber, new SimpleHashObj(t).toDocument());
-
-                // 更新账户缓存
-                var sender = t.getSender();
-                var receiver = t.getReceiver();
-                var coin = (Integer)t.getCoin();
-                blockAccountMap.merge(sender, - coin, Integer::sum);
-                blockAccountMap.merge(receiver, coin, Integer::sum);
-            }
-            
+            waitOrRun(t, () -> saveTransaction(t));
             // 更新下一轮的时间
             blockNowTime = System.currentTimeMillis();
         } while (blockNowTime - blockRunTime <= outBlockTime);
