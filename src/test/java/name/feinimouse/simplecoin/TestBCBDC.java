@@ -1,5 +1,6 @@
 package name.feinimouse.simplecoin;
 
+import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.simplecoin.manager.SimpleBCBDCCenter;
 import name.feinimouse.simplecoin.manager.SimpleBCBDCOrder;
 import name.feinimouse.utils.LoopUtils;
@@ -7,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class TestBCBDC extends TestCenter {
+public class TestBCBDC extends TestCenter<Transaction> {
     private final static int LIST_SIZE = 100;
     private final static int BUNDLE_SIZE = 10;
 

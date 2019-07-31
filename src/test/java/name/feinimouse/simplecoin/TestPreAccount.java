@@ -1,5 +1,6 @@
 package name.feinimouse.simplecoin;
 
+import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.simplecoin.manager.SimplePureAccountCenter;
 import name.feinimouse.simplecoin.manager.SimplePureAccountOrder;
 import name.feinimouse.utils.LoopUtils;
@@ -8,7 +9,7 @@ import org.junit.Test;
 
 import java.util.concurrent.Executors;
 
-public class TestPreAccount extends TestCenter {
+public class TestPreAccount extends TestCenter<Transaction> {
     private final static int LIST_SIZE = 100;
     
     @Before @Override

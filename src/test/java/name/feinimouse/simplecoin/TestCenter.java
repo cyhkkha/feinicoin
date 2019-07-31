@@ -7,10 +7,10 @@ import name.feinimouse.simplecoin.manager.SimpleOrder;
 
 import java.util.List;
 
-public abstract class TestCenter extends SetupTest {
+public abstract class TestCenter <T> extends SetupTest {
     SimpleCenter center;
     SimpleOrder order;
-    List<Transaction> transList;
+    List<T> transList;
     
     public abstract void setUp();
     
