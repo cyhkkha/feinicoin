@@ -1,9 +1,10 @@
-package name.feinimouse.simplecoin.manager;
+package name.feinimouse.simplecoin.manager.custome;
 
 import lombok.NonNull;
 import name.feinimouse.feinism2.SM2Verifier;
 import name.feinimouse.simplecoin.TransBundle;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
+import name.feinimouse.simplecoin.manager.SimpleCenter;
 import name.feinimouse.simplecoin.mongodao.TransDao;
 
 import java.security.InvalidKeyException;

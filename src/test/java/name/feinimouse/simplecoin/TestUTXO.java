@@ -1,7 +1,7 @@
 package name.feinimouse.simplecoin;
 
-import name.feinimouse.simplecoin.manager.SimpleUTXOCenter;
-import name.feinimouse.simplecoin.manager.SimpleUTXOOrder;
+import name.feinimouse.simplecoin.manager.custome.SimpleUTXOCenter;
+import name.feinimouse.simplecoin.manager.custome.SimpleUTXOOrder;
 import name.feinimouse.utils.LoopUtils;
 import org.junit.Before;
 import org.junit.Test;

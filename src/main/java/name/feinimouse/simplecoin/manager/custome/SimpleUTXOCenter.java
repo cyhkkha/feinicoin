@@ -1,8 +1,9 @@
-package name.feinimouse.simplecoin.manager;
+package name.feinimouse.simplecoin.manager.custome;
 
 import lombok.NonNull;
 import name.feinimouse.simplecoin.UTXOBundle;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
+import name.feinimouse.simplecoin.manager.SimpleCenter;
 import name.feinimouse.simplecoin.mongodao.AssetsDao;
 import name.feinimouse.simplecoin.mongodao.TransDao;
 

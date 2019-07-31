@@ -1,8 +1,8 @@
 package name.feinimouse.simplecoin;
 
 import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.simplecoin.manager.SimpleBCBDCCenter;
-import name.feinimouse.simplecoin.manager.SimpleBCBDCOrder;
+import name.feinimouse.simplecoin.manager.custome.SimpleBCBDCCenter;
+import name.feinimouse.simplecoin.manager.custome.SimpleBCBDCOrder;
 import name.feinimouse.utils.LoopUtils;
 import org.junit.Before;
 import org.junit.Test;
