@@ -50,9 +50,11 @@ public class UTXOBundle extends ConcurrentLinkedQueue<Transaction> implements As
     private String issuer;
     
     private int coin = 0;
-    
-    public void addCoin(int coin) {
-        this.coin += coin;
+
+    @Override
+    public boolean add(Transaction transaction) {
+        this.coin += (Integer) transaction.getCoin();
+        return super.add(transaction);
     }
 
     @Override
