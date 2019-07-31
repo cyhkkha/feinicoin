@@ -4,9 +4,9 @@ import lombok.NonNull;
 import name.feinimouse.simplecoin.MixedBundle;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 
-public class SimpleBCBDCMixedCenter extends SimpleCenter<MixedBundle> {
+public class SimpleMixedBCBDCCenter extends SimpleCenter<MixedBundle> {
     
-    public SimpleBCBDCMixedCenter(@NonNull SimpleBCBDCMixedOrder order) {
+    public SimpleMixedBCBDCCenter(@NonNull SimpleMixedBCBDCOrder order) {
         super(order);
     }
 

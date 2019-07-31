@@ -13,11 +13,11 @@ import name.feinimouse.utils.LoopUtils;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SimpleBCBDCMixedOrder extends SimpleOrder<MixedBundle, MixedBundle> {
+public class SimpleMixedBCBDCOrder extends SimpleOrder<MixedBundle, MixedBundle> {
     @Getter @Setter
     protected int bundleLimit = 10;
     
-    public SimpleBCBDCMixedOrder(@NonNull UserManager manager, @NonNull List<MixedBundle> mixedList) {
+    public SimpleMixedBCBDCOrder(@NonNull UserManager manager, @NonNull List<MixedBundle> mixedList) {
         super(manager, mixedList);
     }
 

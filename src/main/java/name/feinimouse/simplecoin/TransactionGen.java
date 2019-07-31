@@ -97,4 +97,11 @@ public class TransactionGen {
         return bundle;
     }
     
+    public MixedBundle genMixedBundle(int utxoSize) {
+        return new MixedBundle(genUTXOBundle(utxoSize));
+    }
+    public MixedBundle genMixedBundle() {
+        return new MixedBundle(genSignedTrans());
+    }
+    
 }

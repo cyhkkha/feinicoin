@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 
 public class TestUTXO extends TestCenter<UTXOBundle> {
     private final static int LIST_SIZE = 100;
-    private final static int UTXO_SIZE = 10;
+    private final static int UTXO_SIZE = 5;
 
     @Before @Override
     public void setUp() {
