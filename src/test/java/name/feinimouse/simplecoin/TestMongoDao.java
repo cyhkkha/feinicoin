@@ -1,10 +1,15 @@
 package name.feinimouse.simplecoin;
 
+import name.feinimouse.simplecoin.block.SimpleHashObj;
 import name.feinimouse.simplecoin.mongodao.MongoDao;
 import name.feinimouse.simplecoin.mongodao.TransDao;
 import name.feinimouse.utils.LoopUtils;
 import org.bson.Document;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class TestMongoDao extends SetupTest {
     
@@ -47,6 +52,49 @@ public class TestMongoDao extends SetupTest {
     @Test
     public void testDrop() {
         MongoDao.dropTest();
+    }
+    
+    private List<Document> loopADocument(int i) {
+        return LoopUtils.loopToList(i, () -> {
+            var trans = transGen.genSignedTrans();
+            return new SimpleHashObj(trans).toDocument();
+        });
+    }
+    
+    @Test
+    public void testInsertTime() {
+        var tempList = loopADocument(10);
+        var msg = MongoDao.createNewBlock();
+        var number = msg.getInteger("number");
+        TransDao.insertList(number, tempList);
+        var timeList = new LinkedList<Long>();
+        LoopUtils.loop(20, () -> {
+            var transList = loopADocument(1000);
+            var timestart = System.nanoTime();
+            TransDao.insertList(number, transList);
+            var time = System.nanoTime() - timestart;
+            timeList.add(time);
+        });
+        collectTime(timeList, "插入");
+    }
+    
+    @Test
+    public void testQueryTime() {
+        var tempList = loopADocument(1000);
+        var msg = MongoDao.createNewBlock();
+        var number = msg.getInteger("number");
+        TransDao.insertList(number, tempList);
+        tempList = TransDao.getList(number);
+        Assert.assertTrue(tempList.size() > 0);
+        System.out.printf("总共找到 %d 条数据 \n", tempList.size());
+        var timeList = new LinkedList<Long>();
+        LoopUtils.loop(20, () -> {
+            var timestart = System.nanoTime();
+            TransDao.getList(number);
+            var time = System.nanoTime() - timestart;
+            timeList.add(time);
+        });
+        collectTime(timeList, "取出");
     }
     
 }
