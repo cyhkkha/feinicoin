@@ -39,14 +39,17 @@ public class SimpleVerifier implements Verifier {
         this.verifyTimes = new ArrayList<>();
         this.bundleTimes = new ArrayList<>();
     }
-
+    
     public boolean verify(@NonNull Transaction t) {
-        var verifier = userManager.getSM2(t.getSender());
+        return verify(t, t.getSender());
+    }
+    
+    public boolean verify(@NonNull Transaction t, String user){
+        var verifier = userManager.getSM2(user);
         var sign = t.getSign().getByte("sender");
         if (sign == null) {
             throw new NullPointerException("发送者还没有签名");
         }
-
         long before = System.nanoTime();
         var signRes = false;
         try {
