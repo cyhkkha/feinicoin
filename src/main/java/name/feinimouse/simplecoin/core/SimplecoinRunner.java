@@ -1,4 +1,4 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.core;
 
 import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinism2.SM2;
@@ -18,14 +18,25 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public abstract class Config {
-    protected static final int USER_COUNT = 100;
-    protected static UserManager userManager;
-    protected static TransactionGen transGen;
-    protected static SimpleVerifier verifier;
-    protected static SM2 sm2;
+public abstract class SimplecoinRunner {
+    protected UserManager userManager;
+    protected TransactionGen transGen;
+    protected SimpleVerifier verifier;
+    protected SM2 sm2;
 
-    public static void init() {
+    protected Integer[] TEST_COUNT;
+    protected int BUNDLE_SIZE;
+    protected int UTXO_SIZE;
+    protected double ASSET_RATE;
+    protected int USER_COUNT;
+    
+    public SimplecoinRunner(Config config) {
+        TEST_COUNT = config.getTEST_COUNT();
+        BUNDLE_SIZE = config.getBUNDLE_SIZE();
+        USER_COUNT = config.getUSER_COUNT();
+        UTXO_SIZE = config.getUTXO_SIZE();
+        ASSET_RATE = config.getASSET_RATE();
+
         var random = new Random();
         var USERS = LoopUtils.loopToList(USER_COUNT, () -> {
             var l = random.nextInt(1000) + System.nanoTime();
@@ -36,8 +47,10 @@ public abstract class Config {
         transGen = new TransactionGen(userManager);
         verifier = new SimpleVerifier(userManager);
     }
+    
+    public abstract StatisticsObj run();
 
-    public static void clear() {
+    public void clear() {
         transGen.getSignTimes().clear();
         verifier.getVerifyTimes().clear();
         verifier.getBundleTimes().clear();
@@ -71,8 +84,7 @@ public abstract class Config {
         System.out.println("---------------------------");
     }
     
-    public static void preRun() {
-        init();
+    public void preRun() {
         clear();
 
         var firstList = LoopUtils.loopToList(10, transGen::genSignedTransFa);

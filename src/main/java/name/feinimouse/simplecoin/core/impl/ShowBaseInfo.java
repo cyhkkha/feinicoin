@@ -1,5 +1,8 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.core.impl;
 
+import name.feinimouse.simplecoin.core.Config;
+import name.feinimouse.simplecoin.core.SimplecoinRunner;
+import name.feinimouse.simplecoin.core.StatisticsObj;
 import name.feinimouse.simplecoin.mongodao.MongoDao;
 import name.feinimouse.simplecoin.mongodao.TransDao;
 import name.feinimouse.utils.LoopUtils;
@@ -7,11 +10,21 @@ import name.feinimouse.utils.LoopUtils;
 import java.util.Collections;
 import java.util.LinkedList;
 
-public class ShowBaseInfo extends Config {
+public class ShowBaseInfo extends SimplecoinRunner {
     private static final int TRANS_SIZE = 1000;
     private static final int UTXO_SIZE = 10;
-    
-    public static void main(String[] args) {
+    private final static int USER_COUNT = 100;
+
+    public ShowBaseInfo() {
+        super(new Config(USER_COUNT));
+    }
+
+    @Override
+    public StatisticsObj run() {
+        return null;
+    }
+
+    public void showInfo() {
         preRun();
 
         var msg = MongoDao.createNewBlock();

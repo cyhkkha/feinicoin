@@ -1,4 +1,4 @@
 package name.feinimouse.simplecoin;
 
-public class Experiment extends Config {
+public class Experiment  {
 }

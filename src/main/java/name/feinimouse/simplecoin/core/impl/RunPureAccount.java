@@ -1,5 +1,8 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.core.impl;
 
+import name.feinimouse.simplecoin.core.Config;
+import name.feinimouse.simplecoin.core.SimplecoinRunner;
+import name.feinimouse.simplecoin.core.StatisticsObj;
 import name.feinimouse.simplecoin.manager.custome.SimplePureAccountCenter;
 import name.feinimouse.simplecoin.manager.custome.SimplePureAccountOrder;
 import name.feinimouse.utils.LoopUtils;
@@ -7,13 +10,17 @@ import name.feinimouse.utils.LoopUtils;
 import java.util.Arrays;
 
 
-public class RunPureAccount extends Config {
-    private final static Integer[] testCount = { 100, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 8000, 10000 };
-    public static void main(String[] args) {
+public class RunPureAccount extends SimplecoinRunner {
+    public RunPureAccount(Config config) {
+        super(config);
+    }
+    
+    @Override
+    public StatisticsObj run() {
         preRun();
-        
+
         var stat = new StatisticsObj();
-        Arrays.asList(testCount).forEach(size -> {
+        Arrays.asList(TEST_COUNT).forEach(size -> {
             var transList = LoopUtils.loopToList(size, transGen::genSignedTransFa);
             var order = new SimplePureAccountOrder(userManager, transList);
             var center = new SimplePureAccountCenter(order);
@@ -21,7 +28,6 @@ public class RunPureAccount extends Config {
             stat.set(center, size);
             System.out.println(size + " is finished");
         });
-        stat.print("纯账户模式");
-        System.exit(0);
+        return stat;
     }
 }

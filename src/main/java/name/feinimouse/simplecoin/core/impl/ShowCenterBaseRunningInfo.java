@@ -1,17 +1,30 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.core.impl;
 
+import name.feinimouse.simplecoin.core.Config;
+import name.feinimouse.simplecoin.core.SimplecoinRunner;
+import name.feinimouse.simplecoin.core.StatisticsObj;
 import name.feinimouse.simplecoin.manager.custome.*;
 import name.feinimouse.utils.LoopUtils;
 
-public class ShowBaseCenter extends Config {
+public class ShowCenterBaseRunningInfo extends SimplecoinRunner {
     private static final int TRANS_SIZE = 1000;
     private final static int ASSET_SIZE = 200;
     private static final int UTXO_SIZE = 5;
     private final static int BUNDLE_SIZE = 20;
-    
-    public static void main(String[] args) {
+    private final static int USER_COUNT = 100;
+
+    public ShowCenterBaseRunningInfo() {
+        super(new Config(USER_COUNT));
+    }
+
+    @Override
+    public StatisticsObj run() {
+        return null;
+    }
+
+    public void showInfo() {
         preRun();
-        
+
         final var sourceTrans = LoopUtils.loopToList(TRANS_SIZE, transGen::genSignedTransFa);
         final var utxoSource = LoopUtils.loopToList(TRANS_SIZE, () -> transGen.genUTXOBundle(UTXO_SIZE));
         final var assetsSource = LoopUtils.loopToList(TRANS_SIZE, () -> transGen.genMixedBundle(UTXO_SIZE));
@@ -24,19 +37,19 @@ public class ShowBaseCenter extends Config {
         var bcbdcUTXOCenter = new SimpleMixedBCBDCCenter(new SimpleMixedBCBDCOrder(userManager, assetsSource));
         bcbdcUTXOCenter.setName("纯UTXO并行模式");
         var mixedCenter = new SimpleMixedBCBDCCenter(new SimpleMixedBCBDCOrder(userManager, mixedSource, BUNDLE_SIZE));
-        
+
         pureAccountCenter.activate();
         bcbdcCenter.activate();
         utxoCenter.activate();
         bcbdcUTXOCenter.activate();
         mixedCenter.activate();
-        
+
         collectCenter(pureAccountCenter);
         collectCenter(bcbdcCenter);
         collectCenter(utxoCenter);
         collectCenter(bcbdcUTXOCenter);
         collectCenter(mixedCenter);
-        
+
         System.exit(0);
     }
 }

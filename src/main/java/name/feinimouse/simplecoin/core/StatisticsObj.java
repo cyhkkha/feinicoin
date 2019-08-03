@@ -1,4 +1,4 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.core;
 
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 

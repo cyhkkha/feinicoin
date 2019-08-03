@@ -1,6 +1,7 @@
 package name.feinimouse.simplecoin;
 
 import name.feinimouse.simplecoin.core.*;
+import name.feinimouse.simplecoin.core.impl.*;
 
 public class Main {
     private static Integer[] TEST_COUNT = { 100, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 8000, 10000 };

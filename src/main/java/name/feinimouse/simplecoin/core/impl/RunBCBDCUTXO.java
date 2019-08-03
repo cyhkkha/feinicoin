@@ -1,19 +1,26 @@
-package name.feinimouse.simplecoin;
+package name.feinimouse.simplecoin.core.impl;
 
+import name.feinimouse.simplecoin.core.Config;
+import name.feinimouse.simplecoin.core.SimplecoinRunner;
+import name.feinimouse.simplecoin.core.StatisticsObj;
 import name.feinimouse.simplecoin.manager.custome.SimpleMixedBCBDCCenter;
 import name.feinimouse.simplecoin.manager.custome.SimpleMixedBCBDCOrder;
 import name.feinimouse.utils.LoopUtils;
 
 import java.util.Arrays;
 
-public class RunBCBDCUTXO extends Config {
-    private final static Integer[] testCount = { 100, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 8000, 10000 };
-    private final static int UTXO_SIZE = 5;
-    public static void main(String[] args) {
+public class RunBCBDCUTXO extends SimplecoinRunner {
+    
+    public RunBCBDCUTXO(Config config) {
+        super(config);
+    }
+
+    @Override
+    public StatisticsObj run() {
         preRun();
 
         var stat = new StatisticsObj();
-        Arrays.asList(testCount).forEach(size -> {
+        Arrays.asList(TEST_COUNT).forEach(size -> {
             var list = LoopUtils.loopToList(size, () -> transGen.genMixedBundle(UTXO_SIZE));
             var order = new SimpleMixedBCBDCOrder(userManager, list);
             var center = new SimpleMixedBCBDCCenter(order);
@@ -21,7 +28,7 @@ public class RunBCBDCUTXO extends Config {
             stat.set(center, size);
             System.out.println(size + " is finished");
         });
-        stat.print("BCBDC UTXO模式");
-        System.exit(0);
+        return stat;
     }
+    
 }
