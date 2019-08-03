@@ -2,6 +2,7 @@ package name.feinimouse.simplecoin.mongodao;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -20,11 +21,21 @@ import java.util.*;
  * Description :
  */
 public class MongoDao {
+    // 是否需要验证
+    private static final boolean AUTH = false;
+    
+    private static final String HOST = "localhost";
+//    private static final String HOST = "10.108.66.193";
+    private static final int PORT = 27017;
     private static final String USERNAME = "root";
-    private static final String DATABASE = "test";
-    private static final char[] PASSWORD = "12345".toCharArray();
-    private static final int MaxConnect = 30;
-    private static final int MaxWaitThread = 30;
+    private static final String DATABASE = "simplecoin";
+    private static final char[] PASSWORD = "123456".toCharArray();
+
+    // 最大链接数
+    private static final int MaxConnect = 5;
+    // 最大等待线程
+    private static final int MaxWaitThread = 5;
+    // 超时和等待时间
     private static final int MaxTimeOut = 60;
     private static final int MaxWaitTime = 60;
     
@@ -36,20 +47,30 @@ public class MongoDao {
     protected static MongoCollection<Document> block;
     
     static {
-        // var credential = MongoCredential.createCredential(USERNAME, DATABASE, PASSWORD);
-        var address = new ServerAddress("localhost", 27017);
+        // 认证信息
+        var credential = MongoCredential.createCredential(USERNAME, "admin", PASSWORD);
+        // 数据库地址
+        var address = new ServerAddress(HOST, PORT);
+        // 数据库配置
         var builder = new MongoClientOptions.Builder();
         builder.connectionsPerHost(MaxConnect)
             .threadsAllowedToBlockForConnectionMultiplier(MaxWaitThread)
             .connectTimeout(MaxTimeOut * 1000)
             .maxWaitTime(MaxWaitTime *1000);
         var option = builder.build();
-        db = new MongoClient(address, option).getDatabase("simplecoin");
-        System.out.println("-------connect mongo success-------");
+        
+        // 验证
+        if (AUTH) {
+            db = new MongoClient(address, credential, option).getDatabase(DATABASE);
+        } else {
+            db = new MongoClient(address, option).getDatabase(DATABASE);
+        }
+        
         transaction = db.getCollection("transaction");
         account = db.getCollection("account");
         assets = db.getCollection("assets");
         block = db.getCollection("block");
+        System.out.println("-------connect mongo success-------");
     }
     @NonNull
     public static void insertTest(Document bson) {
