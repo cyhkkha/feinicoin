@@ -22,23 +22,7 @@ import java.util.*;
  */
 public class MongoDao {
     // 是否需要验证
-    private static final boolean AUTH = false;
-    
-    private static final String HOST = "localhost";
-//    private static final String HOST = "10.108.66.193";
-    private static final int PORT = 27017;
-    private static final String USERNAME = "root";
-    private static final String DATABASE = "simplecoin";
-    private static final char[] PASSWORD = "123456".toCharArray();
-
-    // 最大链接数
-    private static final int MaxConnect = 5;
-    // 最大等待线程
-    private static final int MaxWaitThread = 5;
-    // 超时和等待时间
-    private static final int MaxTimeOut = 60;
-    private static final int MaxWaitTime = 60;
-    
+    private static MongoConf c;
     
     private static MongoDatabase db;
     protected static MongoCollection<Document> transaction;
@@ -48,22 +32,22 @@ public class MongoDao {
     
     static {
         // 认证信息
-        var credential = MongoCredential.createCredential(USERNAME, "admin", PASSWORD);
+        var credential = MongoCredential.createCredential(MongoConf.USERNAME, "admin", MongoConf.PASSWORD);
         // 数据库地址
-        var address = new ServerAddress(HOST, PORT);
+        var address = new ServerAddress(MongoConf.HOST, MongoConf.PORT);
         // 数据库配置
         var builder = new MongoClientOptions.Builder();
-        builder.connectionsPerHost(MaxConnect)
-            .threadsAllowedToBlockForConnectionMultiplier(MaxWaitThread)
-            .connectTimeout(MaxTimeOut * 1000)
-            .maxWaitTime(MaxWaitTime *1000);
+        builder.connectionsPerHost(MongoConf.MaxConnect)
+            .threadsAllowedToBlockForConnectionMultiplier(MongoConf.MaxWaitThread)
+            .connectTimeout(MongoConf.MaxTimeOut * 1000)
+            .maxWaitTime(MongoConf.MaxWaitTime *1000);
         var option = builder.build();
         
         // 验证
-        if (AUTH) {
-            db = new MongoClient(address, credential, option).getDatabase(DATABASE);
+        if (MongoConf.AUTH) {
+            db = new MongoClient(address, credential, option).getDatabase(MongoConf.DATABASE);
         } else {
-            db = new MongoClient(address, option).getDatabase(DATABASE);
+            db = new MongoClient(address, option).getDatabase(MongoConf.DATABASE);
         }
         
         transaction = db.getCollection("transaction");
@@ -78,6 +62,13 @@ public class MongoDao {
     }
     public static void dropTest() {
         db.getCollection("test").drop();
+    }
+    
+    public static void drop() {
+        TransDao.drop();
+        AccountDao.drop();
+        AssetsDao.drop();
+        block.drop();
     }
     
     public static int getLatestNumber() {
