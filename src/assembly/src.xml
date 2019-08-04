@@ -1,5 +1,5 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0">
-    <id>jar-with-dependencies</id>
+    <id>full</id>
     <formats>
         <format>jar</format>
     </formats>
