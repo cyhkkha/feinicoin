@@ -23,4 +23,12 @@ public class TestCmd {
         String[] args = { "-b", "-net" };
         Main.main(args);
     }
+
+    @Test
+    public void testDrop() {
+        String[] args = { "-d" };
+        var cli = new Cli(args);
+        var config = cli.parser();
+        System.out.println(config);
+    }
 }
