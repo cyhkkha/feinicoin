@@ -1,6 +1,6 @@
 package name.feinimouse.simplecoin.core.impl;
 
-import name.feinimouse.simplecoin.core.Config;
+import name.feinimouse.simplecoin.SimplecoinConfig;
 import name.feinimouse.simplecoin.core.SimplecoinRunner;
 import name.feinimouse.simplecoin.core.StatisticsObj;
 import name.feinimouse.simplecoin.manager.custome.SimpleMixedBCBDCCenter;
@@ -9,10 +9,10 @@ import name.feinimouse.utils.LoopUtils;
 
 import java.util.Arrays;
 
-public class RunMixed extends SimplecoinRunner {
+public class MixedRunner extends SimplecoinRunner {
 
-    public RunMixed(Config config) {
-        super(config);
+    public MixedRunner(SimplecoinConfig simplecoinConfig) {
+        super(simplecoinConfig);
     }
 
     @Override

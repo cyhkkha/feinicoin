@@ -38,9 +38,17 @@ public class StatisticsObj {
         System.out.println("--------------------");
     }
     
-    public void output(String name, String path) throws FileNotFoundException {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public void output(String name, String path) throws IOException {
         var out = System.out;
         var file = new File(path);
+        if (!file.exists()) {
+            var parent = file.getParentFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
+            file.createNewFile();
+        }
         var outputStream = new FileOutputStream(file, true);
         var printStream = new PrintStream(outputStream);
         System.setOut(printStream);

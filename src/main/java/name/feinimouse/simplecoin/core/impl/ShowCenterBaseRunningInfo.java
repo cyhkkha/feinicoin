@@ -1,20 +1,20 @@
 package name.feinimouse.simplecoin.core.impl;
 
-import name.feinimouse.simplecoin.core.Config;
+import name.feinimouse.simplecoin.SimplecoinConfig;
 import name.feinimouse.simplecoin.core.SimplecoinRunner;
 import name.feinimouse.simplecoin.core.StatisticsObj;
 import name.feinimouse.simplecoin.manager.custome.*;
 import name.feinimouse.utils.LoopUtils;
 
 public class ShowCenterBaseRunningInfo extends SimplecoinRunner {
-    private static final int TRANS_SIZE = 1000;
-    private final static int ASSET_SIZE = 200;
+    private static final int TRANS_SIZE = 500;
+    private final static int ASSET_SIZE = 100;
     private static final int UTXO_SIZE = 5;
     private final static int BUNDLE_SIZE = 20;
     private final static int USER_COUNT = 100;
 
     public ShowCenterBaseRunningInfo() {
-        super(new Config(USER_COUNT));
+        super(new SimplecoinConfig(USER_COUNT));
     }
 
     @Override
