@@ -5,6 +5,7 @@ import name.feinimouse.feinism2.SM2Generator;
 import name.feinimouse.simplecoin.core.TransactionGen;
 import name.feinimouse.simplecoin.core.UserManager;
 import name.feinimouse.simplecoin.manager.SimpleVerifier;
+import name.feinimouse.simplecoin.mongodao.MongoDao;
 import org.junit.Before;
 
 import java.util.List;
@@ -22,6 +23,9 @@ public class SetupTest {
     TransactionGen transGen;
     SimpleVerifier verifier;
     SM2 sm2;
+    static {
+        MongoDao.init();
+    }
     
     @Before
     public void setUpSM2() {
