@@ -4,7 +4,7 @@ import name.feinimouse.simplecoin.mongodao.MongoDao;
 import org.apache.commons.cli.*;
 
 public class Cli {
-    private static final String version = "0.6.4";
+    private static final String version = "0.6.5";
     
     private static final Integer[] TEST_COUNT = { 100, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 8000, 10000 };
     private static final int BUNDLE_SIZE = 20;

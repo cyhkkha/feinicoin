@@ -40,13 +40,15 @@ public class Main {
         if (config.account) {
             if (config.bcbdc) {
                 runSimpleCoin(new BCBDCAccountRunner(config), "BCBDC账户模式");
+            } else {
+                runSimpleCoin(new PureAccountRunner(config), "纯账户模式");
             }
-            runSimpleCoin(new PureAccountRunner(config), "纯账户模式");
         } else if (config.utxo) {
             if (config.bcbdc) {
                 runSimpleCoin(new BCBDCUTXORunner(config), "BCBDC UTXO 模式");
+            } else {
+                runSimpleCoin(new UTXORunner(config), "纯UTXO模式");
             }
-            runSimpleCoin(new UTXORunner(config), "纯UTXO模式");
         } else if (config.bcbdc) {
             runSimpleCoin(new MixedRunner(config), "BCBDC 混合模式");
         }
