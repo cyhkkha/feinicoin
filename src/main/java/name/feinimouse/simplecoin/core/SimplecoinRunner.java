@@ -29,6 +29,7 @@ public abstract class SimplecoinRunner {
     protected double ASSET_RATE;
     protected int USER_COUNT;
     
+    // 初始化
     public SimplecoinRunner(SimplecoinConfig simplecoinConfig) {
         TEST_COUNT = simplecoinConfig.TEST_COUNT;
         BUNDLE_SIZE = simplecoinConfig.BUNDLE_SIZE;
@@ -37,6 +38,8 @@ public abstract class SimplecoinRunner {
         ASSET_RATE = simplecoinConfig.ASSET_RATE;
 
         var random = new Random();
+        
+        // 生成随机用户
         var USERS = LoopUtils.loopToList(USER_COUNT, () -> {
             var l = random.nextInt(1000) + System.nanoTime();
             return String.valueOf(l);
@@ -49,18 +52,21 @@ public abstract class SimplecoinRunner {
     
     public abstract StatisticsObj run();
 
+    // 清除所有运行时间
     public void clear() {
         transGen.getSignTimes().clear();
         verifier.getVerifyTimes().clear();
         verifier.getBundleTimes().clear();
     }
     
+    // 简单的用于记录运行时间的函数
     public static long recordTime(ConfigRunner r) {
         var timestart = System.nanoTime();
         r.run();
         return System.nanoTime() - timestart;
     }
     
+    // 计算均值并打印一个列表的运行时间
     public static void collectTime(List<Long> timeList, String name) {
         var count = timeList.stream().reduce(Long::sum).orElse(0L);
         System.out.printf("%s次数: %d 次 \n", name, timeList.size());
@@ -68,10 +74,12 @@ public abstract class SimplecoinRunner {
         System.out.printf("%s平均运行时间: %f ms \n", name, count / timeList.size() / 1000_000f);
     }
     
+    // 将交易列表转化为可存储的document
     public static List<Document> transform(List<Transaction> list) {
         return list.stream().map(t -> new SimpleHashObj(t).toDocument()).collect(Collectors.toList());
     }
     
+    // 打印中心的运行数据
     @SuppressWarnings("unchecked")
     public static void collectCenter(SimpleCenter center) {
         System.out.println("---------------------------");
@@ -83,6 +91,7 @@ public abstract class SimplecoinRunner {
         System.out.println("---------------------------");
     }
     
+    // 预运行，让数据库和验签初始化
     public void preRun() {
         clear();
 

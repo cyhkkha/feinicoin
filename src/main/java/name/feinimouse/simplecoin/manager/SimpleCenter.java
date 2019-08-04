@@ -78,7 +78,11 @@ public abstract class SimpleCenter <IN> implements Center {
     // 出块数量统计
     @Getter
     protected int blockCounts = 0;
-    
+
+    /**
+     * 初始化一个Center
+     * @param order Center所管辖的Order
+     */
     public SimpleCenter(@NonNull SimpleOrder<?, IN> order) {
         this.order = order;
         this.manager = order.getUserManager();
@@ -139,7 +143,7 @@ public abstract class SimpleCenter <IN> implements Center {
         blockAccountMap.merge(receiver, coin, Integer::sum);
     }
     
-    // 等待验证
+    // 等待验证，若没有获取到数据则进行等待，否则就处理数据
     protected void waitOrRun(IN item, RunCollectTransaction runner) {
         if (item == null) {
             try {
@@ -153,6 +157,7 @@ public abstract class SimpleCenter <IN> implements Center {
         }
     }
     
+    // 停止Center的运行并统计时间（不会停止Order）
     public void stop() {
         if (running) {
             running = false;
@@ -166,6 +171,7 @@ public abstract class SimpleCenter <IN> implements Center {
     // 收集交易的方法
     protected abstract void collectTransaction();
     
+    // 中心开始运行
     @Override
     public void activate() {
         startTime = System.nanoTime();
@@ -182,10 +188,10 @@ public abstract class SimpleCenter <IN> implements Center {
                 // 统计出块时间
                 var saveTimeStart = System.nanoTime();
                 // 出块
-                System.out.println("create block...");
+//                System.out.println("create block...");
                 var block = createBlock();
                 // 写入数据库
-                System.out.println("write block...");
+//                System.out.println("write block...");
                 write(block);
                 saveTimes.add(System.nanoTime() - saveTimeStart);
             }
@@ -239,6 +245,7 @@ public abstract class SimpleCenter <IN> implements Center {
         return header;
     }
     
+    // 生产区块
     @Override
     public Block createBlock() {
         //  初始化新区块
@@ -283,6 +290,7 @@ public abstract class SimpleCenter <IN> implements Center {
         return new SimpleBlock(accounts,assets,transes,header);
     }
     
+    // 写入区块
     @Override
     public void write(Block b) {
         var header = (SimpleHeader)b.getHeader();

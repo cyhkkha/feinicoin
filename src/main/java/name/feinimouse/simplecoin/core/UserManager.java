@@ -19,7 +19,12 @@ public class UserManager {
     private Random random;
     @Getter
     private int addressLimit;
-    
+
+    /**
+     * 初始化用户管理器
+     * @param users 用户列表
+     * @param addressLimit 一个用户拥有的地址限制
+     */
     public UserManager(String[] users, int addressLimit) {
         // 初始化密钥生成器
         var sm2Gen = SM2Generator.getInstance();

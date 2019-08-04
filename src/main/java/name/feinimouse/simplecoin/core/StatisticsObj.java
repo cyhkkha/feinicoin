@@ -12,18 +12,23 @@ public class StatisticsObj {
     private List<Integer> blockCount;
     private List<Integer> transSizes;
     
+    // 初始化
     public StatisticsObj() {
         runTimes = new LinkedList<>();
         verifyTimes = new LinkedList<>();
         blockCount = new LinkedList<>();
         transSizes = new LinkedList<>();
     }
+    
+    // 转化运行数据
     public void set(SimpleCenter center, int size) {
         runTimes.add(center.getRunTime() / 1000_000f);
         verifyTimes.add(center.getVerifyTime() / 1000_000f);
         blockCount.add(center.getBlockCounts());
         transSizes.add(size);
     }
+    
+    // 打印运行结果
     public void print(String name) {
         System.out.println("--------------------");
         System.out.println(name);
@@ -38,6 +43,7 @@ public class StatisticsObj {
         System.out.println("--------------------");
     }
     
+    // 将结果输出到文件
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void output(String name, String path) throws IOException {
         var out = System.out;

@@ -26,6 +26,7 @@ public class TransactionGen {
     @Getter @Setter
     private int coinLimit = 1000;
 
+    // 初始化
     public TransactionGen(@NonNull UserManager userManager) {
         this.userManager = userManager;
         this.random = new Random();
@@ -33,12 +34,14 @@ public class TransactionGen {
         this.signTimes = new Vector<>();
     }
 
+    // 生成一笔随即交易
     public SimpleTransaction genTransaction() {
         var sender = userManager.getRandomUser();
         var receiver = userManager.getRandomUser(sender);
         return genTransaction(sender, receiver);
     }
     
+    // 生成一笔随即金额指定发送人和接收人的交易
     public SimpleTransaction genTransaction(String sender, String receiver) {
         var coin = random.nextInt(coinLimit);
         var timestamp = System.currentTimeMillis();
@@ -47,11 +50,13 @@ public class TransactionGen {
         return trans;
     }
 
+    // 签名一笔交易
     public SimpleTransaction sign(SimpleTransaction t) throws SignatureException {
         var user = t.getSender();
         return sign(t, user);
     }
     
+    // 用指定人的密钥签名一笔交易
     public SimpleTransaction sign(@NonNull SimpleTransaction t, String user) throws SignatureException {
         var signer = userManager.getSM2(user);
         var before = System.nanoTime();
@@ -67,6 +72,7 @@ public class TransactionGen {
         return t;
     }
 
+    // 生成一笔签名后的随机交易
     public SimpleTransaction genSignedTrans() {
         try {
             return sign(genTransaction());
@@ -80,6 +86,7 @@ public class TransactionGen {
         return genSignedTrans();
     }
     
+    // 生成一笔UTXO交易集合
     public UTXOBundle genUTXOBundle(int size) {
         var mode = random.nextInt(2);
         var bundle = new UTXOBundle();
@@ -107,6 +114,7 @@ public class TransactionGen {
         return bundle;
     }
     
+    // 生成BCBDC对象
     public MixedBundle genMixedBundle(int utxoSize) {
         return new MixedBundle(genUTXOBundle(utxoSize));
     }

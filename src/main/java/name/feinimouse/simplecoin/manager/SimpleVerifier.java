@@ -25,15 +25,23 @@ public class SimpleVerifier implements Verifier {
     protected String name;
     @Getter
     protected SM2 sm2;
+    
+    // 自动统计验证时间
     @Getter
     protected List<Long> verifyTimes;
+    // 自动统计打包时间
     @Getter
     protected List<Long> bundleTimes;
 
+    // 获取验证节点的公钥
     public PublicKey getPublicKey() {
         return sm2.getPublicKey();
     }
-    
+
+    /**
+     * 构造一个verifier
+     * @param userManager 用户管理器
+     */
     public SimpleVerifier(@NonNull UserManager userManager) {
         this.sm2 = SM2Generator.getInstance().generateSM2();
         this.userManager = userManager;
@@ -41,10 +49,12 @@ public class SimpleVerifier implements Verifier {
         this.bundleTimes = new Vector<>();
     }
     
+    // 验证一条交易
     public boolean verify(@NonNull Transaction t) {
         return verify(t, t.getSender());
     }
     
+    // 用指定user的公钥验证交易
     public boolean verify(@NonNull Transaction t, String user){
         var verifier = userManager.getSM2(user);
         var sign = t.getSign().getByte("sender");
@@ -65,6 +75,7 @@ public class SimpleVerifier implements Verifier {
         return signRes;
     }
 
+    // 签名一个BCBDC集合
     public TransBundle signBundle(@NonNull TransBundle tb) {
         var sign = new SimpleSign();
         var hash = tb.getHash();
@@ -82,17 +93,24 @@ public class SimpleVerifier implements Verifier {
             tb.setSign(sign);
         return tb;
     }
-    
+
+    /**
+     * 验证一组交易
+     * @param ts 交易集合
+     * @return 验证通过的交易
+     */
     public List<Transaction> verifyList(@NonNull List<Transaction> ts) {
         return ts.stream().filter(this::verify).collect(Collectors.toList());
     }
     
+    // 通过交易集合产出一个BCBDC集合
     public TransBundle bundle(@NonNull List<Transaction> ts) {
         var verifiedList = verifyList(ts);
         var bundle = new TransBundle(verifiedList);
         return signBundle(bundle);
     }
     
+    // 清除验签时间
     public void clearTime() {
         this.verifyTimes.clear();
     }

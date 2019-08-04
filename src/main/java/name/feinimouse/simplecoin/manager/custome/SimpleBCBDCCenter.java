@@ -22,7 +22,7 @@ public class SimpleBCBDCCenter extends SimpleCenter<TransBundle> {
             // 更新下一轮的时间
             blockNowTime = System.currentTimeMillis();
         } while (blockNowTime - blockRunTime <= outBlockTime);
-        System.out.println("collect time out...");
+//        System.out.println("collect time out...");
     }
     
 }
