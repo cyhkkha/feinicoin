@@ -3,9 +3,8 @@ package name.feinimouse.simplecoin.core;
 import name.feinimouse.feinicoin.account.Transaction;
 import name.feinimouse.feinism2.SM2;
 import name.feinimouse.feinism2.SM2Generator;
+import name.feinimouse.simplecoin.SimplecoinConfig;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
-import name.feinimouse.simplecoin.core.TransactionGen;
-import name.feinimouse.simplecoin.core.UserManager;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 import name.feinimouse.simplecoin.manager.SimpleVerifier;
 import name.feinimouse.simplecoin.mongodao.MongoDao;
@@ -30,12 +29,12 @@ public abstract class SimplecoinRunner {
     protected double ASSET_RATE;
     protected int USER_COUNT;
     
-    public SimplecoinRunner(Config config) {
-        TEST_COUNT = config.getTEST_COUNT();
-        BUNDLE_SIZE = config.getBUNDLE_SIZE();
-        USER_COUNT = config.getUSER_COUNT();
-        UTXO_SIZE = config.getUTXO_SIZE();
-        ASSET_RATE = config.getASSET_RATE();
+    public SimplecoinRunner(SimplecoinConfig simplecoinConfig) {
+        TEST_COUNT = simplecoinConfig.TEST_COUNT;
+        BUNDLE_SIZE = simplecoinConfig.BUNDLE_SIZE;
+        USER_COUNT = simplecoinConfig.USER_COUNT;
+        UTXO_SIZE = simplecoinConfig.UTXO_SIZE;
+        ASSET_RATE = simplecoinConfig.ASSET_RATE;
 
         var random = new Random();
         var USERS = LoopUtils.loopToList(USER_COUNT, () -> {
