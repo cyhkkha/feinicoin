@@ -55,9 +55,7 @@ public class TestMongoDao extends SetupTest {
     @Test
     public void testDrop() {
         MongoDao.dropTest();
-        TransDao.drop();
-        AccountDao.drop();
-        AssetsDao.drop();
+        MongoDao.drop();
     }
     
     private List<Document> loopADocument(int i) {

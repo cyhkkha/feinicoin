@@ -22,7 +22,32 @@ import java.util.*;
  */
 public class MongoDao {
     // 是否需要验证
-    private static MongoConf c;
+    private static boolean AUTH = false;
+    private static boolean REMOTE = false;
+    private static final String HOST = "localhost";
+    private static final int PORT = 27017;
+
+    // Remote
+    private static final String NET_HOST = "10.108.66.193";
+    private static final String USERNAME = "root";
+    private static final String DATABASE = "simplecoin";
+    private static final char[] PASSWORD = "123456".toCharArray();
+
+    // 最大链接数
+    private static final int MaxConnect = 5;
+    // 最大等待线程
+    private static final int MaxWaitThread = 5;
+    // 超时和等待时间
+    private static final int MaxTimeOut = 60;
+    private static final int MaxWaitTime = 60;
+
+    public static void isRemote(boolean b) {
+        REMOTE = b;
+    }
+    public static void isAuth(boolean b) {
+        AUTH = b;
+    }
+    
     
     private static MongoDatabase db;
     protected static MongoCollection<Document> transaction;
@@ -30,24 +55,29 @@ public class MongoDao {
     protected static MongoCollection<Document> assets;
     protected static MongoCollection<Document> block;
     
-    static {
+    public static void init() {
         // 认证信息
-        var credential = MongoCredential.createCredential(MongoConf.USERNAME, "admin", MongoConf.PASSWORD);
+        var credential = MongoCredential.createCredential(USERNAME, "admin", PASSWORD);
+        ServerAddress address;
         // 数据库地址
-        var address = new ServerAddress(MongoConf.HOST, MongoConf.PORT);
+        if (REMOTE) {
+            address = new ServerAddress(NET_HOST, PORT);
+        } else {
+            address = new ServerAddress(HOST, PORT);
+        }
         // 数据库配置
         var builder = new MongoClientOptions.Builder();
-        builder.connectionsPerHost(MongoConf.MaxConnect)
-            .threadsAllowedToBlockForConnectionMultiplier(MongoConf.MaxWaitThread)
-            .connectTimeout(MongoConf.MaxTimeOut * 1000)
-            .maxWaitTime(MongoConf.MaxWaitTime *1000);
+        builder.connectionsPerHost(MaxConnect)
+            .threadsAllowedToBlockForConnectionMultiplier(MaxWaitThread)
+            .connectTimeout(MaxTimeOut * 1000)
+            .maxWaitTime(MaxWaitTime *1000);
         var option = builder.build();
         
         // 验证
-        if (MongoConf.AUTH) {
-            db = new MongoClient(address, credential, option).getDatabase(MongoConf.DATABASE);
+        if (AUTH) {
+            db = new MongoClient(address, credential, option).getDatabase(DATABASE);
         } else {
-            db = new MongoClient(address, option).getDatabase(MongoConf.DATABASE);
+            db = new MongoClient(address, option).getDatabase(DATABASE);
         }
         
         transaction = db.getCollection("transaction");
@@ -56,6 +86,7 @@ public class MongoDao {
         block = db.getCollection("block");
         System.out.println("-------connect mongo success-------");
     }
+    
     @NonNull
     public static void insertTest(Document bson) {
         db.getCollection("test").insertOne(bson);
