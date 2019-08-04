@@ -1,6 +1,9 @@
 package name.feinimouse.simplecoin;
 
+import name.feinimouse.feinicoin.account.Assets;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
+import name.feinimouse.simplecoin.mongodao.AccountDao;
+import name.feinimouse.simplecoin.mongodao.AssetsDao;
 import name.feinimouse.simplecoin.mongodao.MongoDao;
 import name.feinimouse.simplecoin.mongodao.TransDao;
 import name.feinimouse.utils.LoopUtils;
@@ -52,6 +55,9 @@ public class TestMongoDao extends SetupTest {
     @Test
     public void testDrop() {
         MongoDao.dropTest();
+        TransDao.drop();
+        AccountDao.drop();
+        AssetsDao.drop();
     }
     
     private List<Document> loopADocument(int i) {

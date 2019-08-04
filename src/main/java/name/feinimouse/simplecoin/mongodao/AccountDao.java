@@ -16,4 +16,7 @@ public class AccountDao extends MongoDao {
         var insert = new Document("$set", new Document("root", root));
         account.updateOne(filter, insert);
     }
+    public static void drop() {
+        account.drop();
+    }
 }

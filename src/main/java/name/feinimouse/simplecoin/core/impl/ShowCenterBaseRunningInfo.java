@@ -49,7 +49,5 @@ public class ShowCenterBaseRunningInfo extends SimplecoinRunner {
         collectCenter(utxoCenter);
         collectCenter(bcbdcUTXOCenter);
         collectCenter(mixedCenter);
-
-        System.exit(0);
     }
 }

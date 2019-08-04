@@ -2,6 +2,7 @@ package name.feinimouse.simplecoin.core;
 
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 
+import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,6 +36,16 @@ public class StatisticsObj {
         System.out.println("====== block count ======");
         blockCount.forEach(System.out::println);
         System.out.println("--------------------");
+    }
+    
+    public void output(String name, String path) throws FileNotFoundException {
+        var out = System.out;
+        var file = new File(path);
+        var outputStream = new FileOutputStream(file, true);
+        var printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+        print(name);
+        System.setOut(out);
     }
     
 }

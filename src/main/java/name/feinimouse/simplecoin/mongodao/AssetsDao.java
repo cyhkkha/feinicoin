@@ -30,4 +30,8 @@ public class AssetsDao extends MongoDao {
         var insert = new Document("$set", new Document("root", root));
         assets.updateOne(filter, insert);
     }
+    
+    public static void drop() {
+        assets.drop();
+    }
 }

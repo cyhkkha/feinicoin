@@ -29,4 +29,7 @@ public class TransDao extends MongoDao {
         var insert = new Document("$set", new Document("root", root));
         transaction.updateOne(filter, insert);
     }
+    public static void drop() {
+        transaction.drop();
+    }
 }
