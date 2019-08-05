@@ -1,8 +1,8 @@
 package name.feinimouse.simplecoin;
 
 import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.simplecoin.manager.custome.SimpleBCBDCCenter;
-import name.feinimouse.simplecoin.manager.custome.SimpleBCBDCOrder;
+import name.feinimouse.simplecoin.manager.custome.SimpleBCBDCAccountCenter;
+import name.feinimouse.simplecoin.manager.custome.SimpleBCBDCAccountOrder;
 import name.feinimouse.utils.LoopUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,9 +15,9 @@ public class TestBCBDC extends TestCenter<Transaction> {
     @Before @Override
     public void setUp() {
         sourceList = LoopUtils.loopToList(LIST_SIZE, transGen::genSignedTrans);
-        var order = new SimpleBCBDCOrder(userManager, sourceList);
+        var order = new SimpleBCBDCAccountOrder(userManager, sourceList);
         order.setBundleLimit(BUNDLE_SIZE);
-        center = new SimpleBCBDCCenter(order);
+        center = new SimpleBCBDCAccountCenter(order);
         super.order = order;
     }
     

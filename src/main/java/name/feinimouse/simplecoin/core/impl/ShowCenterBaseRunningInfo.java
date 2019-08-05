@@ -32,7 +32,7 @@ public class ShowCenterBaseRunningInfo extends SimplecoinRunner {
         LoopUtils.loop(ASSET_SIZE, () -> mixedSource.add(transGen.genMixedBundle(UTXO_SIZE)));
 
         var pureAccountCenter = new SimplePureAccountCenter(new SimplePureAccountOrder(userManager, sourceTrans));
-        var bcbdcCenter = new SimpleBCBDCCenter(new SimpleBCBDCOrder(userManager, sourceTrans, BUNDLE_SIZE));
+        var bcbdcCenter = new SimpleBCBDCAccountCenter(new SimpleBCBDCAccountOrder(userManager, sourceTrans, BUNDLE_SIZE));
         var utxoCenter = new SimpleUTXOCenter(new SimpleUTXOOrder(userManager, utxoSource));
         var bcbdcUTXOCenter = new SimpleMixedBCBDCCenter(new SimpleMixedBCBDCOrder(userManager, assetsSource));
         bcbdcUTXOCenter.setName("纯UTXO并行模式");

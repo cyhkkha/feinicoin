@@ -11,16 +11,16 @@ import name.feinimouse.utils.LoopUtils;
 
 import java.util.List;
 
-public class SimpleBCBDCOrder extends SimpleOrder<Transaction, TransBundle> {
+public class SimpleBCBDCAccountOrder extends SimpleOrder<Transaction, TransBundle> {
     @Getter @Setter
     protected int bundleLimit = 10;
 
-    public SimpleBCBDCOrder(@NonNull UserManager manager, @NonNull List<Transaction> transactions, int bundleLimit) {
+    public SimpleBCBDCAccountOrder(@NonNull UserManager manager, @NonNull List<Transaction> transactions, int bundleLimit) {
         this(manager, transactions);
         setBundleLimit(bundleLimit);
     }
     
-    public SimpleBCBDCOrder(@NonNull UserManager manager, @NonNull List<Transaction> transactions) {
+    public SimpleBCBDCAccountOrder(@NonNull UserManager manager, @NonNull List<Transaction> transactions) {
         super(manager, transactions);
     }
 

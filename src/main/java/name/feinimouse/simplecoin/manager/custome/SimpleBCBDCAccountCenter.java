@@ -4,9 +4,9 @@ import lombok.NonNull;
 import name.feinimouse.simplecoin.account.TransBundle;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 
-public class SimpleBCBDCCenter extends SimpleCenter<TransBundle> {
+public class SimpleBCBDCAccountCenter extends SimpleCenter<TransBundle> {
     
-    public SimpleBCBDCCenter(@NonNull SimpleBCBDCOrder order) {
+    public SimpleBCBDCAccountCenter(@NonNull SimpleBCBDCAccountOrder order) {
         super(order);
         setName("纯账户并行(BCBDC)模式");
     }
