@@ -16,10 +16,9 @@ public class SimpleUTXOOrder extends SimpleOrder<UTXOBundle, UTXOBundle> {
     public long activate() {
         processing = true;
         verifyTimes.clear();
-        UTXOBundle bundle;
         try {
-            while ((bundle = allTrans.poll()) != null) {
-                final var utxoBundle = bundle;
+            while (!allTrans.isEmpty()) {
+                var utxoBundle = allTrans.poll();
                 utxoBundle.forEach(trans -> {
                     waitOutBlock();
                     if (!super.verify(trans, utxoBundle.getOwner())) {
