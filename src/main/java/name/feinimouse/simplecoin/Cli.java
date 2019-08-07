@@ -4,7 +4,7 @@ import name.feinimouse.simplecoin.mongodao.MongoDao;
 import org.apache.commons.cli.*;
 
 public class Cli {
-    private static final String version = "0.7.1";
+    private static final String version = "0.7.2";
     
     private static final Integer[] TEST_COUNT = { 100, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 8000, 10000 };
     private static final int BUNDLE_SIZE = 20;
@@ -66,6 +66,9 @@ public class Cli {
             System.out.println("Database has been dropped");
             return null;
         }
+        if (cmd.hasOption("clean")) {
+            config.clean = true;
+        }
         if (cmd.hasOption("b")) {
             config.baseInfo = true;
         }
@@ -113,18 +116,18 @@ public class Cli {
         options.addOption("b", "base_info", false, "Show machine base info");
 
         // 设置实验项目
-        options.addOption("user_count", true, "Set the user count");
-        options.addOption("bundle_size", true, "Set the bundle size");
-        options.addOption("utxo_size", true, "Set the utxo size");
-        options.addOption("asset_rate", true, "Set the asset rate");
-        var testCount = Option.builder("test_count").hasArg().argName("count1,count2...")
+        options.addOption(null, "user_count", true, "Set the user count");
+        options.addOption(null, "bundle_size", true, "Set the bundle size");
+        options.addOption(null, "utxo_size", true, "Set the utxo size");
+        options.addOption(null, "asset_rate", true, "Set the asset rate");
+        var testCount = Option.builder(null).longOpt("test_count").hasArg().argName("count1,count2...")
             .desc("Set test count list with ',' separate to handle").build();
         options.addOption(testCount);
         
         // 选择模式
         options.addOption("a", "account", false, "Run account mode");
         options.addOption("u", "utxo", false, "Run utxo mode");
-        options.addOption("bcbdc", false, "Run a mixed mode. \n Run bcbdc mode when use with '--account' or '--utxo'");
+        options.addOption(null, "bcbdc", false, "Run a mixed mode. \n Run bcbdc mode when use with '--account' or '--utxo'");
         
         // 查看版本
         options.addOption("v", "version", false, "Show version of simplecoin");
@@ -135,9 +138,11 @@ public class Cli {
         // 帮助
         options.addOption("h", "help", false, "get help");
         // 远程数据库
-        options.addOption("net", false, "set the database remote");
+        options.addOption(null, "net", false, "set the database remote");
         // 清除远程数据库
-        options.addOption("d", "drop", false, "clear the remote database");
+        options.addOption("d", "drop", false, "clear the database");
+        // 结束后清除数据库
+        options.addOption(null, "clean", false, "clear the database after running");
     }
     
     private int getInt(String name, int def) {

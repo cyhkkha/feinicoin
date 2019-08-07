@@ -25,10 +25,10 @@ public class TestCmd {
     }
 
     @Test
-    public void testDrop() {
-        String[] args = { "-d" };
+    public void testSpecial() {
+        String[] args = { "-bcbdc", "-a", "99" };
         var cli = new Cli(args);
         var config = cli.parser();
-        System.out.println(config);
+        System.out.println(config.clean);
     }
 }

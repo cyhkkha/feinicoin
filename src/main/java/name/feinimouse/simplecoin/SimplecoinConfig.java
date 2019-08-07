@@ -1,7 +1,5 @@
 package name.feinimouse.simplecoin;
 
-import lombok.Data;
-
 import java.util.Arrays;
 
 public class SimplecoinConfig {
@@ -15,6 +13,8 @@ public class SimplecoinConfig {
     public boolean account = false;
     public boolean utxo = false;
     public boolean bcbdc = false;
+    public boolean clean = false;
+    
     public String output;
     public int CYCLE_TIME;
     
