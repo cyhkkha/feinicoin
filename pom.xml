@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>name.feinimouse</groupId>
     <artifactId>feinicoin</artifactId>
-    <version>0.7.2</version>
+    <version>0.7.3</version>
     <packaging>jar</packaging>
     <name>feinicoin</name>
     <url>http://maven.apache.org</url>

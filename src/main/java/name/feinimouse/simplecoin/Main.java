@@ -29,14 +29,23 @@ public class Main {
 
         MongoDao.init();
         
+        runConfig(config);
+        
+        if (config.clean) {
+            MongoDao.drop();
+        }
+        
+        System.exit(0);
+    }
+    
+    private static void runConfig(SimplecoinConfig config) {
         // 查看基本信息
         if (config.baseInfo) {
             var show = new BaseInfoRunner();
             show.showInfo();
-            System.exit(0);
             return;
         }
-        
+
         if (config.account) {
             if (config.bcbdc) {
                 runSimpleCoin(new BCBDCAccountRunner(config), "BCBDC账户模式");
@@ -52,8 +61,6 @@ public class Main {
         } else if (config.bcbdc) {
             runSimpleCoin(new MixedRunner(config), "BCBDC 混合模式");
         }
-
-        System.exit(0);
     }
     
     private static void runSimpleCoin(SimplecoinRunner runner, String name)  {
