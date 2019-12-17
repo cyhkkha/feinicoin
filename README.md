@@ -6,6 +6,10 @@ feinicoin support by java
 
 ---
 
+## 快捷执行
+
+`mav package`： 打包（代码更新后需要在pom.xml中更新版本号）
+
 ## 摘要
 
 采用基于中央管控的节点生产顺序，共识机制借鉴BTF-DPoS共识
