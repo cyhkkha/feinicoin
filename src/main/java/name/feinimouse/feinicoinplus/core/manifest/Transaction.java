@@ -1,11 +1,12 @@
-package name.feinimouse.feinicoinplus.core.block;
+package name.feinimouse.feinicoinplus.core.manifest;
 
 import lombok.Getter;
 import lombok.Setter;
+import name.feinimouse.feinicoinplus.core.JsonFormat;
 
 import java.util.Map;
 
-public class Transaction extends Jsobj {
+public class Transaction extends JsonFormat {
     @Getter @Setter
     private String id;
     @Getter @Setter

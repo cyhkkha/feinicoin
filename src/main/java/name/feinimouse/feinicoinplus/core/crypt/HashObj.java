@@ -1,22 +1,23 @@
-package name.feinimouse.feinicoinplus.core.block;
+package name.feinimouse.feinicoinplus.core.crypt;
 
 
 import lombok.Getter;
 import lombok.Setter;
+import name.feinimouse.feinicoinplus.core.JsonFormat;
 import org.json.JSONObject;
 
-public class HashObj extends Jsobj {
+public class HashObj extends JsonFormat {
     @Getter @Setter
     private String hash;
     @Getter @Setter
-    private Jsobj obj;
+    private JsonFormat obj;
     
-    public HashObj(Jsobj t, String hash) {
+    public HashObj(JsonFormat t, String hash) {
         this.obj = t;
         this.hash = hash;
     }
     
-    public Jsobj obj() {
+    public JsonFormat obj() {
         return getObj();
     }
 

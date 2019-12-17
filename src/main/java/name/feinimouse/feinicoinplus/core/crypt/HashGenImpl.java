@@ -3,8 +3,7 @@ package name.feinimouse.feinicoinplus.core.crypt;
 
 import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
-import name.feinimouse.feinicoinplus.core.block.HashObj;
-import name.feinimouse.feinicoinplus.core.block.Jsobj;
+import name.feinimouse.feinicoinplus.core.JsonFormat;
 
 import java.nio.charset.StandardCharsets;
 import java.util.zip.Checksum;
@@ -33,12 +32,12 @@ public class HashGenImpl implements HashGen {
     }
 
     @Override
-    public String hash(Jsobj t) {
+    public String hash(JsonFormat t) {
         return hash(t.toJson().toString());
     }
 
     @Override
-    public HashObj genHashObj(Jsobj t) {
+    public HashObj genHashObj(JsonFormat t) {
         return new HashObj(t, hash(t));
     }
 }

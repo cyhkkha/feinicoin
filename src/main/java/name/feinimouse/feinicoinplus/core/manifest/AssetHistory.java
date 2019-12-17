@@ -1,9 +1,10 @@
-package name.feinimouse.feinicoinplus.core.block;
+package name.feinimouse.feinicoinplus.core.manifest;
 
 import lombok.Getter;
 import lombok.Setter;
+import name.feinimouse.feinicoinplus.core.JsonFormat;
 
-public class AssetHistory extends Jsobj {
+public class AssetHistory extends JsonFormat {
     @Getter @Setter
     private String timestamp;
     @Getter @Setter

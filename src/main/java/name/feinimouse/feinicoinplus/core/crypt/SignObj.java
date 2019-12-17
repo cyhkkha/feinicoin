@@ -1,10 +1,10 @@
-package name.feinimouse.feinicoinplus.core.block;
+package name.feinimouse.feinicoinplus.core.crypt;
 
 import org.json.JSONObject;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SignObj extends HashObj{
+public class SignObj extends HashObj {
     
     private ConcurrentHashMap<String, String> signMap;
     
