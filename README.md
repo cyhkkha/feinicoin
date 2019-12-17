@@ -6,9 +6,21 @@ feinicoin support by java
 
 ---
 
+---
+新版本
+---
+
 ## 快捷执行
 
 `mav package`： 打包（代码更新后需要在pom.xml中更新版本号）
+
+## 哈希算法
+
+使用了[Essentials包的Hash实现（ Murmur3A (32 bit) and Murmur3F（128 bit））](http://greenrobot.org/essentials/features/performant-hash-functions-for-java/)
+
+---
+旧版本
+---
 
 ## 摘要
 
