@@ -2,7 +2,7 @@ package name.feinimouse.feinicoinplus.core.base;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class SignObj extends HashObj  {
+public abstract class SignObj <T> extends HashObj<T>  {
 
     protected ConcurrentHashMap<String, String> signMap;
     
@@ -10,7 +10,7 @@ public abstract class SignObj extends HashObj  {
         signMap = new ConcurrentHashMap<>();
     }
 
-    public SignObj putSign(String signer, String sign) {
+    public SignObj<T> putSign(String signer, String sign) {
         signMap.put(signer, sign);
         return this;
     }

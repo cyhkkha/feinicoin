@@ -2,12 +2,12 @@ package name.feinimouse.feinicoinplus.core.base;
 
 import org.json.JSONObject;
 
-public class MerkelObj extends HashObj {
+public class MerkelObj <T> extends HashObj<HashObj<T>[]> {
     
-    private HashObj[] arr;
+    private HashObj<T>[] arr;
     private String[] hashTree;
     
-    public MerkelObj(HashObj[] arr, String[] hashTree) {
+    public MerkelObj(HashObj<T>[] arr, String[] hashTree) {
         this.hash = hashTree[0];
         this.arr = arr;
         this.hashTree = hashTree;
@@ -19,7 +19,7 @@ public class MerkelObj extends HashObj {
     }
     
     @Override
-    public HashObj[] getObject() {
+    public HashObj<T>[] obj() {
         return arr;
     }
 
@@ -31,5 +31,10 @@ public class MerkelObj extends HashObj {
     public String[] hashTree() {
         return hashTree;
     }
-    
+
+    public MerkelObj<T> copy() {
+        HashObj<T>[] subArr = arr.clone();
+        String[] subTree = hashTree.clone();
+        return new MerkelObj<>(subArr, subTree);
+    }
 }

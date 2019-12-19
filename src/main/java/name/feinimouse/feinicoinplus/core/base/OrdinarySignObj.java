@@ -2,11 +2,11 @@ package name.feinimouse.feinicoinplus.core.base;
 
 import org.json.JSONObject;
 
-public class OrdinarySignObj extends SignObj {
+public class OrdinarySignObj<T> extends SignObj<T> {
     
-    private HashObj obj;
+    private HashObj<T> obj;
     
-    public OrdinarySignObj(HashObj obj) {
+    public OrdinarySignObj(HashObj<T> obj) {
         super();
         this.obj = obj;
         this.hash = obj.gainHash();
@@ -23,7 +23,7 @@ public class OrdinarySignObj extends SignObj {
     }
 
     @Override
-    public Object getObject() {
-        return obj.getObject();
+    public T obj() {
+        return obj.obj();
     }
 }

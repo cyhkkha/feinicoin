@@ -9,8 +9,8 @@ import java.security.PublicKey;
 
 public interface SignGen {
     String sign(PrivateKey key, String msg);
-    SignObj sign(PrivateKey key, SignObj o, String signer);
+    <T> SignObj<T> sign(PrivateKey key, SignObj<T> o, String signer);
     boolean verify(PublicKey key, String sign, String msg);
-    SignObj genSignObj(PrivateKey key, HashObj h, String signer);
+    <T> SignObj<T> genSignObj(PrivateKey key, HashObj<T> h, String signer);
     KeyPair genKeyPair();
 }

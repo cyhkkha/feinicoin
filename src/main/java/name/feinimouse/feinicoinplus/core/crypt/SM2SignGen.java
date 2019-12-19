@@ -56,7 +56,7 @@ public class SM2SignGen implements SignGen{
     }
 
     @Override
-    public SignObj sign(PrivateKey key, SignObj o, String signer) {
+    public <T> SignObj<T> sign(PrivateKey key, SignObj<T> o, String signer) {
         String s = sign(key, o.gainHash());
         return o.putSign(signer, s);
     }
@@ -79,9 +79,9 @@ public class SM2SignGen implements SignGen{
     }
 
     @Override
-    public SignObj genSignObj(PrivateKey key, HashObj h, String signer) {
+    public <T> SignObj<T> genSignObj(PrivateKey key, HashObj<T> h, String signer) {
         String s = sign(key, h.gainHash());
-        return  new OrdinarySignObj(h).putSign(signer, s);
+        return  new OrdinarySignObj<>(h).putSign(signer, s);
     }
 
     @Override

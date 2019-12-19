@@ -7,6 +7,6 @@ import name.feinimouse.feinicoinplus.core.base.SummaryAble;
 public interface HashGen {
     String hash(String content);
     String hash(SummaryAble obj);
-    HashObj genHashObj(OrdinaryObj obj);
-    HashObj genHashObj(HashObj[] objArr);
+    <T extends OrdinaryObj> HashObj<T> genHashObj(T obj);
+    <T> HashObj<HashObj<T>[]> genHashObj(HashObj<T>[] objArr);
 }

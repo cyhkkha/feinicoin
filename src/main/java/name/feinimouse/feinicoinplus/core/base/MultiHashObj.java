@@ -4,17 +4,17 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
-public class MultiHashObj extends HashObj {
-    private Map<String, HashObj> map;
+public class MultiHashObj <T> extends HashObj<Map<String, HashObj<T>>> {
+    private Map<String, HashObj<T>> map;
     private String[] hashTree;
     
-    public MultiHashObj(Map<String, HashObj> map, String[] hashTree) {
+    public MultiHashObj(Map<String, HashObj<T>> map, String[] hashTree) {
         this.map = map;
         this.hash = hashTree[0];
         this.hashTree = hashTree;
     }
     
-    public HashObj get(String key) {
+    public HashObj<T> get(String key) {
         return map.get(key);
     }
     
@@ -24,7 +24,7 @@ public class MultiHashObj extends HashObj {
     }
 
     @Override
-    public Map<String, HashObj> getObject() {
+    public Map<String, HashObj<T>> obj() {
         return map;
     }
 

@@ -2,10 +2,10 @@ package name.feinimouse.feinicoinplus.core.base;
 
 import org.json.JSONObject;
 
-public class OrdinaryHashObj extends HashObj {
-    protected OrdinaryObj obj;
+public class OrdinaryHashObj <T extends OrdinaryObj> extends HashObj<T> {
+    protected T obj;
 
-    public OrdinaryHashObj(OrdinaryObj obj, String hash) {
+    public OrdinaryHashObj(T obj, String hash) {
         this.obj = obj;
         this.hash = hash;
     }
@@ -21,7 +21,7 @@ public class OrdinaryHashObj extends HashObj {
     }
 
     @Override
-    public Object getObject() {
+    public T obj() {
         return obj;
     }
 }
