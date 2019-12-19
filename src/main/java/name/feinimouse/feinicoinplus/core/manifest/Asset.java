@@ -2,13 +2,13 @@ package name.feinimouse.feinicoinplus.core.manifest;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.JsonFormat;
+import name.feinimouse.feinicoinplus.core.obj.*;
 import org.json.JSONObject;
 
-import java.util.List;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedList;
 
-public class Asset extends JsonFormat implements Cloneable{
+public class Asset implements Cloneable, JsonObj {
     @Getter @Setter
     private String address;
     @Getter @Setter
@@ -20,19 +20,24 @@ public class Asset extends JsonFormat implements Cloneable{
     @Getter @Setter
     private int number;
     @Getter @Setter
-    private List<AssetHistory> histories;
+    private LinkedList<AssetHistory> histories;
     @Getter @Setter
-    private Map<String, String> exFunc;
+    private HashMap<String, String> exFunc;
+    
 
     @Override
-    public JSONObject toJson() {
-        return super.toJson()
-            .put("histories", JsonFormat.genJson(histories));
+    public JSONObject json() {
+        return new JSONObject(this).put("histories", JsonObj.genJson(histories));
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        Asset sub = (Asset) super.clone();
+        LinkedList<AssetHistory> h = new LinkedList<>(histories);
+        sub.setHistories(h);
+        HashMap<String, String> e = new HashMap<>(exFunc);
+        sub.setExFunc(e);
+        return sub;
     }
     
 }
