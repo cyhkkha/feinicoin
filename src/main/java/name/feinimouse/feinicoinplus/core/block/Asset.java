@@ -5,10 +5,9 @@ import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.base.*;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Asset implements Cloneable, JsonAble {
+public class Asset implements OrdinaryObj, Cloneable {
     @Getter @Setter
     private String address;
     @Getter @Setter
@@ -20,24 +19,35 @@ public class Asset implements Cloneable, JsonAble {
     @Getter @Setter
     private int number;
     @Getter @Setter
-    private LinkedList<AssetHistory> histories;
+    private MerkelObj<AssetTrans> histories;
     @Getter @Setter
-    private HashMap<String, String> exFunc;
+    private ConcurrentHashMap<String, String> exFunc;
     
 
     @Override
     public JSONObject json() {
-        return new JSONObject(this).put("histories", JsonAble.genJson(histories));
+        return new JSONObject(this).put("histories", histories.gainHash());
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    protected Object clone() throws CloneNotSupportedException {
         Asset sub = (Asset) super.clone();
-        LinkedList<AssetHistory> h = new LinkedList<>(histories);
-        sub.setHistories(h);
-        HashMap<String, String> e = new HashMap<>(exFunc);
-        sub.setExFunc(e);
+        sub.setHistories(histories.copy());
+        sub.setExFunc(new ConcurrentHashMap<>(exFunc));
         return sub;
     }
-    
+
+    public Asset copy() {
+        try {
+            return (Asset) clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public String summary() {
+        return json().toString();
+    }
 }

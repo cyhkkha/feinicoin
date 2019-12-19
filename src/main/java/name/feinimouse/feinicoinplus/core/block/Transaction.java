@@ -2,11 +2,11 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.base.JsonAble;
+import name.feinimouse.feinicoinplus.core.base.OrdinaryObj;
 
 import java.util.Map;
 
-public class Transaction implements JsonAble {
+public class Transaction implements OrdinaryObj {
     @Getter @Setter
     private String id;
     @Getter @Setter
@@ -19,4 +19,9 @@ public class Transaction implements JsonAble {
     private String number;
     @Getter @Setter
     private Map<String, String> exFunc;
+
+    @Override
+    public String summary() {
+        return json().toString();
+    }
 }

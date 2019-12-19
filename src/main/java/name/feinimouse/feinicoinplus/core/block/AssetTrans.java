@@ -2,9 +2,9 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.base.JsonAble;
+import name.feinimouse.feinicoinplus.core.base.OrdinaryObj;
 
-public class AssetHistory implements JsonAble {
+public class AssetTrans implements OrdinaryObj {
     @Getter @Setter
     private String timestamp;
     @Getter @Setter
@@ -15,5 +15,9 @@ public class AssetHistory implements JsonAble {
     private int number;
     @Getter @Setter
     private String transaction;
-    
+
+    @Override
+    public String summary() {
+        return json().toString();
+    }
 }
