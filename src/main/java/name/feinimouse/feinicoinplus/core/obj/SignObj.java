@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.crypt;
+package name.feinimouse.feinicoinplus.core.obj;
 
 import org.json.JSONObject;
 
@@ -7,9 +7,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SignObj extends HashObj {
     
     private ConcurrentHashMap<String, String> signMap;
+    private HashObj obj;
     
-    public SignObj(HashObj hashObj, String sign) {
-        super(hashObj.obj(), hashObj.getHash());
+    public SignObj(HashObj obj, String sign) {
+        this.obj = obj;
+        this.hash = obj.getHash();
         signMap = new ConcurrentHashMap<>();
     }
     
@@ -26,7 +28,17 @@ public class SignObj extends HashObj {
     }
 
     @Override
-    public JSONObject toJson() {
-        return super.toJson().put("sign", new JSONObject(signMap));
+    public JSONObject json() {
+        return obj.json().put("sign", new JSONObject(signMap));
+    }
+
+    @Override
+    public String summary() {
+        return obj.summary();
+    }
+
+    @Override
+    public Object getObject() {
+        return obj.getObject();
     }
 }
