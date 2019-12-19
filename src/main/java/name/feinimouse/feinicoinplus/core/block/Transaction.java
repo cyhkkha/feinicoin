@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.manifest;
+package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
