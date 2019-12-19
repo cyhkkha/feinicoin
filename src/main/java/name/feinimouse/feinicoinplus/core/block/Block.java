@@ -2,11 +2,11 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.obj.HashObj;
 import name.feinimouse.feinicoinplus.core.obj.MerkelObj;
+import name.feinimouse.feinicoinplus.core.obj.SignObj;
 import org.json.JSONObject;
 
-public class Block extends HashObj {
+public class Block extends SignObj {
     @Getter @Setter
     private int id;
     @Getter @Setter
@@ -29,27 +29,25 @@ public class Block extends HashObj {
     
     @Override
     public Object getObject() {
-        JSONObject o = super.json().put("accounts", accounts.getHash())
-            .put("assets", assets.getHash())
-            .put("transactions", transactions.getHash());
-        o.remove("hash");
-        return o;
+        return super.json().put("accounts", accounts.gainHash())
+            .put("assets", assets.gainHash())
+            .put("transactions", transactions.gainHash());
     }
 
     @Override
     public String summary() {
-        JSONObject o = super.json().put("accounts", accounts.getHash())
-            .put("assets", assets.getHash())
-            .put("transactions", transactions.getHash());
-        o.remove("hash");
-        return o.toString();
+        return super.json().put("accounts", accounts.gainHash())
+            .put("assets", assets.gainHash())
+            .put("transactions", transactions.gainHash())
+            .toString();
     }
 
     @Override
     public JSONObject json() {
-        JSONObject o = super.json().put("accounts", accounts.getHash())
-            .put("assets", assets.getHash())
-            .put("transactions", transactions.getHash());
+        JSONObject o = super.json().put("accounts", accounts.gainHash())
+            .put("assets", assets.gainHash())
+            .put("transactions", transactions.gainHash())
+            .put("sign", new JSONObject(signMap));
         return new JSONObject().put("obj", o).put("hash", hash);
     }
 }

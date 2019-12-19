@@ -44,11 +44,11 @@ public class MurmurHashGen implements HashGen {
     @Override
     public HashObj genHashObj(HashObj[] objArr) {
         if (objArr.length == 1) {
-            return new MerkelObj(objArr, new String[] { objArr[0].getHash() });
+            return new MerkelObj(objArr, new String[] { objArr[0].gainHash() });
         }
         String[] hashTree = new String[objArr.length * 2 - 1];
         for (int i = objArr.length - 1; i >= 0; i--) {
-            hashTree[i] = objArr[i].getHash();
+            hashTree[i] = objArr[i].gainHash();
         }
         genMerkelHash(0, hashTree);
         return new MerkelObj(objArr, hashTree);

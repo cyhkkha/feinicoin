@@ -1,6 +1,7 @@
 package name.feinimouse.feinicoinplus.core.crypt;
 
 import name.feinimouse.feinicoinplus.core.obj.HashObj;
+import name.feinimouse.feinicoinplus.core.obj.OrdinarySignObj;
 import name.feinimouse.feinicoinplus.core.obj.SignObj;
 import org.bouncycastle.asn1.gm.GMNamedCurves;
 import org.bouncycastle.asn1.gm.GMObjectIdentifiers;
@@ -55,6 +56,12 @@ public class SM2SignGen implements SignGen{
     }
 
     @Override
+    public SignObj sign(PrivateKey key, SignObj o, String signer) {
+        String s = sign(key, o.gainHash());
+        return o.putSign(signer, s);
+    }
+
+    @Override
     public boolean verify(PublicKey key, String sign, String msg) {
         try {
             Signature signature = Signature.getInstance(
@@ -72,9 +79,9 @@ public class SM2SignGen implements SignGen{
     }
 
     @Override
-    public SignObj genSignObj(PrivateKey key, HashObj h) {
-        String sign = sign(key, h.getHash());
-        return new SignObj(h, sign);
+    public SignObj genSignObj(PrivateKey key, HashObj h, String signer) {
+        String s = sign(key, h.gainHash());
+        return  new OrdinarySignObj(h).putSign(signer, s);
     }
 
     @Override
