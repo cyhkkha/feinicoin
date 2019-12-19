@@ -1,5 +1,7 @@
 package name.feinimouse.feinicoinplus.core.crypt;
 
+import name.feinimouse.feinicoinplus.core.obj.HashObj;
+import name.feinimouse.feinicoinplus.core.obj.SignObj;
 import org.bouncycastle.asn1.gm.GMNamedCurves;
 import org.bouncycastle.asn1.gm.GMObjectIdentifiers;
 import org.bouncycastle.asn1.x9.X9ECParameters;
@@ -10,11 +12,11 @@ import org.bouncycastle.util.encoders.Hex;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 
-public class SignGenImpl implements SignGen{
+public class SM2SignGen implements SignGen{
     
     private KeyPairGenerator generator;
 
-    public SignGenImpl() throws Exception {
+    public SM2SignGen() throws Exception {
         // 国密标准SM2的椭圆曲线的生成参数
         X9ECParameters sm2ECParams = GMNamedCurves.getByName("sm2p256v1");
         // 椭圆曲线实例
@@ -70,9 +72,9 @@ public class SignGenImpl implements SignGen{
     }
 
     @Override
-    public SignObj genSignObj(PrivateKey key, HashObj t) {
-        String sign = sign(key, t.getHash());
-        return new SignObj(t, sign);
+    public SignObj genSignObj(PrivateKey key, HashObj h) {
+        String sign = sign(key, h.getHash());
+        return new SignObj(h, sign);
     }
 
     @Override
