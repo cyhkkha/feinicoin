@@ -2,8 +2,8 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.obj.MerkelObj;
-import name.feinimouse.feinicoinplus.core.obj.SignObj;
+import name.feinimouse.feinicoinplus.core.base.MerkelObj;
+import name.feinimouse.feinicoinplus.core.base.SignObj;
 import org.json.JSONObject;
 
 public class Block extends SignObj {

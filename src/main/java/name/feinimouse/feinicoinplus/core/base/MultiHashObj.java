@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.obj;
+package name.feinimouse.feinicoinplus.core.base;
 
 import org.json.JSONObject;
 
@@ -30,7 +30,7 @@ public class MultiHashObj extends HashObj {
 
     @Override
     public JSONObject json() {
-        return new JSONObject().put("obj", JsonObj.genJson(map)).put("hash", hash);
+        return new JSONObject().put("obj", JsonAble.genJson(map)).put("hash", hash);
     }
 
     public String[] hashTree() {

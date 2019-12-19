@@ -1,12 +1,12 @@
-package name.feinimouse.feinicoinplus.core.obj;
+package name.feinimouse.feinicoinplus.core.base;
 
 import org.json.JSONObject;
 
 public class OrdinaryJsonObj implements OrdinaryObj {
-    private JsonObj obj;
+    private JsonAble obj;
     private String summary;
     
-    public OrdinaryJsonObj(JsonObj obj, String summary) {
+    public OrdinaryJsonObj(JsonAble obj, String summary) {
         this.obj = obj;
         this.summary = summary;
     }

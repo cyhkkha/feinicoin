@@ -1,7 +1,7 @@
 package name.feinimouse.feinicoinplus.core.crypt;
 
-import name.feinimouse.feinicoinplus.core.obj.HashObj;
-import name.feinimouse.feinicoinplus.core.obj.SignObj;
+import name.feinimouse.feinicoinplus.core.base.HashObj;
+import name.feinimouse.feinicoinplus.core.base.SignObj;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;

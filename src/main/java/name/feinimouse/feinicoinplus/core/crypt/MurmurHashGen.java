@@ -3,7 +3,7 @@ package name.feinimouse.feinicoinplus.core.crypt;
 
 import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
-import name.feinimouse.feinicoinplus.core.obj.*;
+import name.feinimouse.feinicoinplus.core.base.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.zip.Checksum;
@@ -32,7 +32,7 @@ public class MurmurHashGen implements HashGen {
     }
 
     @Override
-    public String hash(SummaryObj t) {
+    public String hash(SummaryAble t) {
         return hash(t.summary());
     }
 

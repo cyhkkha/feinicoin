@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.obj;
+package name.feinimouse.feinicoinplus.core.base;
 
 import org.json.JSONObject;
 
@@ -15,7 +15,7 @@ public class MerkelObj extends HashObj {
     
     @Override
     public String summary() {
-        return JsonObj.genJson(arr).toString();
+        return JsonAble.genJson(arr).toString();
     }
     
     @Override
@@ -25,7 +25,7 @@ public class MerkelObj extends HashObj {
 
     @Override
     public JSONObject json() {
-        return new JSONObject().put("obj", JsonObj.genJson(arr)).put("hash", hash);
+        return new JSONObject().put("obj", JsonAble.genJson(arr)).put("hash", hash);
     }
 
     public String[] hashTree() {

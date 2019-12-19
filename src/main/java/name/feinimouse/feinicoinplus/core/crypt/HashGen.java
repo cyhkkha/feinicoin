@@ -1,12 +1,12 @@
 package name.feinimouse.feinicoinplus.core.crypt;
 
-import name.feinimouse.feinicoinplus.core.obj.HashObj;
-import name.feinimouse.feinicoinplus.core.obj.OrdinaryObj;
-import name.feinimouse.feinicoinplus.core.obj.SummaryObj;
+import name.feinimouse.feinicoinplus.core.base.HashObj;
+import name.feinimouse.feinicoinplus.core.base.OrdinaryObj;
+import name.feinimouse.feinicoinplus.core.base.SummaryAble;
 
 public interface HashGen {
     String hash(String content);
-    String hash(SummaryObj obj);
+    String hash(SummaryAble obj);
     HashObj genHashObj(OrdinaryObj obj);
     HashObj genHashObj(HashObj[] objArr);
 }

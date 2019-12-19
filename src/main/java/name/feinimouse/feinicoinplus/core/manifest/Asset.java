@@ -2,13 +2,13 @@ package name.feinimouse.feinicoinplus.core.manifest;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.obj.*;
+import name.feinimouse.feinicoinplus.core.base.*;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class Asset implements Cloneable, JsonObj {
+public class Asset implements Cloneable, JsonAble {
     @Getter @Setter
     private String address;
     @Getter @Setter
@@ -27,7 +27,7 @@ public class Asset implements Cloneable, JsonObj {
 
     @Override
     public JSONObject json() {
-        return new JSONObject(this).put("histories", JsonObj.genJson(histories));
+        return new JSONObject(this).put("histories", JsonAble.genJson(histories));
     }
 
     @Override

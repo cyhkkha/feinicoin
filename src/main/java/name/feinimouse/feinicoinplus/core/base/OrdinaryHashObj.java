@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.obj;
+package name.feinimouse.feinicoinplus.core.base;
 
 import org.json.JSONObject;
 

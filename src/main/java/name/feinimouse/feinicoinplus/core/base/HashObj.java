@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.obj;
+package name.feinimouse.feinicoinplus.core.base;
 
 
 public abstract class HashObj implements OrdinaryObj {

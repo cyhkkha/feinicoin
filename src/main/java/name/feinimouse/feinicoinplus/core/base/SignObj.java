@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.obj;
+package name.feinimouse.feinicoinplus.core.base;
 
 import java.util.concurrent.ConcurrentHashMap;
 

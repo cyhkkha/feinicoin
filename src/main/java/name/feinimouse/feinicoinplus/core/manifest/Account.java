@@ -2,11 +2,11 @@ package name.feinimouse.feinicoinplus.core.manifest;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.obj.JsonObj;
+import name.feinimouse.feinicoinplus.core.base.JsonAble;
 
 import java.util.Map;
 
-public class Account implements JsonObj {
+public class Account implements JsonAble {
     @Getter @Setter
     private String address;
     @Getter @Setter

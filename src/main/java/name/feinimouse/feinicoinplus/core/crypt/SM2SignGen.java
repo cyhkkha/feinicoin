@@ -1,8 +1,8 @@
 package name.feinimouse.feinicoinplus.core.crypt;
 
-import name.feinimouse.feinicoinplus.core.obj.HashObj;
-import name.feinimouse.feinicoinplus.core.obj.OrdinarySignObj;
-import name.feinimouse.feinicoinplus.core.obj.SignObj;
+import name.feinimouse.feinicoinplus.core.base.HashObj;
+import name.feinimouse.feinicoinplus.core.base.OrdinarySignObj;
+import name.feinimouse.feinicoinplus.core.base.SignObj;
 import org.bouncycastle.asn1.gm.GMNamedCurves;
 import org.bouncycastle.asn1.gm.GMObjectIdentifiers;
 import org.bouncycastle.asn1.x9.X9ECParameters;
