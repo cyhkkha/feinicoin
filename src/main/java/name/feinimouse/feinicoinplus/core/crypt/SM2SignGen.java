@@ -1,5 +1,6 @@
 package name.feinimouse.feinicoinplus.core.crypt;
 
+import name.feinimouse.feinicoinplus.core.base.BaseObj;
 import name.feinimouse.feinicoinplus.core.base.HashObj;
 import name.feinimouse.feinicoinplus.core.base.OrdinarySignObj;
 import name.feinimouse.feinicoinplus.core.base.SignObj;
@@ -56,10 +57,17 @@ public class SM2SignGen implements SignGen{
     }
 
     @Override
-    public <T> SignObj<T> sign(PrivateKey key, SignObj<T> o, String signer) {
-        String s = sign(key, o.gainHash());
-        return o.putSign(signer, s);
+    public <T extends BaseObj> SignObj<T> sign(PrivateKey key, SignObj<T> signObj, String signer) {
+        String s = sign(key, signObj.gainHash());
+        return signObj.putSign(signer, s);
     }
+
+    @Override
+    public <T extends BaseObj> SignObj<T> sign(PrivateKey key, HashObj<T> hashObj, String signer) {
+        String s = sign(key, hashObj.gainHash());
+        return new OrdinarySignObj<>(hashObj);
+    }
+    
 
     @Override
     public boolean verify(PublicKey key, String sign, String msg) {
@@ -77,13 +85,7 @@ public class SM2SignGen implements SignGen{
             return false;
         }
     }
-
-    @Override
-    public <T> SignObj<T> genSignObj(PrivateKey key, HashObj<T> h, String signer) {
-        String s = sign(key, h.gainHash());
-        return  new OrdinarySignObj<>(h).putSign(signer, s);
-    }
-
+    
     @Override
     public KeyPair genKeyPair() {
         return generator.genKeyPair();

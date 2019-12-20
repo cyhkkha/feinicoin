@@ -32,23 +32,24 @@ public class MurmurHashGen implements HashGen {
     }
 
     @Override
-    public String hash(SummaryAble t) {
-        return hash(t.summary());
+    public <T extends BaseObj> String hash(T obj) {
+        return hash(obj.summary());
     }
 
     @Override
-    public <T extends OrdinaryObj> HashObj<T> genHashObj(T obj) {
-        return new OrdinaryHashObj<>(obj, hash(obj.summary()));
+    public <T extends BaseObj> HashObj<T> hashObj(T obj) {
+        return new OrdinaryObj<>(obj, hash(obj.summary()));
     }
+    
 
     @Override
-    public <T> HashObj<HashObj<T>[]> genHashObj(HashObj<T>[] objArr) {
+    public <T extends BaseObj> MerkelObj<T> hashObj(T[] objArr) {
         if (objArr.length == 1) {
-            return new MerkelObj<>(objArr, new String[] { objArr[0].gainHash() });
+            return new MerkelObj<>(objArr, new String[] { hash(objArr[0]) });
         }
         String[] hashTree = new String[objArr.length * 2 - 1];
         for (int i = objArr.length - 1; i >= 0; i--) {
-            hashTree[i] = objArr[i].gainHash();
+            hashTree[i] = hash(objArr[i]);
         }
         genMerkelHash(0, hashTree);
         return new MerkelObj<>(objArr, hashTree);

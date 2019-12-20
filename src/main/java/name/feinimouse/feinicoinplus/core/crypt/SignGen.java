@@ -1,5 +1,6 @@
 package name.feinimouse.feinicoinplus.core.crypt;
 
+import name.feinimouse.feinicoinplus.core.base.BaseObj;
 import name.feinimouse.feinicoinplus.core.base.HashObj;
 import name.feinimouse.feinicoinplus.core.base.SignObj;
 
@@ -9,8 +10,8 @@ import java.security.PublicKey;
 
 public interface SignGen {
     String sign(PrivateKey key, String msg);
-    <T> SignObj<T> sign(PrivateKey key, SignObj<T> o, String signer);
+    <T extends BaseObj> SignObj<T> sign(PrivateKey key, SignObj<T> signObj, String signer);
+    <T extends BaseObj> SignObj<T> sign(PrivateKey key, HashObj<T> hashObj, String signer);
     boolean verify(PublicKey key, String sign, String msg);
-    <T> SignObj<T> genSignObj(PrivateKey key, HashObj<T> h, String signer);
     KeyPair genKeyPair();
 }
