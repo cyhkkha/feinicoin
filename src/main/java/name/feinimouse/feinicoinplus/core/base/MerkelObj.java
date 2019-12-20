@@ -2,39 +2,26 @@ package name.feinimouse.feinicoinplus.core.base;
 
 import org.json.JSONObject;
 
-public class MerkelObj <T> extends HashObj<HashObj<T>[]> {
+public class MerkelObj <T extends BaseObj> extends HashObj<T[]> {
     
-    private HashObj<T>[] arr;
     private String[] hashTree;
     
-    public MerkelObj(HashObj<T>[] arr, String[] hashTree) {
-        this.hash = hashTree[0];
-        this.arr = arr;
+    public MerkelObj(T[] arr, String[] hashTree) {
+        super(arr, BaseObj.genJson(arr).toString(), hashTree[0]);
         this.hashTree = hashTree;
     }
-    
-    @Override
-    public String summary() {
-        return JsonAble.genJson(arr).toString();
-    }
-    
-    @Override
-    public HashObj<T>[] obj() {
-        return arr;
+
+    public String[] hashTree() {
+        return hashTree.clone();
     }
 
     @Override
     public JSONObject json() {
-        return new JSONObject().put("obj", JsonAble.genJson(arr)).put("hash", hash);
+        return super.json().put("obj", BaseObj.genJson(obj));
     }
 
-    public String[] hashTree() {
-        return hashTree;
-    }
-
+    @Override
     public MerkelObj<T> copy() {
-        HashObj<T>[] subArr = arr.clone();
-        String[] subTree = hashTree.clone();
-        return new MerkelObj<>(subArr, subTree);
+        return new MerkelObj<>(obj.clone(), hashTree());
     }
 }

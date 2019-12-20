@@ -2,28 +2,24 @@ package name.feinimouse.feinicoinplus.core.base;
 
 import org.json.JSONObject;
 
-public class OrdinarySignObj<T> extends SignObj<T> {
-    
-    private HashObj<T> obj;
+public class OrdinarySignObj<T extends BaseObj> extends SignObj<T> {
     
     public OrdinarySignObj(HashObj<T> obj) {
-        super();
-        this.obj = obj;
-        this.hash = obj.gainHash();
+        super(obj.obj(), obj.summary(), obj.gainHash());
+    }
+    
+    public OrdinarySignObj(T obj, String hash) {
+        super(obj, obj.summary(), hash);
     }
     
     @Override
     public JSONObject json() {
-        return obj.json().put("sign", new JSONObject(signMap));
+        return super.json().put("obj", obj.json());
     }
 
     @Override
-    public String summary() {
-        return obj.summary();
+    public OrdinarySignObj<T> copy() {
+        return new OrdinarySignObj<>(obj, hash);
     }
 
-    @Override
-    public T obj() {
-        return obj.obj();
-    }
 }
