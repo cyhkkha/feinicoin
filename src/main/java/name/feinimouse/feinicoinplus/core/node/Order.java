@@ -7,4 +7,6 @@ import name.feinimouse.feinicoinplus.core.block.Transaction;
 public interface Order {
     boolean commit(SignObj<Transaction> signObj);
     boolean commit(SignObj<AssetTrans> assetTrans, SignObj<Transaction> transaction);
+    SignObj<Transaction> fetchTransaction();
+    SignObj<AssetTrans> fetchAssetTrans();
 }
