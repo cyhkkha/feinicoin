@@ -1,9 +1,6 @@
 package name.feinimouse.simplecoin;
 
-import name.feinimouse.feinicoin.account.Assets;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
-import name.feinimouse.simplecoin.mongodao.AccountDao;
-import name.feinimouse.simplecoin.mongodao.AssetsDao;
 import name.feinimouse.simplecoin.mongodao.MongoDao;
 import name.feinimouse.simplecoin.mongodao.TransDao;
 import name.feinimouse.utils.LoopUtils;

@@ -3,7 +3,7 @@ package name.feinimouse.simplecoin.core;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import name.feinimouse.feinicoin.account.Transaction;
+import name.feinimouse.simplecoin.account.Transaction;
 import name.feinimouse.simplecoin.account.MixedBundle;
 import name.feinimouse.simplecoin.account.SimpleSign;
 import name.feinimouse.simplecoin.account.SimpleTransaction;
@@ -12,7 +12,6 @@ import name.feinimouse.utils.LoopUtils;
 import net.openhft.hashing.LongHashFunction;
 
 import java.security.SignatureException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Vector;

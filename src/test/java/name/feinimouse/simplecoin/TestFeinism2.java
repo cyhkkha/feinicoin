@@ -1,6 +1,6 @@
 package name.feinimouse.simplecoin;
 
-import name.feinimouse.feinism2.SM2Generator;
+import name.feinimouse.simplecoin.feinism2.SM2Generator;
 import net.openhft.hashing.LongHashFunction;
 import org.json.JSONObject;
 import org.junit.Assert;

@@ -4,9 +4,6 @@ import org.json.JSONObject;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoin.account.ExtFunc;
-import name.feinimouse.feinicoin.account.Sign;
-import name.feinimouse.feinicoin.account.Transaction;
 
 public class SimpleTransaction implements Transaction {
 

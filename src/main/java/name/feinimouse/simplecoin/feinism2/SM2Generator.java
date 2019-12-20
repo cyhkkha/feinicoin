@@ -1,4 +1,4 @@
-package name.feinimouse.feinism2;
+package name.feinimouse.simplecoin.feinism2;
 
 import org.bouncycastle.asn1.gm.GMNamedCurves;
 import org.bouncycastle.asn1.gm.GMObjectIdentifiers;

@@ -1,7 +1,7 @@
 package name.feinimouse.simplecoin.manager.custome;
 
 import lombok.NonNull;
-import name.feinimouse.feinicoin.account.Transaction;
+import name.feinimouse.simplecoin.account.Transaction;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
 
 /**

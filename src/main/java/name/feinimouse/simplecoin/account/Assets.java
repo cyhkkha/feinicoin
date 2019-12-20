@@ -1,6 +1,6 @@
-package name.feinimouse.feinicoin.account;
+package name.feinimouse.simplecoin.account;
 
-import name.feinimouse.feinicoin.block.Hashable;
+import name.feinimouse.simplecoin.block.Hashable;
 
 // 资产由中央节点进行写入
 public interface Assets extends Hashable {

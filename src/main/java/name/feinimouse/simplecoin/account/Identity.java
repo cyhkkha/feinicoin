@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoin.account;
+package name.feinimouse.simplecoin.account;
 
 /**
  * Create by 菲尼莫斯 on 2019/5/24

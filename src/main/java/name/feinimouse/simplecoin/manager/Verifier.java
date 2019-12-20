@@ -1,8 +1,8 @@
-package name.feinimouse.feinicoin.manager;
+package name.feinimouse.simplecoin.manager;
 
-import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.feinicoin.block.Block;
-import name.feinimouse.feinicoin.block.Hashable;
+import name.feinimouse.simplecoin.account.Transaction;
+import name.feinimouse.simplecoin.block.Block;
+import name.feinimouse.simplecoin.block.Hashable;
 
 import java.security.SignatureException;
 

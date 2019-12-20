@@ -2,7 +2,6 @@ package name.feinimouse.simplecoin.account;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoin.account.*;
 import net.openhft.hashing.LongHashFunction;
 import org.json.JSONArray;
 import org.json.JSONObject;

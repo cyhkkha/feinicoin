@@ -1,7 +1,7 @@
 package name.feinimouse.simplecoin;
 
-import name.feinimouse.feinism2.SM2;
-import name.feinimouse.feinism2.SM2Generator;
+import name.feinimouse.simplecoin.feinism2.SM2;
+import name.feinimouse.simplecoin.feinism2.SM2Generator;
 import name.feinimouse.simplecoin.core.TransactionGen;
 import name.feinimouse.simplecoin.core.UserManager;
 import name.feinimouse.simplecoin.manager.SimpleVerifier;
@@ -45,7 +45,7 @@ public class SetupTest {
     }
 
     void collectTime(List<Long> timeList, String name) {
-        var count = timeList.stream().reduce(Long::sum).orElse(0L);
+        long count = timeList.stream().reduce(Long::sum).orElse(0L);
         System.out.printf("%s总计运行时间: %f s \n", name, (count / 1000000000f));
         System.out.printf("%s平均运行时间: %f s \n", name, count / timeList.size() / 1000000000f);
     }

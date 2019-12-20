@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import name.feinimouse.feinicoin.account.Sign;
 import org.bson.Document;
 
 public class SimpleSign implements Sign {

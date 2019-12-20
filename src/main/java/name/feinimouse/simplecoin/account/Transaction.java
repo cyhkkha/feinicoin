@@ -1,6 +1,6 @@
-package name.feinimouse.feinicoin.account;
+package name.feinimouse.simplecoin.account;
 
-import name.feinimouse.feinicoin.block.Hashable;
+import name.feinimouse.simplecoin.block.Hashable;
 
 // 交易信息由用户发起，并由检查节点节点进行审核
 public interface Transaction extends Hashable {

@@ -1,12 +1,10 @@
 package name.feinimouse.simplecoin;
 
-import name.feinimouse.feinicoin.account.Transaction;
+import name.feinimouse.simplecoin.account.Transaction;
 import name.feinimouse.utils.LoopUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.security.SignatureException;
 import java.util.LinkedList;
 
 /**

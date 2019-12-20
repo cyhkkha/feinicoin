@@ -3,8 +3,7 @@ package name.feinimouse.simplecoin.account;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.feinicoin.block.Hashable;
+import name.feinimouse.simplecoin.block.Hashable;
 import name.feinimouse.simplecoin.block.SimpleMerkelTree;
 
 import java.util.List;

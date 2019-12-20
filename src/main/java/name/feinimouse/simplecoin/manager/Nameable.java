@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoin.manager;
+package name.feinimouse.simplecoin.manager;
 
 /**
  * Create by 菲尼莫斯 on 2019/4/15

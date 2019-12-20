@@ -2,8 +2,6 @@ package name.feinimouse.simplecoin.block;
 
 import lombok.Getter;
 import lombok.NonNull;
-import name.feinimouse.feinicoin.block.Hashable;
-import name.feinimouse.feinicoin.block.MerkelTree;
 import net.openhft.hashing.LongHashFunction;
 
 import java.util.LinkedList;

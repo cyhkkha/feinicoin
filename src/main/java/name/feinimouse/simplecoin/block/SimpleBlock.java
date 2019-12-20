@@ -2,8 +2,8 @@ package name.feinimouse.simplecoin.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoin.block.Block;
 
+@SuppressWarnings("rawtypes")
 public class SimpleBlock implements Block {
     @Getter @Setter
     private SimpleMerkelTree accounts;

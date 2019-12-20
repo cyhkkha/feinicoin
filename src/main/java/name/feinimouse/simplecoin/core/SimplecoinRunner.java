@@ -1,8 +1,8 @@
 package name.feinimouse.simplecoin.core;
 
-import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.feinism2.SM2;
-import name.feinimouse.feinism2.SM2Generator;
+import name.feinimouse.simplecoin.account.Transaction;
+import name.feinimouse.simplecoin.feinism2.SM2;
+import name.feinimouse.simplecoin.feinism2.SM2Generator;
 import name.feinimouse.simplecoin.SimplecoinConfig;
 import name.feinimouse.simplecoin.block.SimpleHashObj;
 import name.feinimouse.simplecoin.manager.SimpleCenter;
@@ -68,7 +68,7 @@ public abstract class SimplecoinRunner {
     
     // 计算均值并打印一个列表的运行时间
     public static void collectTime(List<Long> timeList, String name) {
-        var count = timeList.stream().reduce(Long::sum).orElse(0L);
+        long count = timeList.stream().reduce(Long::sum).orElse(0L);
         System.out.printf("%s次数: %d 次 \n", name, timeList.size());
         System.out.printf("%s总计运行时间: %f ms \n", name, (count / 1000_000f));
         System.out.printf("%s平均运行时间: %f ms \n", name, count / timeList.size() / 1000_000f);
@@ -80,7 +80,7 @@ public abstract class SimplecoinRunner {
     }
     
     // 打印中心的运行数据
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static void collectCenter(SimpleCenter center) {
         System.out.println("---------------------------");
         System.out.println(center.getName());

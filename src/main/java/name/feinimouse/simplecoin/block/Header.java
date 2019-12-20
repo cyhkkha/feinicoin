@@ -1,6 +1,6 @@
-package name.feinimouse.feinicoin.block;
+package name.feinimouse.simplecoin.block;
 
-import name.feinimouse.feinicoin.account.Sign;
+import name.feinimouse.simplecoin.account.Sign;
 
 public interface Header extends Hashable {
     // 区块编号

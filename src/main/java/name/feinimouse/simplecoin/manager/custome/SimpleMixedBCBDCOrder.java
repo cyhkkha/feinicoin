@@ -3,7 +3,7 @@ package name.feinimouse.simplecoin.manager.custome;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import name.feinimouse.feinicoin.account.Transaction;
+import name.feinimouse.simplecoin.account.Transaction;
 import name.feinimouse.simplecoin.account.MixedBundle;
 import name.feinimouse.simplecoin.account.TransBundle;
 import name.feinimouse.simplecoin.core.UserManager;
@@ -11,8 +11,6 @@ import name.feinimouse.simplecoin.manager.SimpleOrder;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SimpleMixedBCBDCOrder extends SimpleOrder<MixedBundle, MixedBundle> {
     @Getter @Setter

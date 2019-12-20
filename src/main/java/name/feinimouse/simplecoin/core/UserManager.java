@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Random;
 
 import lombok.Getter;
-import name.feinimouse.feinism2.SM2;
-import name.feinimouse.feinism2.SM2Generator;
+import name.feinimouse.simplecoin.feinism2.SM2;
+import name.feinimouse.simplecoin.feinism2.SM2Generator;
 import name.feinimouse.utils.LoopUtils;
 import net.openhft.hashing.LongHashFunction;
 

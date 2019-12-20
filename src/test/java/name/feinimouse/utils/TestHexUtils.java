@@ -8,8 +8,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import name.feinimouse.feinism2.SM2;
-import name.feinimouse.feinism2.SM2Generator;
+import name.feinimouse.simplecoin.feinism2.SM2;
+import name.feinimouse.simplecoin.feinism2.SM2Generator;
 
 public class TestHexUtils {
     private String test = "I love Liuchang";
@@ -23,7 +23,7 @@ public class TestHexUtils {
     }
 
     @Test
-    public void testToStr() throws SignatureException {
+    public void testToStr() {
         var res = HexUtils.byteToHex(testBytes);
         var res2 = Hex.toHexString(testBytes);
         System.out.println(res);
@@ -39,8 +39,8 @@ public class TestHexUtils {
         var res2 = Hex.decode(testStr);
         System.out.println(Arrays.toString(res));
         System.out.println(Arrays.toString(res2));
-        Assert.assertTrue(Arrays.equals(res, testBytes));
-        Assert.assertTrue(Arrays.equals(res2, testBytes));
+        Assert.assertArrayEquals(res, testBytes);
+        Assert.assertArrayEquals(res2, testBytes);
 
     }
 
@@ -54,6 +54,6 @@ public class TestHexUtils {
         var signBak = HexUtils.hexToByte(signStr);
         System.out.println(Arrays.toString(signBak));
 
-        Assert.assertTrue(Arrays.equals(sign, signBak));
+        Assert.assertArrayEquals(sign, signBak);
     }
 }

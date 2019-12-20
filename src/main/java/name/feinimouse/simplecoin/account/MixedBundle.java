@@ -1,7 +1,6 @@
 package name.feinimouse.simplecoin.account;
 
 import lombok.Getter;
-import name.feinimouse.feinicoin.account.Transaction;
 
 public class MixedBundle {
     @Getter

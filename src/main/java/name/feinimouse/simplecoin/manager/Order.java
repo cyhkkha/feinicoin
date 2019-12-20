@@ -1,9 +1,9 @@
-package name.feinimouse.feinicoin.manager;
+package name.feinimouse.simplecoin.manager;
 
 import java.util.List;
 
-import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.feinicoin.block.Hashable;
+import name.feinimouse.simplecoin.account.Transaction;
+import name.feinimouse.simplecoin.block.Hashable;
 
 public interface Order extends Hashable, Nameable {
     

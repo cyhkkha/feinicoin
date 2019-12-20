@@ -1,6 +1,5 @@
-package name.feinimouse.feinicoin.block;
+package name.feinimouse.simplecoin.block;
 
-import java.util.Collection;
 import java.util.List;
 
 // 默克尔树接口

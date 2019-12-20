@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoin.block;
+package name.feinimouse.simplecoin.block;
 
 public interface Hashable {
     default String getHash() {

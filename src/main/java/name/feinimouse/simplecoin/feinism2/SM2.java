@@ -1,4 +1,4 @@
-package name.feinimouse.feinism2;
+package name.feinimouse.simplecoin.feinism2;
 
 import java.security.InvalidKeyException;
 import java.security.KeyPair;

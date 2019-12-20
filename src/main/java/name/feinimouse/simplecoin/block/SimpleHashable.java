@@ -1,6 +1,5 @@
 package name.feinimouse.simplecoin.block;
 
-import name.feinimouse.feinicoin.block.Hashable;
 import org.bson.Document;
 import org.json.JSONObject;
 

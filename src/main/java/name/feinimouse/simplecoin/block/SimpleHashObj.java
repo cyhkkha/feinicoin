@@ -2,10 +2,9 @@ package name.feinimouse.simplecoin.block;
 
 import lombok.Getter;
 import lombok.NonNull;
-import name.feinimouse.feinicoin.account.Assets;
-import name.feinimouse.feinicoin.account.Sign;
-import name.feinimouse.feinicoin.account.Transaction;
-import name.feinimouse.feinicoin.block.Hashable;
+import name.feinimouse.simplecoin.account.Assets;
+import name.feinimouse.simplecoin.account.Sign;
+import name.feinimouse.simplecoin.account.Transaction;
 import name.feinimouse.simplecoin.account.SimpleSign;
 import org.bson.Document;
 

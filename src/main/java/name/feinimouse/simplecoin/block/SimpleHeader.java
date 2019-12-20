@@ -1,7 +1,6 @@
 package name.feinimouse.simplecoin.block;
 
 import lombok.Data;
-import name.feinimouse.feinicoin.block.Header;
 import name.feinimouse.simplecoin.account.SimpleSign;
 import org.json.JSONObject;
 
