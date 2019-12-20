@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Asset implements OrdinaryObj, Cloneable {
+public class Asset implements BaseObj, Cloneable {
     @Getter @Setter
     private String address;
     @Getter @Setter

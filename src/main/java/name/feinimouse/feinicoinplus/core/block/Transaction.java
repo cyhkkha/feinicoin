@@ -2,11 +2,11 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.base.OrdinaryObj;
+import name.feinimouse.feinicoinplus.core.base.BaseObj;
 
 import java.util.Map;
 
-public class Transaction implements OrdinaryObj {
+public class Transaction implements BaseObj {
     @Getter @Setter
     private String id;
     @Getter @Setter

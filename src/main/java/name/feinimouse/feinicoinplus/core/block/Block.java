@@ -3,10 +3,10 @@ package name.feinimouse.feinicoinplus.core.block;
 import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.base.MerkelObj;
-import name.feinimouse.feinicoinplus.core.base.OrdinaryObj;
+import name.feinimouse.feinicoinplus.core.base.BaseObj;
 import org.json.JSONObject;
 
-public class Block implements OrdinaryObj {
+public class Block implements BaseObj {
     @Getter @Setter
     private int id;
     @Getter @Setter
