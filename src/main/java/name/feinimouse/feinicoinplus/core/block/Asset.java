@@ -2,7 +2,8 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.base.*;
+import name.feinimouse.feinicoinplus.core.BaseObj;
+import name.feinimouse.feinicoinplus.core.MerkelObj;
 import org.json.JSONObject;
 
 import java.util.concurrent.ConcurrentHashMap;

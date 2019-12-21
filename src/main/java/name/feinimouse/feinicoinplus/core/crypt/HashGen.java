@@ -1,8 +1,8 @@
 package name.feinimouse.feinicoinplus.core.crypt;
 
-import name.feinimouse.feinicoinplus.core.base.HashObj;
-import name.feinimouse.feinicoinplus.core.base.BaseObj;
-import name.feinimouse.feinicoinplus.core.base.MerkelObj;
+import name.feinimouse.feinicoinplus.core.HashObj;
+import name.feinimouse.feinicoinplus.core.BaseObj;
+import name.feinimouse.feinicoinplus.core.MerkelObj;
 
 public interface HashGen {
     String hash(String content);

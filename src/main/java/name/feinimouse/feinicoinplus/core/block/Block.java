@@ -2,8 +2,8 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.base.MerkelObj;
-import name.feinimouse.feinicoinplus.core.base.BaseObj;
+import name.feinimouse.feinicoinplus.core.MerkelObj;
+import name.feinimouse.feinicoinplus.core.BaseObj;
 import org.json.JSONObject;
 
 public class Block implements BaseObj {

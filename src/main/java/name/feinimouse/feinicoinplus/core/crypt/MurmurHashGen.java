@@ -3,7 +3,10 @@ package name.feinimouse.feinicoinplus.core.crypt;
 
 import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
-import name.feinimouse.feinicoinplus.core.base.*;
+import name.feinimouse.feinicoinplus.core.BaseObj;
+import name.feinimouse.feinicoinplus.core.HashObj;
+import name.feinimouse.feinicoinplus.core.MerkelObj;
+import name.feinimouse.feinicoinplus.core.OrdinaryObj;
 
 import java.nio.charset.StandardCharsets;
 import java.util.zip.Checksum;
