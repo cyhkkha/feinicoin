@@ -11,6 +11,8 @@ public abstract class Node extends Thread {
     
     public static final int COMMIT_SUCCESS = 0;
     public static final int CACHE_OVERFLOW = 1;
+    public static final int METHOD_NOT_SUPPORT = 2;
+    public static final int CLASS_UNRECOGNIZED = 3;
     
     // 节点类型
     @Getter
@@ -60,13 +62,16 @@ public abstract class Node extends Thread {
     }
 
     // 向节点提交一个签名内容，签名内容带有附加的cover信息
-    public abstract <T> int commit(SignAttachObj<T> attachObj, Class<T> tClass) throws BadCommitException;
+    public abstract <T> int commit(SignAttachObj<T> attachObj, Class<T> tClass);
 
     // 向节点提交一条普通信息
-    public abstract int commit(JSONObject json) throws BadCommitException;
+    public abstract int commit(JSONObject json);
     
     // 向节点拉取一条信息，节点将返回拉取的结果
     public abstract <T> SignAttachObj<T> fetch(JSONObject json, Class<T> tClass) throws BadCommitException;
+    
+    // 向节点拉取一条普通信息
+    public abstract JSONObject fetch(JSONObject json) throws BadCommitException;
     
     // 在节点运行前的动作
     protected abstract void beforeWork();

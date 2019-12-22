@@ -14,7 +14,7 @@ public abstract class CacheNode extends Node {
     // 缓存Transaction
     protected ConcurrentLinkedQueue<SignAttachObj<Transaction>> transactionWait;
     // 缓存AssetTransaction
-    protected ConcurrentLinkedQueue<SignAttachObj<Transaction>> assetTransWait;
+    protected ConcurrentLinkedQueue<SignAttachObj<AssetTrans>> assetTransWait;
     // 缓存普通消息
     protected ConcurrentLinkedQueue<JSONObject> massageWait;
     
@@ -35,7 +35,7 @@ public abstract class CacheNode extends Node {
 
     @SuppressWarnings("unchecked")
     @Override
-    public synchronized <T> int commit(SignAttachObj<T> attachObj, Class<T> tClass) throws BadCommitException {
+    public synchronized <T> int commit(SignAttachObj<T> attachObj, Class<T> tClass) {
         if (tClass.equals(Transaction.class)) {
             return transactionWait.size() < transactionWaitMax 
                 && transactionWait.add((SignAttachObj<Transaction>) attachObj)
@@ -44,15 +44,15 @@ public abstract class CacheNode extends Node {
         }
         if (tClass.equals(AssetTrans.class)) {
             return assetTransWait.size() < assetTransWaitMax 
-                && assetTransWait.add((SignAttachObj<Transaction>) attachObj)
+                && assetTransWait.add((SignAttachObj<AssetTrans>) attachObj)
                 ? COMMIT_SUCCESS
                 : CACHE_OVERFLOW;
         }
-        throw new BadCommitException(tClass);
+        return CLASS_UNRECOGNIZED;
     }
 
     @Override
-    public synchronized int commit(JSONObject json) throws BadCommitException {
+    public synchronized int commit(JSONObject json) {
         return massageWait.size() < massageWaitMax
             && massageWait.add(json)
             ? COMMIT_SUCCESS

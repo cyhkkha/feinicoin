@@ -4,19 +4,19 @@ import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
-import java.security.KeyPair;
+import java.security.PrivateKey;
 
 // verifier基类
 @Component("verifier")
 public class Verifier extends CacheNode {
 
     // 签名串
-    protected KeyPair keyPair;
+    protected PrivateKey privateKey;
     
     // 节点类型为Verifier
-    public Verifier(KeyPair keyPair) {
+    public Verifier(PrivateKey privateKey) {
         super("verifier");
-        this.keyPair = keyPair;
+        this.privateKey = privateKey;
     }
 
     @Override
@@ -36,7 +36,12 @@ public class Verifier extends CacheNode {
 
     @Override
     public <T> SignAttachObj<T> fetch(JSONObject json, Class<T> tClass) throws BadCommitException {
-        return null;
+        throw new BadCommitException("fetch not support");
+    }
+
+    @Override
+    public JSONObject fetch(JSONObject json) throws BadCommitException {
+        throw new BadCommitException("fetch not support");
     }
 
     @Override

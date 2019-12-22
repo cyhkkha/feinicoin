@@ -6,7 +6,6 @@ import de.greenrobot.common.hash.Murmur3F;
 import name.feinimouse.feinicoinplus.core.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.zip.Checksum;
 
 public class MurmurHashGen implements HashGen {
@@ -42,7 +41,6 @@ public class MurmurHashGen implements HashGen {
         if (objArr.length == 0 || summaryArr.length == 0) {
             return null;
         }
-            String summary = Arrays.toString(summaryArr);
         if (objArr.length == 1 && summaryArr.length == 1) {
             String hash = hash(summaryArr[0]);
             return new BaseMerkelObj<>(objArr, new String[]{ hash }, summaryArr);

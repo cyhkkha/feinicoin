@@ -2,7 +2,6 @@ package name.feinimouse.feinicoinplus;
 
 import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.BaseHashObj;
-import name.feinimouse.feinicoinplus.core.CoverObj;
 import name.feinimouse.utils.HexUtils;
 import org.junit.Assert;
 import org.junit.Test;

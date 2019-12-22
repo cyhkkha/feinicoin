@@ -10,18 +10,18 @@ public class SignAttachObj<T> implements BaseObj {
     @Getter @Setter
     private SignObj<T> obj;
     @Getter @Setter
-    private JSONObject cover;
+    private JSONObject attach;
 
     public SignAttachObj() {}
 
-    public SignAttachObj(SignObj<T> obj, JSONObject cover) {
+    public SignAttachObj(SignObj<T> obj, JSONObject attach) {
         this.obj = obj;
-        this.cover = cover;
+        this.attach = attach;
     }
 
     @Override
     public JSONObject json() {
-        return obj.json().put("cover", cover);
+        return obj.json().put("attach", attach);
     }
     
 }
