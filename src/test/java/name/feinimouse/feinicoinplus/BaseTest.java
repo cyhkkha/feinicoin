@@ -1,11 +1,12 @@
 package name.feinimouse.feinicoinplus;
 
 import name.feinimouse.feinicoinplus.core.block.Transaction;
-import name.feinimouse.feinicoinplus.core.OrdinaryObj;
+import name.feinimouse.feinicoinplus.core.BaseHashObj;
+import name.feinimouse.feinicoinplus.core.CoverObj;
 import name.feinimouse.utils.HexUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.Random;
 
 public class BaseTest {
@@ -21,10 +22,7 @@ public class BaseTest {
     
     @Test
     public void testGeneric() {
-        OrdinaryObj<Transaction> obj = new OrdinaryObj<>(new Transaction(), "ssss");
-        Field[] fields = obj.getClass().getSuperclass().getDeclaredFields();
-        for(Field field: fields) {
-            System.out.println(field.getGenericType());
-        }
+        BaseHashObj<Transaction> obj = new BaseHashObj<>(new Transaction(), "ssss", "hhhhh");
+        Assert.assertEquals(obj.obj().getClass(), Transaction.class);
     }
 }

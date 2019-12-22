@@ -2,7 +2,6 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.SignCoverObj;
 import name.feinimouse.feinicoinplus.core.block.AssetTrans;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
@@ -13,9 +12,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 // 一个提供消息缓存的节点基类
 public abstract class CacheNode extends Node {
     // 缓存Transaction
-    protected ConcurrentLinkedQueue<SignCoverObj<Transaction>> transactionWait;
+    protected ConcurrentLinkedQueue<SignAttachObj<Transaction>> transactionWait;
     // 缓存AssetTransaction
-    protected ConcurrentLinkedQueue<SignCoverObj<Transaction>> assetTransWait;
+    protected ConcurrentLinkedQueue<SignAttachObj<Transaction>> assetTransWait;
     // 缓存普通消息
     protected ConcurrentLinkedQueue<JSONObject> massageWait;
     
@@ -36,16 +35,16 @@ public abstract class CacheNode extends Node {
 
     @SuppressWarnings("unchecked")
     @Override
-    public synchronized <T> int commit(SignCoverObj<T>  coverObj, Class<T> tClass) throws BadCommitException {
+    public synchronized <T> int commit(SignAttachObj<T> attachObj, Class<T> tClass) throws BadCommitException {
         if (tClass.equals(Transaction.class)) {
             return transactionWait.size() < transactionWaitMax 
-                && transactionWait.add((SignCoverObj<Transaction>) coverObj)
+                && transactionWait.add((SignAttachObj<Transaction>) attachObj)
                 ? COMMIT_SUCCESS
                 : CACHE_OVERFLOW;
         }
         if (tClass.equals(AssetTrans.class)) {
             return assetTransWait.size() < assetTransWaitMax 
-                && assetTransWait.add((SignCoverObj<Transaction>) coverObj)
+                && assetTransWait.add((SignAttachObj<Transaction>) attachObj)
                 ? COMMIT_SUCCESS
                 : CACHE_OVERFLOW;
         }
@@ -69,11 +68,6 @@ public abstract class CacheNode extends Node {
 
     @Override
     protected void working() {
-        // 如果节点未设置网络则自动停止
-        if (network == null) {
-            stopNode();
-            return;
-        }
         // 优先处理普通消息
         if (massageWait.size() > 0) {
             resolveMassage();

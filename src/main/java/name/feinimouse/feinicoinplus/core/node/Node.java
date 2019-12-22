@@ -2,7 +2,6 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.SignCoverObj;
 import name.feinimouse.feinicoinplus.core.SignObj;
 import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
 import org.json.JSONObject;
@@ -40,6 +39,10 @@ public abstract class Node extends Thread {
     // 线程运行的具体内容
     @Override
     public void run() {
+        // 如果节点未设置网络和地址则自动停止
+        if (network == null || address == null) {
+            return;
+        }
         isRunning = true;
         beforeWork();
         while (isRunning) {
@@ -57,13 +60,13 @@ public abstract class Node extends Thread {
     }
 
     // 向节点提交一个签名内容，签名内容带有附加的cover信息
-    public abstract <T> int commit(SignCoverObj<T> coverObj, Class<T> tClass) throws BadCommitException;
+    public abstract <T> int commit(SignAttachObj<T> attachObj, Class<T> tClass) throws BadCommitException;
 
     // 向节点提交一条普通信息
     public abstract int commit(JSONObject json) throws BadCommitException;
     
     // 向节点拉取一条信息，节点将返回拉取的结果
-    public abstract <T> SignCoverObj<T> fetch(JSONObject json, Class<T> tClass) throws BadCommitException;
+    public abstract <T> SignAttachObj<T> fetch(JSONObject json, Class<T> tClass) throws BadCommitException;
     
     // 在节点运行前的动作
     protected abstract void beforeWork();
@@ -75,11 +78,11 @@ public abstract class Node extends Thread {
     protected abstract void working();
     
     // 给一个签名消息添加一个cover附加信息，该信息为节点的概况
-    protected <T> SignCoverObj<T> coverSign(SignObj<T> signObj) {
+    protected <T> SignAttachObj<T> coverSign(SignObj<T> signObj) {
         JSONObject nodeMsg = new JSONObject().put("address", address)
             .put("network", network.getAddress())
             .put("type", nodeType);
-        return new SignCoverObj<>(signObj, nodeMsg);
+        return new SignAttachObj<>(signObj, nodeMsg);
     }
 
     // 停止节点的运行
