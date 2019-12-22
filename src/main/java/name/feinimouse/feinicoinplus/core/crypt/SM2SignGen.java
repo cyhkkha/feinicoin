@@ -1,8 +1,7 @@
 package name.feinimouse.feinicoinplus.core.crypt;
 
-import name.feinimouse.feinicoinplus.core.BaseObj;
 import name.feinimouse.feinicoinplus.core.HashObj;
-import name.feinimouse.feinicoinplus.core.OrdinarySignObj;
+import name.feinimouse.feinicoinplus.core.BaseSignObj;
 import name.feinimouse.feinicoinplus.core.SignObj;
 import org.bouncycastle.asn1.gm.GMNamedCurves;
 import org.bouncycastle.asn1.gm.GMObjectIdentifiers;
@@ -40,6 +39,7 @@ public class SM2SignGen implements SignGen{
         }
     }
 
+    // 这里注意Signature对象是不能复用的（我写的时候没有找到复用的办法）
     @Override
     public String sign(PrivateKey key, String msg) {
         try {
@@ -57,19 +57,18 @@ public class SM2SignGen implements SignGen{
     }
 
     @Override
-    public <T extends BaseObj> SignObj<T> sign(PrivateKey key, SignObj<T> signObj, String signer) {
+    public <T> SignObj<T> sign(PrivateKey key, SignObj<T> signObj, String signer) {
         String s = sign(key, signObj.gainHash());
         return signObj.putSign(signer, s);
     }
 
     @Override
-    public <T extends BaseObj> SignObj<T> sign(PrivateKey key, HashObj<T> hashObj, String signer) {
+    public <T> SignObj<T> sign(PrivateKey key, HashObj<T> hashObj, String signer) {
         String s = sign(key, hashObj.gainHash());
-        return new OrdinarySignObj<>(hashObj);
+        return new BaseSignObj<>(hashObj).putSign(signer, s);
     }
-    
 
-    @Override
+    // 这里注意Signature对象是不能复用的（我写的时候没有找到复用的办法）
     public boolean verify(PublicKey key, String sign, String msg) {
         try {
             Signature signature = Signature.getInstance(
@@ -85,7 +84,13 @@ public class SM2SignGen implements SignGen{
             return false;
         }
     }
+
+    @Override
+    public <T> boolean verify(PublicKey key, SignObj<T> signObj, String signer) {
+        return verify(key, signObj.findSign(signer), signObj.gainHash());
+    }
     
+
     @Override
     public KeyPair genKeyPair() {
         return generator.genKeyPair();

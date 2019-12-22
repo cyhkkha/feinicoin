@@ -3,12 +3,10 @@ package name.feinimouse.feinicoinplus.core.crypt;
 
 import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
-import name.feinimouse.feinicoinplus.core.BaseObj;
-import name.feinimouse.feinicoinplus.core.HashObj;
-import name.feinimouse.feinicoinplus.core.MerkelObj;
-import name.feinimouse.feinicoinplus.core.OrdinaryObj;
+import name.feinimouse.feinicoinplus.core.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.zip.Checksum;
 
 public class MurmurHashGen implements HashGen {
@@ -35,27 +33,26 @@ public class MurmurHashGen implements HashGen {
     }
 
     @Override
-    public <T extends BaseObj> String hash(T obj) {
-        return hash(obj.summary());
+    public <T extends BaseObj> HashObj<T> hashObj(T obj, String summary) {
+        return new BaseHashObj<>(obj, summary, hash(summary));
     }
 
     @Override
-    public <T extends BaseObj> HashObj<T> hashObj(T obj) {
-        return new OrdinaryObj<>(obj, hash(obj.summary()));
-    }
-    
-
-    @Override
-    public <T extends BaseObj> MerkelObj<T> hashObj(T[] objArr) {
-        if (objArr.length == 1) {
-            return new MerkelObj<>(objArr, new String[] { hash(objArr[0]) });
+    public <T extends BaseObj> HashObj<T[]> hashObj(T[] objArr, String[] summaryArr) {
+        if (objArr.length == 0 || summaryArr.length == 0) {
+            return null;
+        }
+            String summary = Arrays.toString(summaryArr);
+        if (objArr.length == 1 && summaryArr.length == 1) {
+            String hash = hash(summaryArr[0]);
+            return new BaseMerkelObj<>(objArr, new String[]{ hash }, summaryArr);
         }
         String[] hashTree = new String[objArr.length * 2 - 1];
         for (int i = objArr.length - 1; i >= 0; i--) {
-            hashTree[i] = hash(objArr[i]);
+            hashTree[i] = hash(summaryArr[i]);
         }
         genMerkelHash(0, hashTree);
-        return new MerkelObj<>(objArr, hashTree);
+        return new BaseMerkelObj<>(objArr, hashTree, summaryArr);
     }
     
 
@@ -63,7 +60,8 @@ public class MurmurHashGen implements HashGen {
         if (2 * root > hashTree.length) {
             return hashTree[root];
         }
-        return hash(genMerkelHash(2 * root, hashTree) + genMerkelHash(2 * root + 1, hashTree));
+        return hash(genMerkelHash(2 * root, hashTree) 
+            + genMerkelHash(2 * root + 1, hashTree));
     }
     
 }
