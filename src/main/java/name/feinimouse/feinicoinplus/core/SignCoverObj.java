@@ -6,13 +6,13 @@ import org.json.JSONObject;
 
 public class SignCoverObj<T> implements BaseObj {
     @Getter @Setter
-    private SignObj<T> obj;
+    private BaseSignObj<T> obj;
     @Getter @Setter
     private JSONObject cover;
 
     public SignCoverObj() {}
 
-    public SignCoverObj(SignObj<T> obj, JSONObject cover) {
+    public SignCoverObj(BaseSignObj<T> obj, JSONObject cover) {
         this.obj = obj;
         this.cover = cover;
     }
@@ -21,9 +21,5 @@ public class SignCoverObj<T> implements BaseObj {
     public JSONObject json() {
         return obj.json().put("cover", cover);
     }
-
-    @Override
-    public String summary() {
-        return obj.summary();
-    }
+    
 }

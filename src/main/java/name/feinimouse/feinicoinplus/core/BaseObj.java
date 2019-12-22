@@ -10,7 +10,6 @@ public interface BaseObj {
     default JSONObject json() {
         return new JSONObject(this);
     }
-    String summary();
     static <T extends BaseObj> JSONArray genJson(List<T> list) {
         JSONArray ja = new JSONArray();
         list.forEach(jf -> ja.put(jf.json()));
