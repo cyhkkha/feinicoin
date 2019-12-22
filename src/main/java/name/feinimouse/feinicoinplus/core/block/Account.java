@@ -13,9 +13,5 @@ public class Account implements BaseObj {
     private int coin;
     @Getter @Setter
     private Map<String, String> exFunc;
-
-    @Override
-    public String summary() {
-        return json().toString();
-    }
+    
 }

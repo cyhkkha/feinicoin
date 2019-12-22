@@ -17,9 +17,4 @@ public class Transaction implements BaseObj {
     private String number;
     @Getter @Setter
     private Map<String, String> exFunc;
-
-    @Override
-    public String summary() {
-        return json().toString();
-    }
 }
