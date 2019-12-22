@@ -1,5 +1,6 @@
 package name.feinimouse.feinicoinplus.core;
 
+import name.feinimouse.utils.JsonUtils;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -21,7 +22,7 @@ public class BaseMerkelObj<T extends BaseObj> implements HashObj<T[]> {
 
     @Override
     public JSONObject json() {
-        return new JSONObject().put("obj", BaseObj.genJson(obj))
+        return new JSONObject().put("obj", JsonUtils.genJson(obj))
             .put("hash", gainHash());
     }
 

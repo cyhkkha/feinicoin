@@ -3,6 +3,7 @@ package name.feinimouse.feinicoinplus.core.block;
 import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.BaseObj;
+import name.feinimouse.utils.JsonUtils;
 import org.json.JSONObject;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +27,7 @@ public class Asset implements BaseObj, Cloneable {
 
     @Override
     public JSONObject json() {
-        return new JSONObject(this).put("histories", BaseObj.genJson(histories));
+        return new JSONObject(this).put("histories", JsonUtils.genJson(histories));
     }
 
     @Override
