@@ -47,9 +47,9 @@ public abstract class Node extends Thread {
         if (network == null || address == null) {
             throw new NodeRunRejectException("network or address of Node: " + nodeType + " are not been set");
         }
-        runningTag = true;
         beforeWork();
         
+        runningTag = true;
         while (runningTag) {
             // 真正的线程运行内容在这里
             runningTag = working();
