@@ -18,7 +18,7 @@ public class BaseSignObj<T> implements SignObj<T> {
         signMap.put(signer, sign);
         return this;
     }
-    public String findSign(String signer) {
+    public String getSign(String signer) {
         return signMap.get(signer);
     }
     public String deleteSign(String signer) {

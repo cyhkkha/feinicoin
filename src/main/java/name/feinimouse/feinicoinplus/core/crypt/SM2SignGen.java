@@ -17,7 +17,7 @@ public class SM2SignGen implements SignGen{
     
     private KeyPairGenerator generator;
 
-    public SM2SignGen() throws Exception {
+    public SM2SignGen() {
         // 国密标准SM2的椭圆曲线的生成参数
         X9ECParameters sm2ECParams = GMNamedCurves.getByName("sm2p256v1");
         // 椭圆曲线实例
@@ -35,7 +35,7 @@ public class SM2SignGen implements SignGen{
             generator.initialize(sm2EC, new SecureRandom());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("SM2椭圆曲线生成失败！");
+            throw new RuntimeException("SM2椭圆曲线生成失败！");
         }
     }
 
@@ -87,7 +87,7 @@ public class SM2SignGen implements SignGen{
 
     @Override
     public <T> boolean verify(PublicKey key, SignObj<T> signObj, String signer) {
-        return verify(key, signObj.findSign(signer), signObj.gainHash());
+        return verify(key, signObj.getSign(signer), signObj.gainHash());
     }
     
 
