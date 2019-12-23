@@ -15,6 +15,8 @@ public class AssetTrans implements BaseObj, Cloneable {
     @Getter @Setter
     private String receiver;
     @Getter @Setter
+    private String operator;
+    @Getter @Setter
     private int number;
     @Getter @Setter
     private Transaction transaction;
