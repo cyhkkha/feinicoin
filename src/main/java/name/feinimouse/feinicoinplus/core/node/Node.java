@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.SignObj;
 import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
-import name.feinimouse.feinicoinplus.core.node.exce.NodeRunRejectException;
+import name.feinimouse.feinicoinplus.core.node.exce.InvalidStartException;
+import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
 import org.json.JSONObject;
 
 // 一个节点即是一个线程
@@ -15,6 +16,10 @@ public abstract class Node extends Thread {
     public static final int METHOD_NOT_SUPPORT = 2;
     public static final int CLASS_UNRECOGNIZED = 3;
     public static final int NODE_NOT_WORKING = 4;
+    public static final int CLASS_INCONSISTENT = 5;
+    public static final int BAD_COMMUNICATOR = 6;
+    
+    public static final int MSG_VERIFIER_CALLBACK = 101;
     
     // 节点类型
     @Getter
@@ -44,30 +49,35 @@ public abstract class Node extends Thread {
     @Override
     public void run() {
         // 如果节点未设置网络和地址则自动停止
-        if (network == null || address == null) {
-            throw new NodeRunRejectException("network or address of Node: " + nodeType + " are not been set");
+        try {
+            if (network == null || address == null) {
+                throw new InvalidStartException("network or address of Node: " + nodeType + " are not been set");
+            }
+            beforeWork();
+        } catch (InvalidStartException e) {
+            e.printStackTrace();
+            return;
         }
-        beforeWork();
-        
         runningTag = true;
         while (runningTag) {
             // 真正的线程运行内容在这里
-            runningTag = working();
-            // 注意调用interrupted方法后中断状态又会置为false
-            if (!runningTag || interrupted()) {
-                break;
-            } else {
-                try {
-                    Thread.sleep(interval);
-                } catch (InterruptedException ex) {
+            try {
+                runningTag = working();
+                // 注意调用interrupted方法后中断状态又会置为false
+                if (!runningTag || interrupted()) {
                     runningTag = false;
+                } else {
+                    Thread.sleep(interval);
                 }
+            } catch (InterruptedException | NodeRunningException ex) {
+                ex.printStackTrace();
+                runningTag = false;
             }
         }
         afterWork();
     }
 
-    // 向节点提交一个签名内容，签名内容带有附加的cover信息
+    // 向节点提交一个签名内容，签名内容带有附加的节点消息
     public abstract <T> int commit(SignAttachObj<T> attachObj, Class<T> tClass);
 
     // 向节点提交一条普通信息
@@ -80,22 +90,25 @@ public abstract class Node extends Thread {
     public abstract JSONObject fetch(JSONObject json) throws BadCommitException;
     
     // 在节点运行前的动作
-    protected abstract void beforeWork();
+    protected abstract void beforeWork() throws InvalidStartException;
     
     // 节点运行后的动作，一般来说用来释放资源
     protected abstract void afterWork();
     
     // 真正的节点的运行工作，返回结果将作为判断是否继续运行的标准
-    protected abstract boolean working();
+    protected abstract boolean working() throws NodeRunningException;
     
     // 给一个签名消息添加一个cover附加信息，该信息为节点的概况
-    protected <T> SignAttachObj<T> coverSign(SignObj<T> signObj) {
-        JSONObject nodeMsg = new JSONObject().put("address", address)
-            .put("network", network.getAddress())
-            .put("type", nodeType);
-        return new SignAttachObj<>(signObj, nodeMsg);
+    public <T> SignAttachObj<T> coverSign(SignObj<T> signObj) {
+        return new SignAttachObj<>(signObj, nodeMsg());
     }
 
+    public JSONObject nodeMsg() {
+        return new JSONObject().put("nodeAddress", address)
+            .put("networkAddress", network.getAddress())
+            .put("nodeType", nodeType);
+    }
+    
     // 停止节点的运行
     public synchronized void stopNode() {
         if (runningTag) {
