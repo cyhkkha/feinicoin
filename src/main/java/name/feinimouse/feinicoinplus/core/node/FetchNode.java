@@ -24,8 +24,8 @@ public abstract class FetchNode extends CacheNode {
     protected int assetTransFetchMax = 10;
     
     // 节点类型为Order
-    public FetchNode() {
-        super("order");
+    public FetchNode(String nodeType) {
+        super(nodeType);
         transFetch = new ConcurrentLinkedQueue<>();
         assetTransFetch = new ConcurrentLinkedQueue<>();
     }
