@@ -14,6 +14,7 @@ public abstract class Node extends Thread {
     public static final int CACHE_OVERFLOW = 1;
     public static final int METHOD_NOT_SUPPORT = 2;
     public static final int CLASS_UNRECOGNIZED = 3;
+    public static final int NODE_NOT_WORKING = 4;
     
     // 节点类型
     @Getter
@@ -32,9 +33,7 @@ public abstract class Node extends Thread {
     protected long interval = 10;
     
     // 是否正在运行
-    private boolean isRunning = false;
-    // 该值表示节点是否被强制中断或者自动运行结束
-    private boolean stopTag = false;
+    private boolean runningTag = false;
 
     // 节点必须有类型
     public Node(String nodeType) {
@@ -48,21 +47,24 @@ public abstract class Node extends Thread {
         if (network == null || address == null) {
             throw new NodeRunRejectException("network or address of Node: " + nodeType + " are not been set");
         }
-        isRunning = true;
+        runningTag = true;
         beforeWork();
-        try {
-            while (isRunning && !stopTag) {
-                // 真正的线程运行内容在这里
-                isRunning = working();
-                Thread.sleep(interval);
+        
+        while (runningTag) {
+            // 真正的线程运行内容在这里
+            runningTag = working();
+            // 注意调用interrupted方法后中断状态又会置为false
+            if (!runningTag || interrupted()) {
+                break;
+            } else {
+                try {
+                    Thread.sleep(interval);
+                } catch (InterruptedException ex) {
+                    runningTag = false;
+                }
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            afterWork();
-            isRunning = false;
-            stopTag = true;
         }
+        afterWork();
     }
 
     // 向节点提交一个签名内容，签名内容带有附加的cover信息
@@ -94,24 +96,14 @@ public abstract class Node extends Thread {
         return new SignAttachObj<>(signObj, nodeMsg);
     }
 
-    // 停止节点的运行,调用该方法后必须调用reset节点才能重新运行
+    // 停止节点的运行
     public synchronized void stopNode() {
-        if (isRunning) {
+        if (runningTag) {
             interrupt();
-            stopTag = true;
-        }
-    }
-    public void reset() {
-        if (!isRunning && stopTag) {
-            stopTag = false;
         }
     }
     // 获取节点的运行状态
-    public boolean isRunning() {
-        return isRunning;
-    }
-    
     public boolean isStop() {
-        return stopTag;
+        return !runningTag;
     }
 }

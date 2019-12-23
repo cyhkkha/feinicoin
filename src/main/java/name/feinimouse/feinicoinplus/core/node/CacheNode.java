@@ -4,13 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.block.AssetTrans;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
-import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
 import org.json.JSONObject;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 // 一个提供消息缓存的节点基类
-public abstract class CacheNode extends Node {
+public abstract class CacheNode extends AutoStopNode {
     // 缓存Transaction
     protected ConcurrentLinkedQueue<SignAttachObj<Transaction>> transactionWait;
     // 缓存AssetTransaction
@@ -36,6 +35,9 @@ public abstract class CacheNode extends Node {
     @SuppressWarnings("unchecked")
     @Override
     public synchronized <T> int commit(SignAttachObj<T> attachObj, Class<T> tClass) {
+        if (isStop()) {
+            return NODE_NOT_WORKING;
+        }
         if (tClass.equals(Transaction.class)) {
             return transactionWait.size() < transactionWaitMax 
                 && transactionWait.add((SignAttachObj<Transaction>) attachObj)
@@ -53,6 +55,9 @@ public abstract class CacheNode extends Node {
 
     @Override
     public synchronized int commit(JSONObject json) {
+        if (isStop()) {
+            return NODE_NOT_WORKING;
+        }
         return massageWait.size() < massageWaitMax
             && massageWait.add(json)
             ? COMMIT_SUCCESS
@@ -64,23 +69,31 @@ public abstract class CacheNode extends Node {
         transactionWait.clear();
         assetTransWait.clear();
         massageWait.clear();
+        super.afterWork();
     }
 
     @Override
     protected boolean working() {
         // 优先处理普通消息
         if (massageWait.size() > 0) {
-            return resolveMassage(massageWait.poll());
+            boolean res = resolveMassage(massageWait.poll());
+            resetGap();
+            return res;
         }
         // 处理Transaction
         if (transactionWait.size() > 0) {
-            return resolveTransaction(transactionWait.poll());
+            boolean res = resolveTransaction(transactionWait.poll());
+            resetGap();
+            return res;
         }
         // 处理AssetTransaction
         if (assetTransWait.size() > 0) {
-            return resolveAssetTrans(assetTransWait.poll());
+            boolean res = resolveAssetTrans(assetTransWait.poll());
+            resetGap();
+            return res;
         }
-        return resolveGapPeriod();
+        // 先执行空窗任务，再判断是否空窗超时
+        return resolveGapPeriod() && super.working();
     }
 
     // 处理普通消息，返回值预示着是否继续运行节点

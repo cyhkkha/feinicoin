@@ -33,6 +33,9 @@ public abstract class FetchNode extends CacheNode {
     @SuppressWarnings("unchecked")
     @Override
     public synchronized <T> SignAttachObj<T> fetch(JSONObject json, Class<T> tClass) throws BadCommitException {
+        if (isStop()) {
+            throw new BadCommitException("Node: " + nodeType + " is not working");
+        }
         String origin = json.getString("origin");
         if (!origin.toLowerCase().equals("center")) {
             throw new BadCommitException("Can't resolve origin of " + origin);
@@ -48,8 +51,8 @@ public abstract class FetchNode extends CacheNode {
 
     @Override
     protected void afterWork() {
-        super.afterWork();
         transFetch.clear();
         assetTransFetch.clear();
+        super.afterWork();
     }
 }
