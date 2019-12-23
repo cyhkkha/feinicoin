@@ -67,27 +67,28 @@ public abstract class CacheNode extends Node {
     }
 
     @Override
-    protected void working() {
+    protected boolean working() {
         // 优先处理普通消息
         if (massageWait.size() > 0) {
-            resolveMassage();
-            return;
+            return resolveMassage(massageWait.poll());
         }
         // 处理Transaction
         if (transactionWait.size() > 0) {
-            resolveTransaction();
-            return;
+            return resolveTransaction(transactionWait.poll());
         }
         // 处理AssetTransaction
         if (assetTransWait.size() > 0) {
-            resolveAssetTrans();
+            return resolveAssetTrans(assetTransWait.poll());
         }
+        return resolveGapPeriod();
     }
 
-    // 处理普通消息
-    protected abstract void resolveMassage();
+    // 处理普通消息，返回值预示着是否继续运行节点
+    protected abstract boolean resolveMassage(JSONObject json);
     // 处理Transaction
-    protected abstract void resolveTransaction();
+    protected abstract boolean resolveTransaction(SignAttachObj<Transaction> signAttachObj);
     // 处理AssetTransaction
-    protected abstract void resolveAssetTrans();
+    protected abstract boolean resolveAssetTrans(SignAttachObj<AssetTrans> signAttachObj);
+    // 处理无工作的空窗期
+    protected abstract boolean resolveGapPeriod();
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.SignObj;
 import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
+import name.feinimouse.feinicoinplus.core.node.exce.NodeRunRejectException;
 import org.json.JSONObject;
 
 // 一个节点即是一个线程
@@ -32,33 +33,36 @@ public abstract class Node extends Thread {
     
     // 是否正在运行
     private boolean isRunning = false;
+    // 该值表示节点是否被强制中断或者自动运行结束
+    private boolean stopTag = false;
 
     // 节点必须有类型
     public Node(String nodeType) {
         this.nodeType = nodeType;
     }
 
-    // 线程运行的具体内容
+    // 线程运行的具体内容，节点运行完毕后必须调用reset方法重置节点才能再次运行
     @Override
     public void run() {
         // 如果节点未设置网络和地址则自动停止
         if (network == null || address == null) {
-            return;
+            throw new NodeRunRejectException("network or address of Node: " + nodeType + " are not been set");
         }
         isRunning = true;
         beforeWork();
-        while (isRunning) {
-            // 真正的线程运行内容在这里
-            working();
-            try {
+        try {
+            while (isRunning && !stopTag) {
+                // 真正的线程运行内容在这里
+                isRunning = working();
                 Thread.sleep(interval);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                // 节点被中断则自动停止
-                isRunning = false;
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            afterWork();
+            isRunning = false;
+            stopTag = true;
         }
-        afterWork();
     }
 
     // 向节点提交一个签名内容，签名内容带有附加的cover信息
@@ -79,8 +83,8 @@ public abstract class Node extends Thread {
     // 节点运行后的动作，一般来说用来释放资源
     protected abstract void afterWork();
     
-    // 真正的节点的运行工作
-    protected abstract void working();
+    // 真正的节点的运行工作，返回结果将作为判断是否继续运行的标准
+    protected abstract boolean working();
     
     // 给一个签名消息添加一个cover附加信息，该信息为节点的概况
     protected <T> SignAttachObj<T> coverSign(SignObj<T> signObj) {
@@ -90,16 +94,24 @@ public abstract class Node extends Thread {
         return new SignAttachObj<>(signObj, nodeMsg);
     }
 
-    // 停止节点的运行
+    // 停止节点的运行,调用该方法后必须调用reset节点才能重新运行
     public synchronized void stopNode() {
         if (isRunning) {
             interrupt();
-            isRunning = false;
+            stopTag = true;
         }
     }
-    
+    public void reset() {
+        if (!isRunning && stopTag) {
+            stopTag = false;
+        }
+    }
     // 获取节点的运行状态
-    public synchronized boolean isRunning() {
+    public boolean isRunning() {
         return isRunning;
+    }
+    
+    public boolean isStop() {
+        return stopTag;
     }
 }
