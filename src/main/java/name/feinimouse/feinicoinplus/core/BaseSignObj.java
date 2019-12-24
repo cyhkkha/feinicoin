@@ -44,4 +44,9 @@ public class BaseSignObj<T> implements SignObj<T> {
     public JSONObject json() {
         return hashObj.json().put("sign", new JSONObject(signMap));
     }
+
+    @Override
+    public int signSize() {
+        return signMap.size();
+    }
 }
