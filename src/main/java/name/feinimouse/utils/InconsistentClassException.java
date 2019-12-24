@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.node.exce;
+package name.feinimouse.utils;
 
 public class InconsistentClassException extends Exception {
     public InconsistentClassException() {

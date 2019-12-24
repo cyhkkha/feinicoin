@@ -1,9 +1,6 @@
-package name.feinimouse.feinicoinplus.core.node;
+package name.feinimouse.utils;
 
 import lombok.Getter;
-import name.feinimouse.feinicoinplus.core.node.exce.InconsistentClassException;
-import name.feinimouse.feinicoinplus.core.node.exce.OverFlowException;
-import name.feinimouse.feinicoinplus.core.node.exce.UnrecognizedClassException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -12,20 +9,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SignAttachCMContainer {
-    private Map<Class<?>, Queue<SignAttachObj<?>>> map;
+public abstract class ClassMapContainer<T> {
+    private Map<Class<?>, Queue<T>> map;
     private Class<?>[] supportClass;
-    
+
     @Getter
     private int max = 20;
     private final AtomicInteger size;
-    
-    public SignAttachCMContainer(Class<?>[] supportClass) {
+
+    public ClassMapContainer(Class<?>[] supportClass) {
         this.supportClass = supportClass;
         size = new AtomicInteger(0);
         map = new ConcurrentHashMap<>();
         for (Class<?> cls : supportClass) {
-            Queue<SignAttachObj<?>> queue = new ConcurrentLinkedQueue<>();
+            Queue<T> queue = new ConcurrentLinkedQueue<>();
             map.put(cls, queue);
         }
     }
@@ -37,56 +34,57 @@ public class SignAttachCMContainer {
         this.max = max;
         return true;
     }
-    
+
     public int size() {
         return size.intValue();
     }
-    
+
     public boolean containClass(Class<?> c) {
         return map.containsKey(c);
     }
-    
+
+    // 注意：由于并发需要，不能仅仅凭借该方法的返回为真，就确定一定能取出元素，因取出元素后再次判断元素是否为空
     public boolean hasObject(Class<?> c) {
         return containClass(c) && map.get(c).size() > 0;
     }
+
+    public abstract Class<?> getCoverClass(T t);
     
-    public SignAttachCMContainer put(Class<?> c, SignAttachObj<?> signAttachObj) throws UnrecognizedClassException, InconsistentClassException, OverFlowException {
+    public ClassMapContainer<T> put(T t) throws UnrecognizedClassException, OverFlowException {
+        Class<?> c = getCoverClass(t);
         if (!containClass(c)) {
             throw new UnrecognizedClassException(c);
         }
-        if (!c.equals(signAttachObj.getObj().obj().getClass())) {
-            throw new InconsistentClassException(c);
-        }
         synchronized (size) {
             if (size.intValue() >= max) {
-                throw new OverFlowException("NSAOMCQueue overflow");
+                throw new OverFlowException("container overflow");
             }
             size.addAndGet(1);
         }
-            map.get(c).add(signAttachObj);
-            return this;
+        map.get(c).add(t);
+        return this;
     }
-    
-    @SuppressWarnings("unchecked")
-    public <T> SignAttachObj<T> get(Class<T> c) {
+
+    public T get(Class<?> c) {
         if (containClass(c)) {
-            SignAttachObj<T> signAttachObj = (SignAttachObj<T>) map.get(c).poll();
-            if (signAttachObj != null) {
+            T t = map.get(c).poll();
+            if (t != null) {
                 synchronized (size) {
                     size.addAndGet(-1);
                 }
             }
-            return signAttachObj;
+            return t;
         }
         return null;
-    } 
-    
+    }
+
     public Class<?>[] getSupportClass() {
         return supportClass.clone();
     }
-    
+
     public void clear() {
         map.values().forEach(Collection::clear);
         map.clear();
     }
+    
 }
