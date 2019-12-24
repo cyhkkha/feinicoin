@@ -7,7 +7,6 @@ import name.feinimouse.feinicoinplus.core.block.AssetTrans;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.crypt.SignGen;
 import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
-import name.feinimouse.feinicoinplus.core.node.exce.InvalidStartException;
 import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
@@ -30,83 +29,71 @@ public class Verifier extends CacheNode {
     
     // 节点类型为Verifier
     public Verifier(PrivateKey privateKey) {
-        super("verifier", new Class[]{ Transaction.class, AssetTrans.class });
+        super(NODE_VERIFIER, new CarrierSubCMC(new Class[]{ Transaction.class, AssetTrans.class }));
         this.privateKey = privateKey;
+//        supportAttachClass = new Class[] { SignObj.class };
+//        supportCommitType = new int[] { MSG_COMMIT_VERIFIER };
     }
 
     @Override
-    protected boolean resolveMassage(JSONObject json) {
-        return false;
-    }
-
-    @Override
-    protected int beforeCache(JSONObject attach) {
-        if (!attach.getString("nodeType").equals("order")) {
-            return BAD_COMMUNICATOR;
+    protected void beforeCache(Carrier carrier) throws BadCommitException {
+        if (carrier.notMatch(NODE_ORDER, MSG_COMMIT_VERIFIER, SignObj.class)) {
+            throw BadCommitException.methodNotSupportException(carrier, this);
         }
-        if (!attach.has("address")) {
-            return BAD_COMMUNICATOR;
-        }
-        return super.beforeCache(attach);
     }
 
     @Override
-    protected boolean resolveWait() {
+    protected void resolveCache() {
         if (cacheWait.hasObject(Transaction.class)) {
-            SignAttachObj<Transaction> signAttachObj = cacheWait.get(Transaction.class);
-            if (signAttachObj != null) {
-                String callbackAddress = signAttachObj.getAttach().getString("address");
-                SignObj<Transaction> signObj = signAttachObj.getObj();
+            Carrier carrier = cacheWait.get(Transaction.class);
+            if (carrier != null) {
+                @SuppressWarnings("unchecked")
+                SignObj<Transaction> signObj = (SignObj<Transaction>) carrier.getAttach();
+                String callbackAddress = carrier.getSender();
                 String signer = signObj.obj().getSender();
-                verifyAndSendBack(signer, signObj, callbackAddress, Transaction.class);
+                JSONObject result = getVerifyResultAndSign(signer, signObj);
+                commitToNetwork(callbackAddress, MSG_VERIFIER_CALLBACK, result, signObj
+                    , SignObj.class, Transaction.class);
             }
         }
         if (cacheWait.hasObject(AssetTrans.class)) {
-            SignAttachObj<AssetTrans> signAttachObj = cacheWait.get(AssetTrans.class);
-            if (signAttachObj != null) {
-                String callbackAddress = signAttachObj.getAttach().getString("address");
-                SignObj<AssetTrans> signObj = signAttachObj.getObj();
+            Carrier carrier  = cacheWait.get(AssetTrans.class);
+            if (carrier != null) {
+                @SuppressWarnings("unchecked")
+                SignObj<AssetTrans> signObj = (SignObj<AssetTrans>) carrier.getAttach();
+                String callbackAddress = carrier.getSender();
                 String signer = signObj.obj().getOperator();
-                verifyAndSendBack(signer, signObj, callbackAddress, AssetTrans.class);
+                JSONObject result = getVerifyResultAndSign(signer, signObj);
+                commitToNetwork(callbackAddress, MSG_VERIFIER_CALLBACK, result, signObj
+                    , SignObj.class, AssetTrans.class);
             }
         }
-        return true;
     }
     
-    private <T> void verifyAndSendBack(String signer, SignObj<T> signObj, String address, Class<T> tClass) {
+    private JSONObject getVerifyResultAndSign(String signer, SignObj<?> signObj) {
         PublicKey key = publicKeyHub.getKey(signer);
-        boolean result = signGen.verify(key, signObj, signer);
+        JSONObject result = new JSONObject().put("result", signGen.verify(key, signObj, signer));
         signGen.sign(privateKey, signObj, address);
-        JSONObject backAttach = nodeMsg().put("type", MSG_VERIFIER_CALLBACK).put("result", result);
-        SignAttachObj<T> callback = new SignAttachObj<>(signObj, backAttach);
-        network.commit(address, callback, tClass);
+        return result;
     }
+    
 
     // 空窗期继续运行
     @Override
-    protected boolean resolveGapPeriod() {
-        return true;
+    protected void resolveGapPeriod() {
     }
 
     @Override
-    public <T> SignAttachObj<T> fetch(JSONObject json, Class<T> tClass) throws BadCommitException {
-        throw new BadCommitException("fetch not support");
+    protected Carrier resolveFetch(Carrier carrier) throws BadCommitException {
+        throw new BadCommitException("fetch not support: " + nodeMsg().toString());
     }
+    
 
     @Override
-    public JSONObject fetch(JSONObject json) throws BadCommitException {
-        throw new BadCommitException("fetch not support");
-    }
-
-    @Override
-    public synchronized int commit(JSONObject json) {
-        return METHOD_NOT_SUPPORT;
-    }
-
-    @Override
-    protected void beforeWork() throws InvalidStartException {
+    protected void beforeWork() throws NodeRunningException {
         if (signGen == null || publicKeyHub == null) {
-            throw new InvalidStartException("verifier has not been set a signGen or a publicKekHub");
+            throw NodeRunningException
+                .invalidStartException("verifier has not been set a signGen or a publicKekHub: " + nodeMsg().toString());
         }
     }
 }

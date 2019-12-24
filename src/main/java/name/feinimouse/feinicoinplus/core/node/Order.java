@@ -1,34 +1,38 @@
 package name.feinimouse.feinicoinplus.core.node;
 
+import name.feinimouse.feinicoinplus.core.SignObj;
+import name.feinimouse.feinicoinplus.core.block.AssetTrans;
+import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
-import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
-import org.json.JSONObject;
+import name.feinimouse.utils.ClassMapContainer;
 
 // Order基类
 public class Order extends CacheNode {
     
-    private SignAttachCMContainer fetchWait;
+    private ClassMapContainer<Carrier> fetchWait;
     
-    public Order(String nodeType, Class<?>[] supportClass) {
-        super(nodeType, supportClass);
-        fetchWait = new SignAttachCMContainer(supportClass);
+    public Order(String nodeType) {
+        super(NODE_ORDER, new CarrierSubCMC(new Class[]{ Transaction.class, AssetTrans.class }));
+        fetchWait = new CarrierSubCMC(new Class[]{ Transaction.class, AssetTrans.class });
+//        supportAttachClass = new Class[] { SignObj.class };
+//        supportCommitType = new int[] { MSG_COMMIT_ORDER };
     }
 
     @Override
-    public <T> SignAttachObj<T> fetch(JSONObject json, Class<T> tClass) throws BadCommitException {
-        if (isStop()) {
-            throw new BadCommitException("Node: " + nodeType + " is not working");
+    protected Carrier resolveFetch(Carrier carrier) throws BadCommitException {
+        if (carrier.notMatch(NODE_CENTER, MSG_FETCH_ORDER, SignObj.class)) {
+            throw BadCommitException.methodNotSupportException(carrier, this);
         }
-        String origin = json.getString("origin");
-        if (!origin.toLowerCase().equals("center")) {
-            throw new BadCommitException("Can't resolve origin of " + origin);
-        }
-        return fetchWait.get(tClass);
+        return fetchWait.get(carrier.getFetchClass());
     }
-
+    
     @Override
-    public JSONObject fetch(JSONObject json) throws BadCommitException {
-        return null;
+    protected void beforeCache(Carrier carrier) throws BadCommitException {
+        if (carrier.notMatch(NODE_ENTER, MSG_COMMIT_ORDER, SignObj.class)
+            && carrier.notMatch(NODE_VERIFIER, MSG_VERIFIER_CALLBACK, SignObj.class)) {
+            throw BadCommitException.methodNotSupportException(carrier, this);
+        }
+        
     }
 
     @Override
@@ -36,19 +40,14 @@ public class Order extends CacheNode {
         fetchWait.clear();
         super.afterWork();
     }
+    
 
     @Override
-    protected boolean resolveMassage(JSONObject json) {
-        return false;
+    protected void resolveCache() {
+        
     }
 
     @Override
-    protected boolean resolveWait() {
-        return false;
-    }
-
-    @Override
-    protected boolean resolveGapPeriod() {
-        return false;
+    protected void resolveGapPeriod() {
     }
 }
