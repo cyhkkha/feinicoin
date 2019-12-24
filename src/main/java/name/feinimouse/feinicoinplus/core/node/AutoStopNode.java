@@ -3,8 +3,8 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.node.exce.InvalidStartException;
 import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
+import name.feinimouse.feinicoinplus.core.node.exce.NodeStopException;
 
 public abstract class AutoStopNode extends Node {
 
@@ -19,7 +19,7 @@ public abstract class AutoStopNode extends Node {
     @Setter
     protected long maxGapTime = 20 * 1000;
     
-    public AutoStopNode(String nodeType) {
+    public AutoStopNode(int nodeType) {
         super(nodeType);
     }
 
@@ -35,13 +35,16 @@ public abstract class AutoStopNode extends Node {
 
     // 超过工作时间则退出
     @Override
-    protected boolean working() throws NodeRunningException {
-        return System.currentTimeMillis() - gapStartTime <= maxGapTime;
+    protected void working() throws NodeRunningException, NodeStopException {
+        if (System.currentTimeMillis() - gapStartTime <= maxGapTime) {
+            throw new NodeStopException("Gap timeout: " + nodeMsg().toString());
+        }
     }
 
     @Override
-    protected void beforeWork() throws InvalidStartException {
+    protected void beforeWork() throws NodeRunningException {
         startTime = System.currentTimeMillis();
+        startTime = 0;
         resetGap();
     }
 

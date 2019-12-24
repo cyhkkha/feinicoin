@@ -2,10 +2,9 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.SignObj;
 import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
-import name.feinimouse.feinicoinplus.core.node.exce.InvalidStartException;
 import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
+import name.feinimouse.feinicoinplus.core.node.exce.NodeStopException;
 import org.json.JSONObject;
 
 // 一个节点即是一个线程
@@ -19,11 +18,19 @@ public abstract class Node extends Thread {
     public static final int CLASS_INCONSISTENT = 5;
     public static final int BAD_COMMUNICATOR = 6;
     
-    public static final int MSG_VERIFIER_CALLBACK = 101;
+    public final static int NODE_ORDER = 200;
+    public final static int NODE_VERIFIER = 201;
+    public final static int NODE_CENTER = 202;
+    public final static int NODE_ENTER = 203;
+
+    public final static int MSG_COMMIT_ORDER = 100;
+    public final static int MSG_COMMIT_VERIFIER = 101;
+    public final static int MSG_VERIFIER_CALLBACK = 102;
+    public final static int MSG_FETCH_ORDER = 103;
     
     // 节点类型
     @Getter
-    protected String nodeType;
+    protected int nodeType;
     
     // 节点的运行网络，和节点发送消息有关
     @Getter @Setter
@@ -41,7 +48,7 @@ public abstract class Node extends Thread {
     private boolean runningTag = false;
 
     // 节点必须有类型
-    public Node(String nodeType) {
+    public Node(int nodeType) {
         this.nodeType = nodeType;
     }
 
@@ -51,10 +58,11 @@ public abstract class Node extends Thread {
         // 如果节点未设置网络和地址则自动停止
         try {
             if (network == null || address == null) {
-                throw new InvalidStartException("network or address of Node: " + nodeType + " are not been set");
+                throw NodeRunningException
+                    .invalidStartException("Network or Address of the Node Type: " + nodeType + " are not been set");
             }
             beforeWork();
-        } catch (InvalidStartException e) {
+        } catch (NodeRunningException e) {
             e.printStackTrace();
             return;
         }
@@ -62,51 +70,67 @@ public abstract class Node extends Thread {
         while (runningTag) {
             // 真正的线程运行内容在这里
             try {
-                runningTag = working();
-                // 注意调用interrupted方法后中断状态又会置为false
-                if (!runningTag || interrupted()) {
-                    runningTag = false;
-                } else {
-                    Thread.sleep(interval);
-                }
-            } catch (InterruptedException | NodeRunningException ex) {
+                working();
+                Thread.sleep(interval);
+            } catch (InterruptedException | NodeStopException | NodeRunningException ex) {
                 ex.printStackTrace();
                 runningTag = false;
             }
         }
         afterWork();
     }
+    
+    // 向节点提交一条消息
+    public void commit(Carrier carrier) throws BadCommitException {
+        if (isStop()) {
+            throw BadCommitException.notWorkException(this);
+        }
+        if (carrier.getSender() == null) {
+            throw BadCommitException.noSenderException(this);
+        }
+        resolveCommit(carrier);
+    }
 
-    // 向节点提交一个签名内容，签名内容带有附加的节点消息
-    public abstract <T> int commit(SignAttachObj<T> attachObj, Class<T> tClass);
-
-    // 向节点提交一条普通信息
-    public abstract int commit(JSONObject json);
+    // 处理提交
+    protected abstract void resolveCommit(Carrier carrier) throws BadCommitException;
     
     // 向节点拉取一条信息，节点将返回拉取的结果
-    public abstract <T> SignAttachObj<T> fetch(JSONObject json, Class<T> tClass) throws BadCommitException;
+    public Carrier fetch(Carrier carrier) throws BadCommitException {
+        if (isStop()) {
+            throw BadCommitException.notWorkException(this);
+        }
+        if (carrier.getSender() == null) {
+            throw BadCommitException.noSenderException(this);
+        }
+        return resolveFetch(carrier);
+    }
     
-    // 向节点拉取一条普通信息
-    public abstract JSONObject fetch(JSONObject json) throws BadCommitException;
-    
+    // 处理拉取
+    protected abstract Carrier resolveFetch(Carrier carrier) throws BadCommitException;
+
     // 在节点运行前的动作
-    protected abstract void beforeWork() throws InvalidStartException;
+    protected abstract void beforeWork() throws NodeRunningException;
     
     // 节点运行后的动作，一般来说用来释放资源
     protected abstract void afterWork();
     
-    // 真正的节点的运行工作，返回结果将作为判断是否继续运行的标准
-    protected abstract boolean working() throws NodeRunningException;
+    // 真正的节点的运行工作
+    protected abstract void working() throws NodeRunningException, NodeStopException;
     
-    // 给一个签名消息添加一个cover附加信息，该信息为节点的概况
-    public <T> SignAttachObj<T> coverSign(SignObj<T> signObj) {
-        return new SignAttachObj<>(signObj, nodeMsg());
-    }
-
     public JSONObject nodeMsg() {
         return new JSONObject().put("nodeAddress", address)
             .put("networkAddress", network.getAddress())
             .put("nodeType", nodeType);
+    }
+
+    protected void commitToNetwork(String callbackAddress, int msgType, JSONObject json, Object attach, Class<?> attachClass, Class<?> subClass) {
+        Carrier carrier = new Carrier(address, network.getAddress(), nodeType);
+        carrier.setMsgType(msgType);
+        carrier.setMsg(json);
+        carrier.setAttach(attach);
+        carrier.setAttachClass(attachClass);
+        carrier.setAttachSubClass(subClass);
+        network.commit(callbackAddress, carrier);
     }
     
     // 停止节点的运行

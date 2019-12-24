@@ -1,109 +1,75 @@
 package name.feinimouse.feinicoinplus.core.node;
 
-import lombok.Getter;
-import name.feinimouse.feinicoinplus.core.node.exce.InconsistentClassException;
+import name.feinimouse.feinicoinplus.core.SignObj;
+import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
+import name.feinimouse.feinicoinplus.core.node.exce.NodeStopException;
+import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
-import name.feinimouse.feinicoinplus.core.node.exce.OverFlowException;
-import name.feinimouse.feinicoinplus.core.node.exce.UnrecognizedClassException;
-import org.json.JSONObject;
+import name.feinimouse.utils.OverFlowException;
+import name.feinimouse.utils.UnrecognizedClassException;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Arrays;
 
 // 一个提供消息缓存的节点基类
 public abstract class CacheNode extends AutoStopNode {
     
-    protected SignAttachCMContainer cacheWait;
+    protected ClassMapContainer<Carrier> cacheWait;
     
-    // 缓存普通消息
-    protected ConcurrentLinkedQueue<JSONObject> massageWait;
+//    protected int[] supportCommitType;
+//    protected Class<?>[] supportAttachClass;
     
-    @Getter
-    protected int massageWaitMax = 10;
-    
-    public CacheNode(String nodeType, Class<?>[] cacheSupport) {
+    public CacheNode(int nodeType, ClassMapContainer<Carrier> cacheWait) {
         super(nodeType);
-        cacheWait = new SignAttachCMContainer(cacheSupport);
-        massageWait = new ConcurrentLinkedQueue<>();
+        this.cacheWait = cacheWait;
     }
 
     public boolean setCacheWaitMax(int max) {
         return cacheWait.setMax(max);
     }
+
     
-    @Override
-    public <T> int commit(SignAttachObj<T> attachObj, Class<T> tClass) { 
-        int before = beforeCache(attachObj.getAttach());
-        if (before != 0) {
-            return before;
-        }
+    
+    public void pushContainer(ClassMapContainer<Carrier> container, Carrier carrier) throws BadCommitException{
         try {
-            cacheWait.put(tClass, attachObj);
-            return COMMIT_SUCCESS;
+            container.put(carrier);
         } catch (UnrecognizedClassException e) {
             e.printStackTrace();
-            return CLASS_UNRECOGNIZED;
-        } catch (InconsistentClassException e) {
-            e.printStackTrace();
-            return CLASS_INCONSISTENT;
+            throw new BadCommitException("Commit class not support: " + nodeMsg().toString());
         } catch (OverFlowException e) {
             e.printStackTrace();
-            return CACHE_OVERFLOW;
+            throw new BadCommitException("Cache over flow: " + nodeMsg().toString());
         }
-    }
-    
-    // 检查附加信息
-    protected int beforeCache(JSONObject attach) {
-        if (isStop()) {
-            return NODE_NOT_WORKING;
-        }
-        return 0;
     }
 
     @Override
-    public int commit(JSONObject json) {
-        if (isStop()) {
-            return NODE_NOT_WORKING;
-        }
-        return massageWait.size() < massageWaitMax
-            && massageWait.add(json)
-            ? COMMIT_SUCCESS
-            : CACHE_OVERFLOW;
+    protected void resolveCommit(Carrier carrier) throws BadCommitException {
+        beforeCache(carrier);
+        pushContainer(cacheWait, carrier);
     }
-
-    public synchronized void setMassageWaitMax(int massageWaitMax) {
-        this.massageWaitMax = massageWaitMax;
-    }
+    
+    protected abstract void beforeCache(Carrier carrier) throws BadCommitException;
 
     @Override
     protected void afterWork() {
         cacheWait.clear();
-        massageWait.clear();
         super.afterWork();
     }
 
     @Override
-    protected boolean working() throws NodeRunningException {
-        // 优先处理普通消息
-        if (massageWait.size() > 0) {
-            boolean res = resolveMassage(massageWait.poll());
-            resetGap();
-            return res;
-        }
+    protected void working() throws NodeRunningException, NodeStopException {
         // 处理Cache
         if (cacheWait.size() > 0) {
-            boolean res = resolveWait();
+            resolveCache();
             resetGap();
-            return res;
         }
         // 先执行空窗任务，再判断是否空窗超时
-        return resolveGapPeriod() && super.working();
+        resolveGapPeriod();
+        super.working();
     }
-
-    // 处理普通消息，注意方法的返回值预示着是否继续运行节点
-    protected abstract boolean resolveMassage(JSONObject json) throws NodeRunningException;
+    
     // 处理Transaction
-    protected abstract boolean resolveWait() throws NodeRunningException;
+    protected abstract void resolveCache() throws NodeRunningException, NodeStopException;
     // 处理无工作的空窗期
-    protected abstract boolean resolveGapPeriod() throws NodeRunningException;
+    protected abstract void resolveGapPeriod() throws NodeRunningException;
     
 }
