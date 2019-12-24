@@ -123,14 +123,14 @@ public abstract class Node extends Thread {
             .put("nodeType", nodeType);
     }
 
-    protected void commitToNetwork(String callbackAddress, int msgType, JSONObject json, Object attach, Class<?> attachClass, Class<?> subClass) {
+    protected void commitToNetwork(String address, int msgType, JSONObject json, Object attach, Class<?> attachClass, Class<?> subClass) {
         Carrier carrier = new Carrier(address, network.getAddress(), nodeType);
         carrier.setMsgType(msgType);
         carrier.setMsg(json);
         carrier.setAttach(attach);
         carrier.setAttachClass(attachClass);
         carrier.setAttachSubClass(subClass);
-        network.commit(callbackAddress, carrier);
+        network.commit(address, carrier);
     }
     
     // 停止节点的运行

@@ -31,8 +31,6 @@ public class Verifier extends CacheNode {
     public Verifier(PrivateKey privateKey) {
         super(NODE_VERIFIER, new CarrierSubCMC(new Class[]{ Transaction.class, AssetTrans.class }));
         this.privateKey = privateKey;
-//        supportAttachClass = new Class[] { SignObj.class };
-//        supportCommitType = new int[] { MSG_COMMIT_VERIFIER };
     }
 
     @Override
@@ -45,7 +43,7 @@ public class Verifier extends CacheNode {
     @Override
     protected void resolveCache() {
         if (cacheWait.hasObject(Transaction.class)) {
-            Carrier carrier = cacheWait.get(Transaction.class);
+            Carrier carrier = cacheWait.poll(Transaction.class);
             if (carrier != null) {
                 @SuppressWarnings("unchecked")
                 SignObj<Transaction> signObj = (SignObj<Transaction>) carrier.getAttach();
@@ -57,7 +55,7 @@ public class Verifier extends CacheNode {
             }
         }
         if (cacheWait.hasObject(AssetTrans.class)) {
-            Carrier carrier  = cacheWait.get(AssetTrans.class);
+            Carrier carrier  = cacheWait.poll(AssetTrans.class);
             if (carrier != null) {
                 @SuppressWarnings("unchecked")
                 SignObj<AssetTrans> signObj = (SignObj<AssetTrans>) carrier.getAttach();
@@ -95,5 +93,6 @@ public class Verifier extends CacheNode {
             throw NodeRunningException
                 .invalidStartException("verifier has not been set a signGen or a publicKekHub: " + nodeMsg().toString());
         }
+        super.beforeWork();
     }
 }

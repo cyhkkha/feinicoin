@@ -65,7 +65,7 @@ public abstract class ClassMapContainer<T> {
         return this;
     }
 
-    public T get(Class<?> c) {
+    public T poll(Class<?> c) {
         if (containClass(c)) {
             T t = map.get(c).poll();
             if (t != null) {

@@ -1,6 +1,5 @@
 package name.feinimouse.feinicoinplus.core.node;
 
-import name.feinimouse.feinicoinplus.core.SignObj;
 import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
 import name.feinimouse.feinicoinplus.core.node.exce.NodeStopException;
 import name.feinimouse.utils.ClassMapContainer;
@@ -8,15 +7,11 @@ import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
 import name.feinimouse.utils.OverFlowException;
 import name.feinimouse.utils.UnrecognizedClassException;
 
-import java.util.Arrays;
 
 // 一个提供消息缓存的节点基类
 public abstract class CacheNode extends AutoStopNode {
     
     protected ClassMapContainer<Carrier> cacheWait;
-    
-//    protected int[] supportCommitType;
-//    protected Class<?>[] supportAttachClass;
     
     public CacheNode(int nodeType, ClassMapContainer<Carrier> cacheWait) {
         super(nodeType);
