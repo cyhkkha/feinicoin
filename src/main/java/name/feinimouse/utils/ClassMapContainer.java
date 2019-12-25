@@ -13,8 +13,9 @@ public abstract class ClassMapContainer<T> {
     private Map<Class<?>, Queue<T>> map;
     private Class<?>[] supportClass;
 
+    // -1表示无限容量
     @Getter
-    private int max = 20;
+    private int max = -1;
     private final AtomicInteger size;
 
     public ClassMapContainer(Class<?>[] supportClass) {
@@ -27,11 +28,11 @@ public abstract class ClassMapContainer<T> {
         }
     }
 
-    public synchronized boolean setMax(int max) {
-        if (size.intValue() > max) {
+    public synchronized boolean setMax(int newMax) {
+        if (size.intValue() > newMax) {
             return false;
         }
-        this.max = max;
+        this.max = newMax;
         return true;
     }
 
@@ -56,7 +57,7 @@ public abstract class ClassMapContainer<T> {
             throw new UnrecognizedClassException(c);
         }
         synchronized (size) {
-            if (size.intValue() >= max) {
+            if (max >= 0 && size.intValue() >= max) {
                 throw new OverFlowException("container overflow");
             }
             size.addAndGet(1);
