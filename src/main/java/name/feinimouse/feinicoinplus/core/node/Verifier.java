@@ -51,8 +51,7 @@ public class Verifier extends CacheNode {
                 String callbackAddress = carrier.getSender();
                 String signer = signObj.obj().getSender();
                 JSONObject result = getVerifyResultAndSign(signer, signObj);
-                commitToNetwork(callbackAddress, MSG_VERIFIER_CALLBACK, result, signObj
-                    , SignObj.class, Transaction.class);
+                commitToNetwork(callbackAddress, MSG_CALLBACK_VERIFIER, result, carrier);
             }
         }
         if (cacheWait.hasObject(AssetTrans.class)) {
@@ -63,8 +62,7 @@ public class Verifier extends CacheNode {
                 String callbackAddress = carrier.getSender();
                 String signer = signObj.obj().getOperator();
                 JSONObject result = getVerifyResultAndSign(signer, signObj);
-                commitToNetwork(callbackAddress, MSG_VERIFIER_CALLBACK, result, signObj
-                    , SignObj.class, AssetTrans.class);
+                commitToNetwork(callbackAddress, MSG_CALLBACK_VERIFIER, result, carrier);
             }
         }
     }

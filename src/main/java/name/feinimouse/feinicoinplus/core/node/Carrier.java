@@ -14,7 +14,7 @@ public class Carrier {
     private JSONObject msg;
     private Object attach;
     private Class<?> attachClass;
-    private Class<?> attachSubClass;
+    private Class<?> subClass;
     private Class<?> fetchClass;
 
     public Carrier() {}
@@ -30,7 +30,7 @@ public class Carrier {
             .put("nodeType", nodeType)
             .put("msgType", msgType)
             .put("attachClass", attachClass)
-            .put("subAttachClass", attachSubClass)
+            .put("subAttachClass", subClass)
             .toString();
     }
     

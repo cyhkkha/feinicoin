@@ -9,7 +9,7 @@ public class CarrierSubCMC extends ClassMapContainer<Carrier> {
 
     @Override
     public Class<?> getCoverClass(Carrier carrier) {
-        return carrier.getAttachSubClass();
+        return carrier.getSubClass();
     }
 
     public CarrierSubCMC(Class<?>[] supportClass, int max) {

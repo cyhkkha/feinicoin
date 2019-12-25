@@ -10,13 +10,13 @@ import org.json.JSONObject;
 // 一个节点即是一个线程
 public abstract class Node extends Thread {
     
-    public static final int COMMIT_SUCCESS = 0;
-    public static final int CACHE_OVERFLOW = 1;
-    public static final int METHOD_NOT_SUPPORT = 2;
-    public static final int CLASS_UNRECOGNIZED = 3;
-    public static final int NODE_NOT_WORKING = 4;
-    public static final int CLASS_INCONSISTENT = 5;
-    public static final int BAD_COMMUNICATOR = 6;
+//    public static final int COMMIT_SUCCESS = 0;
+//    public static final int CACHE_OVERFLOW = 1;
+//    public static final int METHOD_NOT_SUPPORT = 2;
+//    public static final int CLASS_UNRECOGNIZED = 3;
+//    public static final int NODE_NOT_WORKING = 4;
+//    public static final int CLASS_INCONSISTENT = 5;
+//    public static final int BAD_COMMUNICATOR = 6;
     
     public final static int NODE_ORDER = 200;
     public final static int NODE_VERIFIER = 201;
@@ -25,8 +25,9 @@ public abstract class Node extends Thread {
 
     public final static int MSG_COMMIT_ORDER = 100;
     public final static int MSG_COMMIT_VERIFIER = 101;
-    public final static int MSG_VERIFIER_CALLBACK = 102;
+    public final static int MSG_CALLBACK_VERIFIER = 102;
     public final static int MSG_FETCH_ORDER = 103;
+    public final static int MSG_CALLBACK_ORDER = 104;
     
     // 节点类型
     @Getter
@@ -123,14 +124,26 @@ public abstract class Node extends Thread {
             .put("nodeType", nodeType);
     }
 
-    protected void commitToNetwork(String address, int msgType, JSONObject json, Object attach, Class<?> attachClass, Class<?> subClass) {
+    protected void commitToNetwork(String receiver, int msgType, JSONObject msg, Object attach, Class<?> attachClass, Class<?> subClass) {
         Carrier carrier = new Carrier(address, network.getAddress(), nodeType);
+        carrier.setReceiver(receiver);
         carrier.setMsgType(msgType);
-        carrier.setMsg(json);
+        
+        carrier.setMsg(msg);
         carrier.setAttach(attach);
         carrier.setAttachClass(attachClass);
-        carrier.setAttachSubClass(subClass);
-        network.commit(address, carrier);
+        carrier.setSubClass(subClass);
+        network.commit(carrier);
+    }
+    
+    protected void commitToNetwork(String receiver, int msgType, JSONObject msg, Carrier carrier) {
+        carrier.setReceiver(receiver);
+        carrier.setMsgType(msgType);
+        carrier.setSender(address);
+        carrier.setNetwork(network.getAddress());
+        carrier.setNodeType(nodeType);
+        carrier.setMsg(msg);
+        network.commit(carrier);
     }
     
     // 停止节点的运行
