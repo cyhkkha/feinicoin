@@ -24,8 +24,11 @@ public class BadCommitException extends Exception {
         return new BadCommitException("Commit without origin, Commit Failed from: " + node.nodeMsg().toString());
     }
     
-    public static BadCommitException methodNotSupportException(Carrier carrier, Node node) {
+    public static BadCommitException classNotSupportException(Carrier carrier, Node node) {
         return new BadCommitException("Error Operation type of " + carrier.gainType() 
             + " , Operation Failed from: " + node.nodeMsg().toString());
+    }
+    public static BadCommitException commitNotSupportException(Node node) {
+        return new BadCommitException("commit not support from: " + node.nodeMsg().toString());
     }
 }

@@ -39,7 +39,7 @@ public class Order extends CacheNode {
     @Override
     protected Carrier resolveFetch(Carrier carrier) throws BadCommitException {
         if (carrier.notMatch(NODE_CENTER, MSG_FETCH_ORDER, SignObj.class)) {
-            throw BadCommitException.methodNotSupportException(carrier, this);
+            throw BadCommitException.classNotSupportException(carrier, this);
         }
         return fetchWait.poll(carrier.getFetchClass());
     }
@@ -48,7 +48,7 @@ public class Order extends CacheNode {
     protected void beforeCache(Carrier carrier) throws BadCommitException {
         if (carrier.notMatch(NODE_ENTER, MSG_COMMIT_ORDER, SignObj.class)
             && carrier.notMatch(NODE_VERIFIER, MSG_CALLBACK_VERIFIER, SignObj.class)) {
-            throw BadCommitException.methodNotSupportException(carrier, this);
+            throw BadCommitException.classNotSupportException(carrier, this);
         }
 
     }
