@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.node.exce;
+package name.feinimouse.feinicoinplus.core.exception;
 
 public class NodeStopException extends Exception{
     public NodeStopException(String message) {

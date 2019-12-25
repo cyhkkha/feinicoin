@@ -2,20 +2,22 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
+import name.feinimouse.feinicoinplus.core.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.SignObj;
 import name.feinimouse.feinicoinplus.core.block.AssetTrans;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
-import name.feinimouse.feinicoinplus.core.crypt.SignGen;
-import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
-import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
+import name.feinimouse.feinicoinplus.core.SignGen;
+import name.feinimouse.feinicoinplus.core.data.Carrier;
+import name.feinimouse.feinicoinplus.core.data.CarrierSubCMC;
+import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
+import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
 import org.json.JSONObject;
-import org.springframework.stereotype.Component;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
 // verifier基类
-@Component("verifier")
+//@Component("verifier")
 public class Verifier extends CacheNode {
 
     // 签名串

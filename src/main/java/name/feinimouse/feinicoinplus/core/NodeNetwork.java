@@ -1,6 +1,7 @@
-package name.feinimouse.feinicoinplus.core.node;
+package name.feinimouse.feinicoinplus.core;
 
-import name.feinimouse.feinicoinplus.core.node.exce.NoSuchNodeException;
+import name.feinimouse.feinicoinplus.core.data.Carrier;
+import name.feinimouse.feinicoinplus.core.exception.NoSuchNodeException;
 
 public interface NodeNetwork {
     String getAddress();

@@ -2,13 +2,17 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
-import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
-import name.feinimouse.feinicoinplus.core.node.exce.NodeStopException;
+import name.feinimouse.feinicoinplus.core.CoverObj;
+import name.feinimouse.feinicoinplus.core.Node;
+import name.feinimouse.feinicoinplus.core.NodeNetwork;
+import name.feinimouse.feinicoinplus.core.data.Carrier;
+import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
+import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
+import name.feinimouse.feinicoinplus.core.exception.NodeStopException;
 import org.json.JSONObject;
 
 // 一个节点即是一个线程
-public abstract class Node extends Thread {
+public abstract class BaseNode extends Thread implements Node {
     
 //    public static final int COMMIT_SUCCESS = 0;
 //    public static final int CACHE_OVERFLOW = 1;
@@ -49,7 +53,7 @@ public abstract class Node extends Thread {
     private boolean runningTag = false;
 
     // 节点必须有类型
-    public Node(int nodeType) {
+    public BaseNode(int nodeType) {
         this.nodeType = nodeType;
     }
 
@@ -82,6 +86,7 @@ public abstract class Node extends Thread {
     }
     
     // 向节点提交一条消息
+    @Override
     public void commit(Carrier carrier) throws BadCommitException {
         if (isStop()) {
             throw BadCommitException.notWorkException(this);
@@ -96,6 +101,7 @@ public abstract class Node extends Thread {
     protected abstract void resolveCommit(Carrier carrier) throws BadCommitException;
     
     // 向节点拉取一条信息，节点将返回拉取的结果
+    @Override
     public Carrier fetch(Carrier carrier) throws BadCommitException {
         if (isStop()) {
             throw BadCommitException.notWorkException(this);
@@ -117,14 +123,15 @@ public abstract class Node extends Thread {
     
     // 真正的节点的运行工作
     protected abstract void working() throws NodeRunningException, NodeStopException;
-    
+
+    @Override
     public JSONObject nodeMsg() {
         return new JSONObject().put("nodeAddress", address)
             .put("networkAddress", network.getAddress())
             .put("nodeType", nodeType);
     }
 
-    protected void commitToNetwork(String receiver, int msgType, JSONObject msg, Object attach, Class<?> attachClass, Class<?> subClass) {
+    protected void commitToNetwork(String receiver, int msgType, JSONObject msg, CoverObj<?> attach, Class<?> attachClass, Class<?> subClass) {
         Carrier carrier = new Carrier(address, network.getAddress(), nodeType);
         carrier.setReceiver(receiver);
         carrier.setMsgType(msgType);
@@ -147,12 +154,14 @@ public abstract class Node extends Thread {
     }
     
     // 停止节点的运行
+    @Override
     public synchronized void stopNode() {
         if (runningTag) {
             interrupt();
         }
     }
     // 获取节点的运行状态
+    @Override
     public boolean isStop() {
         return !runningTag;
     }

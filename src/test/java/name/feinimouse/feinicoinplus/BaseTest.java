@@ -1,8 +1,8 @@
 package name.feinimouse.feinicoinplus;
 
-import name.feinimouse.feinicoinplus.core.BaseSignObj;
+import name.feinimouse.feinicoinplus.core.data.BaseSignObj;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
-import name.feinimouse.feinicoinplus.core.BaseHashObj;
+import name.feinimouse.feinicoinplus.core.data.BaseHashObj;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,5 +1,7 @@
-package name.feinimouse.feinicoinplus.core;
+package name.feinimouse.feinicoinplus.core.data;
 
+import name.feinimouse.feinicoinplus.core.BaseObj;
+import name.feinimouse.feinicoinplus.core.HashObj;
 import name.feinimouse.utils.JsonUtils;
 import org.json.JSONObject;
 

@@ -1,5 +1,7 @@
-package name.feinimouse.feinicoinplus.core;
+package name.feinimouse.feinicoinplus.core.data;
 
+import name.feinimouse.feinicoinplus.core.HashObj;
+import name.feinimouse.feinicoinplus.core.SignObj;
 import org.json.JSONObject;
 
 import java.util.concurrent.ConcurrentHashMap;

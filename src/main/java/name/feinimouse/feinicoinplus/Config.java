@@ -1,17 +1,11 @@
 package name.feinimouse.feinicoinplus;
 
-import name.feinimouse.feinicoinplus.core.crypt.HashGen;
-import name.feinimouse.feinicoinplus.core.crypt.MurmurHashGen;
-import name.feinimouse.feinicoinplus.core.crypt.SignGen;
-import name.feinimouse.feinicoinplus.core.crypt.SM2SignGen;
-import name.feinimouse.feinicoinplus.core.node.Node;
-import name.feinimouse.feinicoinplus.core.node.PublicKeyHub;
-import name.feinimouse.feinicoinplus.core.node.Verifier;
+import name.feinimouse.feinicoinplus.core.HashGen;
+import name.feinimouse.feinicoinplus.sim.MurmurHashGen;
+import name.feinimouse.feinicoinplus.core.SignGen;
+import name.feinimouse.feinicoinplus.sim.SM2SignGen;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.*;
-
-import java.security.PrivateKey;
 
 @Configuration
 @PropertySource("classpath:feinicoinplus-config.properties")
@@ -34,18 +28,18 @@ public class Config {
     }
     
     // 公钥仓库
-    @Bean
-    public PublicKeyHub publicKeyHub() {
-        return new PublicKeyHub();
-    }
-    
-    // 验证节点，非单例的prototype
-    @Bean @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public Node verifier() {
-        PrivateKey key = signGen().genKeyPair().getPrivate();
-        Verifier node = new Verifier(key);
-        node.setSignGen(signGen());
-        node.setPublicKeyHub(publicKeyHub());
-        return node;
-    }
+//    @Bean
+//    public PublicKeyHub publicKeyHub() {
+//        return new PublicKeyHub();
+//    }
+//    
+//    // 验证节点，非单例的prototype
+//    @Bean @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+//    public Node verifier() {
+//        PrivateKey key = signGen().genKeyPair().getPrivate();
+//        Verifier node = new Verifier(key);
+//        node.setSignGen(signGen());
+//        node.setPublicKeyHub(publicKeyHub());
+//        return node;
+//    }
 }

@@ -1,6 +1,7 @@
-package name.feinimouse.feinicoinplus.core.node;
+package name.feinimouse.feinicoinplus.core.data;
 
 import lombok.Data;
+import name.feinimouse.feinicoinplus.core.CoverObj;
 import org.json.JSONObject;
 
 @Data
@@ -12,7 +13,7 @@ public class Carrier {
     private int nodeType;
     private int msgType;
     private JSONObject msg;
-    private Object attach;
+    private CoverObj<?> attach;
     private Class<?> attachClass;
     private Class<?> subClass;
     private Class<?> fetchClass;

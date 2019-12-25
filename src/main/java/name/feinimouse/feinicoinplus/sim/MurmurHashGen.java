@@ -1,9 +1,12 @@
-package name.feinimouse.feinicoinplus.core.crypt;
+package name.feinimouse.feinicoinplus.sim;
 
 
 import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
 import name.feinimouse.feinicoinplus.core.*;
+import name.feinimouse.feinicoinplus.core.HashGen;
+import name.feinimouse.feinicoinplus.core.data.BaseHashObj;
+import name.feinimouse.feinicoinplus.core.data.BaseMerkelObj;
 
 import java.nio.charset.StandardCharsets;
 import java.util.zip.Checksum;

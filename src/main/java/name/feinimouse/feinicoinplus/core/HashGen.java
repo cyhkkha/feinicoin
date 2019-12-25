@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.crypt;
+package name.feinimouse.feinicoinplus.core;
 
 import name.feinimouse.feinicoinplus.core.HashObj;
 import name.feinimouse.feinicoinplus.core.BaseObj;

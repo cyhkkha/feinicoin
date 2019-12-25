@@ -3,10 +3,10 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
-import name.feinimouse.feinicoinplus.core.node.exce.NodeStopException;
+import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
+import name.feinimouse.feinicoinplus.core.exception.NodeStopException;
 
-public abstract class AutoStopNode extends Node {
+public abstract class AutoStopNode extends BaseNode {
 
     @Getter
     private long startTime;

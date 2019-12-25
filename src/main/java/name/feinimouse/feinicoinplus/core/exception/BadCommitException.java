@@ -1,7 +1,7 @@
-package name.feinimouse.feinicoinplus.core.node.exce;
+package name.feinimouse.feinicoinplus.core.exception;
 
-import name.feinimouse.feinicoinplus.core.node.Carrier;
-import name.feinimouse.feinicoinplus.core.node.Node;
+import name.feinimouse.feinicoinplus.core.Node;
+import name.feinimouse.feinicoinplus.core.data.Carrier;
 
 public class BadCommitException extends Exception {
     public BadCommitException() {

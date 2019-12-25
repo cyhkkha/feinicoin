@@ -5,8 +5,10 @@ import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.SignObj;
 import name.feinimouse.feinicoinplus.core.block.AssetTrans;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
-import name.feinimouse.feinicoinplus.core.node.exce.BadCommitException;
-import name.feinimouse.feinicoinplus.core.node.exce.NodeRunningException;
+import name.feinimouse.feinicoinplus.core.data.Carrier;
+import name.feinimouse.feinicoinplus.core.data.CarrierSubCMC;
+import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
+import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
 import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.utils.OverFlowException;
 import name.feinimouse.utils.UnrecognizedClassException;
@@ -16,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 // Order基类
+//@Component("order")
 public class Order extends CacheNode {
 
     // 等待center拉取的交易

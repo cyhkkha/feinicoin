@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.node;
+package name.feinimouse.feinicoinplus.core.data;
 
 import name.feinimouse.utils.ClassMapContainer;
 
