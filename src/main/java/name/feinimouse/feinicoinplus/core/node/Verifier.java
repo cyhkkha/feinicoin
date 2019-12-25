@@ -29,7 +29,8 @@ public class Verifier extends CacheNode {
     
     // 节点类型为Verifier
     public Verifier(PrivateKey privateKey) {
-        super(NODE_VERIFIER, new CarrierSubCMC(new Class[]{ Transaction.class, AssetTrans.class }));
+        // 默认缓存的初始容量为30
+        super(NODE_VERIFIER, new CarrierSubCMC(new Class[]{ Transaction.class, AssetTrans.class }, 30));
         this.privateKey = privateKey;
     }
 

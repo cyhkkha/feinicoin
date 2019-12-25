@@ -11,4 +11,8 @@ public class CarrierSubCMC extends ClassMapContainer<Carrier> {
     public Class<?> getCoverClass(Carrier carrier) {
         return carrier.getAttachSubClass();
     }
+
+    public CarrierSubCMC(Class<?>[] supportClass, int max) {
+        super(supportClass, max);
+    }
 }

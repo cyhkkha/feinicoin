@@ -27,6 +27,11 @@ public abstract class ClassMapContainer<T> {
             map.put(cls, queue);
         }
     }
+    
+    public ClassMapContainer(Class<?>[] supportClass, int max) {
+        this(supportClass);
+        setMax(max);
+    }
 
     public synchronized boolean setMax(int newMax) {
         if (size.intValue() > newMax) {
@@ -34,6 +39,10 @@ public abstract class ClassMapContainer<T> {
         }
         this.max = newMax;
         return true;
+    }
+    
+    public synchronized void setMaxInfinitive() {
+        this.max = -1;
     }
 
     public int size() {

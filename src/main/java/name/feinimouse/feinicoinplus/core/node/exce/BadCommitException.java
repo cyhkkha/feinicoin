@@ -3,7 +3,7 @@ package name.feinimouse.feinicoinplus.core.node.exce;
 import name.feinimouse.feinicoinplus.core.node.Carrier;
 import name.feinimouse.feinicoinplus.core.node.Node;
 
-public class BadCommitException extends RuntimeException {
+public class BadCommitException extends Exception {
     public BadCommitException() {
         super();
     }
