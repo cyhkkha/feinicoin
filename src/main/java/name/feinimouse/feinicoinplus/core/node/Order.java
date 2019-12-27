@@ -41,7 +41,8 @@ public class Order extends CacheNode {
 
     @Override
     protected Carrier resolveFetch(Carrier carrier) throws BadCommitException {
-        if (carrier.notMatch(NODE_CENTER, MSG_FETCH_ORDER, SignObj.class)) {
+        if (carrier.notMatchFetch(NODE_CENTER, MSG_FETCH_ORDER, Transaction.class)
+        || carrier.notMatchFetch(NODE_CENTER, MSG_FETCH_ORDER, AssetTrans.class)) {
             throw BadCommitException.classNotSupportException(carrier, this);
         }
         return fetchWait.poll(carrier.getFetchClass());
@@ -49,8 +50,8 @@ public class Order extends CacheNode {
 
     @Override
     protected void beforeCache(Carrier carrier) throws BadCommitException {
-        if (carrier.notMatch(NODE_ENTER, MSG_COMMIT_ORDER, SignObj.class)
-            && carrier.notMatch(NODE_VERIFIER, MSG_CALLBACK_VERIFIER, SignObj.class)) {
+        if (carrier.notMatchAttach(NODE_ENTER, MSG_COMMIT_ORDER, SignObj.class)
+            && carrier.notMatchAttach(NODE_VERIFIER, MSG_CALLBACK_VERIFIER, SignObj.class)) {
             throw BadCommitException.classNotSupportException(carrier, this);
         }
 
@@ -140,6 +141,13 @@ public class Order extends CacheNode {
         }
         try {
             // 所有验证通过进入fetch队列
+            carrier.setSender(address);
+            carrier.setNetwork(network.getAddress());
+            carrier.setNodeType(nodeType);
+            carrier.setMsg(new JSONObject()
+                .put("verifier", carrier.getSender())
+                .put("order", address)
+                .put("enter", origin.getSender()));
             fetchWait.put(carrier);
         } catch (UnrecognizedClassException | OverFlowException e) {
             // 理论上该错误不会发生

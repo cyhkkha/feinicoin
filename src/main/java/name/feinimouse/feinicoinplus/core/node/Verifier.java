@@ -38,7 +38,7 @@ public class Verifier extends CacheNode {
 
     @Override
     protected void beforeCache(Carrier carrier) throws BadCommitException {
-        if (carrier.notMatch(NODE_ORDER, MSG_COMMIT_VERIFIER, SignObj.class)) {
+        if (carrier.notMatchAttach(NODE_ORDER, MSG_COMMIT_VERIFIER, SignObj.class)) {
             throw BadCommitException.classNotSupportException(carrier, this);
         }
     }

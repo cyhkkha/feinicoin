@@ -5,6 +5,7 @@ import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.CoverObj;
 import name.feinimouse.feinicoinplus.core.Node;
 import name.feinimouse.feinicoinplus.core.NodeNetwork;
+import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.data.Carrier;
 import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
 import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
@@ -50,7 +51,7 @@ public abstract class BaseNode extends Thread implements Node {
     protected long interval = 10;
     
     // 是否正在运行
-    private boolean runningTag = false;
+    protected boolean runningTag = false;
 
     // 节点必须有类型
     public BaseNode(int nodeType) {
@@ -76,10 +77,11 @@ public abstract class BaseNode extends Thread implements Node {
             // 真正的线程运行内容在这里
             try {
                 working();
-                Thread.sleep(interval);
+                if (runningTag) {
+                    Thread.sleep(interval);
+                }
             } catch (InterruptedException | NodeStopException | NodeRunningException ex) {
                 ex.printStackTrace();
-                runningTag = false;
             }
         }
         afterWork();
@@ -130,18 +132,6 @@ public abstract class BaseNode extends Thread implements Node {
             .put("networkAddress", network.getAddress())
             .put("nodeType", nodeType);
     }
-
-    protected void commitToNetwork(String receiver, int msgType, JSONObject msg, CoverObj<?> attach, Class<?> attachClass, Class<?> subClass) {
-        Carrier carrier = new Carrier(address, network.getAddress(), nodeType);
-        carrier.setReceiver(receiver);
-        carrier.setMsgType(msgType);
-        
-        carrier.setMsg(msg);
-        carrier.setAttach(attach);
-        carrier.setAttachClass(attachClass);
-        carrier.setSubClass(subClass);
-        network.commit(carrier);
-    }
     
     protected void commitToNetwork(String receiver, int msgType, JSONObject msg, Carrier carrier) {
         carrier.setReceiver(receiver);
@@ -153,10 +143,23 @@ public abstract class BaseNode extends Thread implements Node {
         network.commit(carrier);
     }
     
+    protected Carrier fetchFromNetWork(String receiver, int msgType, JSONObject msg, Class<?> fetchClass) {
+        Carrier carrier = new Carrier();
+        carrier.setFetchClass(Transaction.class);
+        carrier.setReceiver(receiver);
+        carrier.setMsgType(msgType);
+        carrier.setSender(address);
+        carrier.setNetwork(network.getAddress());
+        carrier.setNodeType(nodeType);
+        carrier.setMsg(msg);
+        return network.fetch(carrier);
+    }
+    
     // 停止节点的运行
     @Override
     public synchronized void stopNode() {
         if (runningTag) {
+            runningTag = false;
             interrupt();
         }
     }
