@@ -1,30 +1,28 @@
 package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
-import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
-import name.feinimouse.feinicoinplus.core.lambda.OrdinaryRunner;
+import name.feinimouse.feinicoinplus.core.lambda.InputRunner;
+import name.feinimouse.feinicoinplus.core.lambda.RunnerStopper;
 
 public class TimeExecutor {
     @Getter
     // 限制时间
     private long maxETime;
     @Getter
+    // 任务间隔
+    private long delayETime;
+
+    @Getter
     // 上一次单次任务的时间
     private long lastTaskETime;
     @Getter
     // 上一次完整流程的运行时间
     private long realETime;
-    @Getter
-    // 任务间隔
-    private long delayETime;
     
     private boolean running = false;
-    private OrdinaryRunner runner;
-    
-    public TimeExecutor(long maxETime) {
-        this.maxETime = maxETime;
-    }    
-    public boolean setRunner(OrdinaryRunner runner) {
+    private InputRunner<RunnerStopper> runner;
+
+    public boolean setRunner(InputRunner<RunnerStopper> runner) {
         if (isStop()) {
             this.runner = runner;
             return true;
@@ -63,7 +61,7 @@ public class TimeExecutor {
                 break;
             }
             
-            runner.run();
+            runner.run(this::stopExecutor);
             
             long taskStopTime = System.currentTimeMillis();
             lastTaskETime = taskStopTime - taskStartTime;
