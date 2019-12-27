@@ -1,5 +1,6 @@
 package name.feinimouse.feinicoinplus.core;
 
-public interface CoverObj<T> {
-    T obj();
+public interface CoverObj {
+    Object obj();
+    Class<?> objClass();
 }

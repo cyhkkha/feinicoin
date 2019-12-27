@@ -2,8 +2,8 @@ package name.feinimouse.feinicoinplus.core;
 
 import org.json.JSONObject;
 
-public interface BaseObj {
+public interface JsonAble {
     default JSONObject json() {
-        return new JSONObject(this);
+        return new JSONObject().put("obj", new JSONObject(this));
     }
 }
