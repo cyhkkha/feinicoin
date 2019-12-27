@@ -3,18 +3,18 @@ package name.feinimouse.feinicoinplus.core.block;
 import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.BaseObj;
-import name.feinimouse.feinicoinplus.core.HashObj;
+import name.feinimouse.feinicoinplus.core.SignObj;
 import org.json.JSONObject;
 
 public class Block implements BaseObj {
     @Getter @Setter
     private int id;
     @Getter @Setter
-    private HashObj<Account[]> accounts;
+    private SignObj<Account[]> accounts;
     @Getter @Setter
-    private HashObj<Asset[]> assets;
+    private SignObj<Asset[]> assets;
     @Getter @Setter
-    private HashObj<Transaction[]> transactions;
+    private SignObj<Transaction[]> transactions;
 
     @Getter @Setter
     private String preHash;

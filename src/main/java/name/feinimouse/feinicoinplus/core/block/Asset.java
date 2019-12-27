@@ -3,6 +3,7 @@ package name.feinimouse.feinicoinplus.core.block;
 import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.BaseObj;
+import name.feinimouse.feinicoinplus.core.SignObj;
 import name.feinimouse.utils.JsonUtils;
 import org.json.JSONObject;
 
@@ -19,8 +20,10 @@ public class Asset implements BaseObj, Cloneable {
     private String issuer;
     @Getter @Setter
     private int number;
+    
+    // TODO 使用一个队列
     @Getter @Setter
-    private AssetTrans[] histories;
+    private SignObj<AssetTrans>[] histories;
     @Getter @Setter
     private ConcurrentHashMap<String, String> exFunc;
     
@@ -33,11 +36,7 @@ public class Asset implements BaseObj, Cloneable {
     @Override
     protected Object clone() throws CloneNotSupportedException {
         Asset sub = (Asset) super.clone();
-        AssetTrans[] sunHistory = new AssetTrans[histories.length];
-        for (int i = 0; i < histories.length; i++) {
-            sunHistory[i] = histories[i].copy();
-        }
-        sub.setHistories(sunHistory);
+        sub.setHistories(histories.clone());
         sub.setExFunc(new ConcurrentHashMap<>(exFunc));
         return sub;
     }
