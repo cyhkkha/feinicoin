@@ -2,11 +2,11 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.BaseObj;
+import name.feinimouse.feinicoinplus.core.JsonAble;
 
 import java.util.Map;
 
-public class Transaction implements BaseObj {
+public class Transaction implements JsonAble {
     @Getter @Setter
     private String timestamp;
     @Getter @Setter

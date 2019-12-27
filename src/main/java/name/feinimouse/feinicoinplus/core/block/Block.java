@@ -2,19 +2,19 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.BaseObj;
+import name.feinimouse.feinicoinplus.core.JsonAble;
 import name.feinimouse.feinicoinplus.core.SignObj;
 import org.json.JSONObject;
 
-public class Block implements BaseObj {
+public class Block implements JsonAble {
     @Getter @Setter
     private int id;
     @Getter @Setter
-    private SignObj<Account[]> accounts;
+    private SignObj accounts;
     @Getter @Setter
-    private SignObj<Asset[]> assets;
+    private SignObj assets;
     @Getter @Setter
-    private SignObj<Transaction[]> transactions;
+    private SignObj transactions;
 
     @Getter @Setter
     private String preHash;
@@ -25,8 +25,10 @@ public class Block implements BaseObj {
 
     @Override
     public JSONObject json() {
-        return new JSONObject(this).put("accounts", accounts.json())
-            .put("assets", assets.json())
-            .put("transactions", transactions.json());
+        return new JSONObject()
+            .put("obj", new JSONObject(this)
+                .put("accounts", accounts.json())
+                .put("assets", assets.json())
+                .put("transactions", transactions.json()));
     }
 }

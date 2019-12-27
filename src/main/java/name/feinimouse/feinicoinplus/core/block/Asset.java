@@ -2,14 +2,15 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.BaseObj;
+import name.feinimouse.feinicoinplus.core.JsonAble;
 import name.feinimouse.feinicoinplus.core.SignObj;
 import name.feinimouse.utils.JsonUtils;
 import org.json.JSONObject;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Asset implements BaseObj, Cloneable {
+public class Asset implements JsonAble, Cloneable {
     @Getter @Setter
     private String address;
     @Getter @Setter
@@ -21,22 +22,23 @@ public class Asset implements BaseObj, Cloneable {
     @Getter @Setter
     private int number;
     
-    // TODO 使用一个队列
     @Getter @Setter
-    private SignObj<AssetTrans>[] histories;
+    private ConcurrentLinkedQueue<SignObj> histories;
     @Getter @Setter
     private ConcurrentHashMap<String, String> exFunc;
     
 
     @Override
     public JSONObject json() {
-        return new JSONObject(this).put("histories", JsonUtils.genJson(histories));
+        return new JSONObject()
+            .put("obj", new JSONObject(this)
+                .put("histories", JsonUtils.genJson(histories)));
     }
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
         Asset sub = (Asset) super.clone();
-        sub.setHistories(histories.clone());
+        sub.setHistories(new ConcurrentLinkedQueue<>(histories));
         sub.setExFunc(new ConcurrentHashMap<>(exFunc));
         return sub;
     }
