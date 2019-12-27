@@ -25,7 +25,7 @@ public class Carrier {
         this.network = network;
         this.nodeType = nodeType;
     }
-    
+
     public String gainType() {
         return new JSONObject().put("sender", sender)
             .put("nodeType", nodeType)
@@ -35,10 +35,20 @@ public class Carrier {
             .toString();
     }
     
-    public boolean notMatch(int nodeTYpe, int msgType, Class<?> attachClass) {
-        return !(getNodeType() == nodeTYpe
-            && getMsgType() == msgType
-            && getAttachClass() == attachClass);
+    public boolean notMatch(int nodeType, int msgType) {
+        return getNodeType() != nodeType
+            || getMsgType() != msgType;
     }
     
+    public boolean notMatchAttach(int nodeType, int msgType, Class<?> attachClass) {
+        return notMatch(nodeType, msgType) || !getAttachClass().equals(attachClass);
+    }
+
+    public boolean notMatchAttach(int nodeType, int msgType, Class<?> attachClass, Class<?> subClass) {
+        return notMatchAttach(nodeType, msgType, attachClass) || !getSubClass().equals(subClass);
+    }
+    
+    public boolean notMatchFetch(int nodeType, int msgType, Class<?> fetchClass) {
+        return notMatch(nodeType, msgType) || !getFetchClass().equals(fetchClass);
+    }
 }
