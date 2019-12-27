@@ -14,7 +14,7 @@ public class Transaction implements BaseObj {
     @Getter @Setter
     private String receiver;
     @Getter @Setter
-    private String number;
+    private int number;
     @Getter @Setter
     private Map<String, String> exFunc;
 }
