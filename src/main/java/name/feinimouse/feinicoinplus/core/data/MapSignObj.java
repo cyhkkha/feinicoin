@@ -5,23 +5,23 @@ import name.feinimouse.feinicoinplus.core.SignObj;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class MapSignObj<T> implements SignObj<T> {
+public abstract class MapSignObj implements SignObj {
 
     protected Map<String, String> signMap;
-    protected T core;
+    protected Object core;
 
-    public MapSignObj(T core) {
+    public MapSignObj(Object core) {
         this.core = core;
         signMap = new ConcurrentHashMap<>();
     }
 
-    public MapSignObj(T core, Map<String, String> signMap) {
+    public MapSignObj(Object core, Map<String, String> signMap) {
         this.core = core;
         this.signMap = signMap;
     }
     
     @Override
-    public SignObj<T> putSign(String signer, String sign) {
+    public SignObj putSign(String signer, String sign) {
         signMap.put(signer, sign);
         return this;
     }

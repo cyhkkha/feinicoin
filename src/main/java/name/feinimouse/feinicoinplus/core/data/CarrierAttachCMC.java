@@ -2,17 +2,17 @@ package name.feinimouse.feinicoinplus.core.data;
 
 import name.feinimouse.utils.ClassMapContainer;
 
-public class CarrierSubCMC extends ClassMapContainer<Carrier> {
-    public CarrierSubCMC(Class<?>[] supportClass) {
+public class CarrierAttachCMC extends ClassMapContainer<Carrier> {
+    public CarrierAttachCMC(Class<?>[] supportClass) {
         super(supportClass);
     }
 
     @Override
     public Class<?> getCoverClass(Carrier carrier) {
-        return carrier.getSubClass();
+        return carrier.getAttach().objClass();
     }
 
-    public CarrierSubCMC(Class<?>[] supportClass, int max) {
+    public CarrierAttachCMC(Class<?>[] supportClass, int max) {
         super(supportClass, max);
     }
 }

@@ -2,23 +2,27 @@ package name.feinimouse.feinicoinplus.core.data;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.BaseObj;
 import org.json.JSONObject;
 
 import java.util.Map;
 
-public class Packer extends MapSignObj<BaseObj> {
+public class Packer extends MapSignObj {
     
     @Getter @Setter
     private String hash;
     @Getter @Setter
     private String summary;
+    @Getter @Setter
+    private JSONObject json;
+    @Setter
+    private Class<?> objClass;
 
-    public Packer(BaseObj core) {
+    public Packer(Object core) {
         super(core);
+        objClass = core.getClass();
     }
 
-    public Packer(BaseObj core, Map<String, String> signMap) {
+    public Packer(Object core, Map<String, String> signMap) {
         super(core, signMap);
     }
 
@@ -34,19 +38,18 @@ public class Packer extends MapSignObj<BaseObj> {
     }
 
     @Override
-    public BaseObj obj() {
+    public Object obj() {
         return core;
     }
 
     @Override
     public Class<?> objClass() {
-        return core.getClass();
+        return objClass;
     }
 
     @Override
     public JSONObject json() {
-        return new JSONObject()
-            .put("obj", core.json())
+        return json
             .put("hash", hash)
             .put("signs", signMap);
     }
