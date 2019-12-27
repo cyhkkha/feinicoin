@@ -41,10 +41,13 @@ public class MurmurHashGen implements HashGen {
 
     @Override
     public <T extends BaseObj> HashObj<T[]> hashObj(T[] objArr, String[] summaryArr) {
-        if (objArr.length == 0 || summaryArr.length == 0) {
+        if (objArr.length != summaryArr.length) {
             return null;
         }
-        if (objArr.length == 1 && summaryArr.length == 1) {
+        if (objArr.length == 0) {
+            return null;
+        }
+        if (objArr.length == 1) {
             String hash = hash(summaryArr[0]);
             return new BaseMerkelObj<>(objArr, new String[]{ hash }, summaryArr);
         }
