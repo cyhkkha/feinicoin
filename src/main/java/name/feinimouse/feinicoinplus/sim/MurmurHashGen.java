@@ -5,8 +5,8 @@ import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
 import name.feinimouse.feinicoinplus.core.*;
 import name.feinimouse.feinicoinplus.core.HashGen;
-import name.feinimouse.feinicoinplus.core.data.BaseHashObj;
-import name.feinimouse.feinicoinplus.core.data.BaseMerkelObj;
+import name.feinimouse.feinicoinplus.core.data.Packer;
+import name.feinimouse.feinicoinplus.core.data.PackerArr;
 
 import java.nio.charset.StandardCharsets;
 import java.util.zip.Checksum;
@@ -35,28 +35,34 @@ public class MurmurHashGen implements HashGen {
     }
 
     @Override
-    public <T extends BaseObj> HashObj<T> hashObj(T obj, String summary) {
-        return new BaseHashObj<>(obj, summary, hash(summary));
+    public <T> HashObj hashObj(T obj, String summary) {
+        Packer packer = new Packer(obj);
+        packer.setHash(hash(summary));
+        packer.setSummary(summary);
+        return packer;
     }
 
     @Override
-    public <T extends BaseObj> HashObj<T[]> hashObj(T[] objArr, String[] summaryArr) {
+    public <T> HashObj hashObj(T[] objArr, String[] summaryArr) {
         if (objArr.length != summaryArr.length) {
             return null;
         }
         if (objArr.length == 0) {
             return null;
         }
+        PackerArr packerArr = new PackerArr(objArr, objArr[0].getClass());
+        packerArr.setSummaryArr(summaryArr);
         if (objArr.length == 1) {
-            String hash = hash(summaryArr[0]);
-            return new BaseMerkelObj<>(objArr, new String[]{ hash }, summaryArr);
+            packerArr.setHashTree(new String[] { hash(summaryArr[0]) });
+            return packerArr;
         }
         String[] hashTree = new String[objArr.length * 2 - 1];
         for (int i = objArr.length - 1; i >= 0; i--) {
             hashTree[i] = hash(summaryArr[i]);
         }
         genMerkelHash(0, hashTree);
-        return new BaseMerkelObj<>(objArr, hashTree, summaryArr);
+        packerArr.setHashTree(hashTree);
+        return packerArr;
     }
     
 
