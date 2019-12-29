@@ -9,7 +9,10 @@ public class CarrierAttachCMC extends ClassMapContainer<Carrier> {
 
     @Override
     public Class<?> getCoverClass(Carrier carrier) {
-        return carrier.getAttach().objClass();
+        if (carrier.getPacker() == null) {
+            return null;
+        }
+        return carrier.getPacker().objClass();
     }
 
     public CarrierAttachCMC(Class<?>[] supportClass, int max) {
