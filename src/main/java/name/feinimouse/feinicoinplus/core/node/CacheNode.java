@@ -30,20 +30,18 @@ public abstract class CacheNode extends AutoStopNode {
             container.put(carrier);
         } catch (UnrecognizedClassException e) {
             e.printStackTrace();
-            throw new BadCommitException("Commit class not support: " + nodeMsg().toString());
+            throw BadCommitException.classNotSupportException(this, carrier.getPacker().objClass());
         } catch (OverFlowException e) {
             e.printStackTrace();
-            throw new BadCommitException("Cache over flow: " + nodeMsg().toString());
+            throw  BadCommitException.commitOverflowException(this);
         }
     }
 
     @Override
     protected void resolveCommit(Carrier carrier) throws BadCommitException {
-        beforeCache(carrier);
         pushContainer(cacheWait, carrier);
     }
     
-    protected abstract void beforeCache(Carrier carrier) throws BadCommitException;
 
     @Override
     protected void afterWork() {
