@@ -2,11 +2,12 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.CoverObj;
 import name.feinimouse.feinicoinplus.core.Node;
 import name.feinimouse.feinicoinplus.core.NodeNetwork;
-import name.feinimouse.feinicoinplus.core.block.Transaction;
+import name.feinimouse.feinicoinplus.core.data.AttachMessage;
 import name.feinimouse.feinicoinplus.core.data.Carrier;
+import name.feinimouse.feinicoinplus.core.data.NodeMessage;
+import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
 import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
 import name.feinimouse.feinicoinplus.core.exception.NodeStopException;
@@ -87,15 +88,31 @@ public abstract class BaseNode extends Thread implements Node {
         afterWork();
     }
     
-    // 向节点提交一条消息
-    @Override
-    public void commit(Carrier carrier) throws BadCommitException {
+    protected void baseCheck(Carrier carrier) throws BadCommitException {
         if (isStop()) {
             throw BadCommitException.notWorkException(this);
         }
-        if (carrier.getSender() == null) {
+        NodeMessage message = carrier.getNodeMessage();
+        if (message == null || message.getSender() == null) {
             throw BadCommitException.noSenderException(this);
         }
+        if (message.getCallback() == null) {
+            message.setCallback(message.getSender());
+        }
+        if (carrier.getAttachMessage() == null) {
+            carrier.setAttachMessage(new AttachMessage());
+        }
+    }
+    
+    protected abstract void beforeCommit(Carrier carrier) throws BadCommitException;
+    
+    protected abstract void beforeFetch(Carrier carrier) throws BadCommitException;
+    
+    // 向节点提交一条消息
+    @Override
+    public void commit(Carrier carrier) throws BadCommitException {
+        baseCheck(carrier);
+        beforeCommit(carrier);
         resolveCommit(carrier);
     }
 
@@ -105,12 +122,8 @@ public abstract class BaseNode extends Thread implements Node {
     // 向节点拉取一条信息，节点将返回拉取的结果
     @Override
     public Carrier fetch(Carrier carrier) throws BadCommitException {
-        if (isStop()) {
-            throw BadCommitException.notWorkException(this);
-        }
-        if (carrier.getSender() == null) {
-            throw BadCommitException.noSenderException(this);
-        }
+        baseCheck(carrier);
+        beforeFetch(carrier);
         return resolveFetch(carrier);
     }
     
@@ -133,25 +146,25 @@ public abstract class BaseNode extends Thread implements Node {
             .put("nodeType", nodeType);
     }
     
-    protected void commitToNetwork(String receiver, int msgType, JSONObject msg, Carrier carrier) {
-        carrier.setReceiver(receiver);
-        carrier.setMsgType(msgType);
-        carrier.setSender(address);
-        carrier.setNetwork(network.getAddress());
-        carrier.setNodeType(nodeType);
-        carrier.setMsg(msg);
+    protected Carrier genCarrier(String receiver, int msgType, AttachMessage msg) {
+        NodeMessage message = new NodeMessage(nodeType, network.getAddress());
+        message.setMsgType(msgType);
+        message.setReceiver(receiver);
+        message.setSender(address);
+        message.setCallback(address);
+        if (msg == null) {
+            msg = new AttachMessage();
+        }
+        return new Carrier(message, msg);
+    }
+    
+    protected void commitToNetwork(Carrier carrier, Packer packer) {
+        carrier.setPacker(packer);
         network.commit(carrier);
     }
     
-    protected Carrier fetchFromNetWork(String receiver, int msgType, JSONObject msg, Class<?> fetchClass) {
-        Carrier carrier = new Carrier();
-        carrier.setFetchClass(Transaction.class);
-        carrier.setReceiver(receiver);
-        carrier.setMsgType(msgType);
-        carrier.setSender(address);
-        carrier.setNetwork(network.getAddress());
-        carrier.setNodeType(nodeType);
-        carrier.setMsg(msg);
+    protected Carrier fetchFromNetWork(Carrier carrier, Class<?> fetchClass) {
+        carrier.setFetchClass(fetchClass);
         return network.fetch(carrier);
     }
     
