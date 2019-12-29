@@ -7,7 +7,7 @@ import org.json.JSONObject;
 @Data
 public class AttachMessage implements JsonAble {
     private String msg;
-    private boolean verifiedResult;
+    private Boolean verifiedResult;
     private String verifier;
     private String order;
     private String enter;
