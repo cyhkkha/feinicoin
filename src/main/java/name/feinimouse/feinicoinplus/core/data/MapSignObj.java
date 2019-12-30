@@ -19,16 +19,18 @@ public abstract class MapSignObj implements SignObj {
         this.core = core;
         this.signMap = signMap;
     }
-    
+
     @Override
     public SignObj putSign(String signer, String sign) {
         signMap.put(signer, sign);
         return this;
     }
+
     @Override
     public String getSign(String signer) {
         return signMap.get(signer);
     }
+
     @Override
     public String deleteSign(String signer) {
         return signMap.remove(signer);
@@ -37,5 +39,10 @@ public abstract class MapSignObj implements SignObj {
     @Override
     public int signSize() {
         return signMap.size();
+    }
+
+    @Override
+    public boolean containSign(String signer) {
+        return signMap.containsKey(signer);
     }
 }
