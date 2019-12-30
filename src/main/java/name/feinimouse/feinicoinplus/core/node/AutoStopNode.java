@@ -18,17 +18,17 @@ public abstract class AutoStopNode extends BaseNode {
     // 最大工作时间(默认20秒)
     @Setter
     protected long maxGapTime = 20 * 1000;
-    
+
     public AutoStopNode(int nodeType) {
         super(nodeType);
     }
 
     public long getWorkingTime() {
-        return stopTime == 0 
+        return stopTime == 0
             ? System.currentTimeMillis() - startTime
             : stopTime - startTime;
     }
-    
+
     protected final void resetGap() {
         gapStartTime = System.currentTimeMillis();
     }
@@ -42,6 +42,7 @@ public abstract class AutoStopNode extends BaseNode {
     }
 
     @Override
+    @SuppressWarnings("RedundantThrows")
     protected void beforeWork() throws NodeRunningException {
         startTime = System.currentTimeMillis();
         startTime = 0;

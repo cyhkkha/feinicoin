@@ -2,13 +2,13 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
+import name.feinimouse.feinicoinplus.core.PropNeeded;
 import name.feinimouse.feinicoinplus.core.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.block.AssetTrans;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.SignGen;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
-import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
 import name.feinimouse.feinicoinplus.core.lambda.InOutRunner;
 
 
@@ -22,16 +22,20 @@ public class Verifier extends CacheNode {
     // 签名串
     protected PrivateKey privateKey;
     // 公钥仓库
-    @Setter @Getter
+    @Setter
+    @Getter
+    @PropNeeded
     protected PublicKeyHub publicKeyHub;
     // 签名机
-    @Setter @Getter
+    @Setter
+    @Getter
+    @PropNeeded
     protected SignGen signGen;
 
     // 节点类型为Verifier
     public Verifier(PrivateKey privateKey) {
         // 默认缓存的初始容量为30
-        super(NODE_VERIFIER, new CarrierAttachCMC(new Class[]{ Transaction.class, AssetTrans.class }, 30));
+        super(NODE_VERIFIER, new CarrierAttachCMC(new Class[]{Transaction.class, AssetTrans.class}, 30));
         this.privateKey = privateKey;
     }
 
@@ -55,7 +59,7 @@ public class Verifier extends CacheNode {
             resolveVerify(carrier, packer -> ((Transaction) packer.obj()).getSender());
         }
         if (cacheWait.hasObject(AssetTrans.class)) {
-            Carrier carrier  = cacheWait.poll(AssetTrans.class);
+            Carrier carrier = cacheWait.poll(AssetTrans.class);
             resolveVerify(carrier, packer -> ((AssetTrans) packer.obj()).getOperator());
         }
     }
@@ -87,15 +91,5 @@ public class Verifier extends CacheNode {
     @Override
     protected Carrier resolveFetch(Carrier carrier) throws BadCommitException {
         throw new BadCommitException("fetch not support: " + nodeMsg().toString());
-    }
-
-
-    @Override
-    protected void beforeWork() throws NodeRunningException {
-        if (signGen == null || publicKeyHub == null) {
-            throw NodeRunningException
-                .invalidStartException("verifier has not been set a signGen or a publicKekHub: " + nodeMsg().toString());
-        }
-        super.beforeWork();
     }
 }

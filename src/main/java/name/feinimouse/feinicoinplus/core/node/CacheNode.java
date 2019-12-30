@@ -11,9 +11,9 @@ import name.feinimouse.utils.UnrecognizedClassException;
 
 // 一个提供消息缓存的节点基类
 public abstract class CacheNode extends AutoStopNode {
-    
+
     protected ClassMapContainer<Carrier> cacheWait;
-    
+
     public CacheNode(int nodeType, ClassMapContainer<Carrier> cacheWait) {
         super(nodeType);
         this.cacheWait = cacheWait;
@@ -23,9 +23,8 @@ public abstract class CacheNode extends AutoStopNode {
         return cacheWait.setMax(max);
     }
 
-    
-    
-    public void pushContainer(ClassMapContainer<Carrier> container, Carrier carrier) throws BadCommitException{
+
+    public void pushContainer(ClassMapContainer<Carrier> container, Carrier carrier) throws BadCommitException {
         try {
             container.put(carrier);
         } catch (UnrecognizedClassException e) {
@@ -33,7 +32,7 @@ public abstract class CacheNode extends AutoStopNode {
             throw BadCommitException.classNotSupportException(this, carrier.getPacker().objClass());
         } catch (OverFlowException e) {
             e.printStackTrace();
-            throw  BadCommitException.commitOverflowException(this);
+            throw BadCommitException.commitOverflowException(this);
         }
     }
 
@@ -41,7 +40,7 @@ public abstract class CacheNode extends AutoStopNode {
     protected void resolveCommit(Carrier carrier) throws BadCommitException {
         pushContainer(cacheWait, carrier);
     }
-    
+
 
     @Override
     protected void afterWork() {
@@ -60,10 +59,11 @@ public abstract class CacheNode extends AutoStopNode {
         resolveGapPeriod();
         super.working();
     }
-    
+
     // 处理Transaction
     protected abstract void resolveCache() throws NodeRunningException, NodeStopException;
+
     // 处理无工作的空窗期
     protected abstract void resolveGapPeriod() throws NodeRunningException;
-    
+
 }

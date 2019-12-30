@@ -2,11 +2,11 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
+import name.feinimouse.feinicoinplus.core.PropNeeded;
 import name.feinimouse.feinicoinplus.core.block.AssetTrans;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
-import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
 import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.utils.OverFlowException;
 import name.feinimouse.utils.UnrecognizedClassException;
@@ -26,6 +26,7 @@ public class Order extends CacheNode {
     // verifier群的地址
     @Getter
     @Setter
+    @PropNeeded
     protected String verifiersAddress;
 
     public Order() {
@@ -66,26 +67,15 @@ public class Order extends CacheNode {
     }
 
     @Override
-    protected void beforeWork() throws NodeRunningException {
-        if (verifiersAddress == null) {
-            throw NodeRunningException
-                .invalidStartException("Order has not been set a verifiersAddress: " + nodeMsg().toString());
-        }
-        super.beforeWork();
-    }
-
-    @Override
     protected void resolveCache() {
         if (cacheWait.hasObject(Transaction.class)) {
-            Carrier carrier = cacheWait.poll(Transaction.class);
-            resolveCarrier(carrier);
+            resolveCarrier(cacheWait.poll(Transaction.class));
         }
         if (cacheWait.hasObject(AssetTrans.class)) {
-            Carrier carrier = cacheWait.poll(AssetTrans.class);
-            resolveCarrier(carrier);
+            resolveCarrier(cacheWait.poll(AssetTrans.class));
         }
     }
-    
+
     protected void resolveCarrier(Carrier carrier) {
         if (carrier != null) {
             NodeMessage nodeMessage = carrier.getNodeMessage();
@@ -114,7 +104,7 @@ public class Order extends CacheNode {
 
     protected void resolveVerifyCallback(Carrier carrier) {
         Packer packer = carrier.getPacker();
-        
+
         // 查看是否备案
         String hash = packer.gainHash();
         Carrier origin = verifyWait.get(hash);
@@ -124,7 +114,7 @@ public class Order extends CacheNode {
         }
         // 删除该备案状态
         verifyWait.remove(hash);
-        
+
         // 查看是否为已验证交易
         AttachMessage attachMessage = carrier.getAttachMessage();
         // 没有标识验证者则尝试从新走验证流程，若缓存溢出则丢弃
@@ -138,8 +128,8 @@ public class Order extends CacheNode {
             return;
         }
         // 如检测到verifier，但没有验证结果和签名，则证明是非法交易
-        if (attachMessage.getVerifiedResult() == null 
-            ||packer.getSign(attachMessage.getVerifier()) == null) {
+        if (attachMessage.getVerifiedResult() == null
+            || packer.getSign(attachMessage.getVerifier()) == null) {
             sendBackError();
             return;
         }
@@ -148,7 +138,7 @@ public class Order extends CacheNode {
             sendBackError();
             return;
         }
-        
+
         try {
             attachMessage.setOrder(address);
             if (attachMessage.getEnter() == null) {
@@ -162,9 +152,10 @@ public class Order extends CacheNode {
             e.printStackTrace();
         }
     }
-    
-    protected void sendBackError() {}
-    
+
+    protected void sendBackError() {
+    }
+
     @Override
     protected void resolveGapPeriod() {
     }
