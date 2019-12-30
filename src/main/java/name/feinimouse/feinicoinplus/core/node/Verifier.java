@@ -43,7 +43,7 @@ public class Verifier extends CacheNode {
     protected void beforeCommit(Carrier carrier) throws BadCommitException {
         NodeMessage nodeMessage = carrier.getNodeMessage();
         if (nodeMessage.notMatch(NODE_ORDER, MSG_COMMIT_VERIFIER)) {
-            throw BadCommitException.commitNotSupportException(this, nodeMessage);
+            throw BadCommitException.typeNotSupportException(this, nodeMessage);
         }
     }
 

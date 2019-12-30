@@ -34,7 +34,7 @@ public class BadCommitException extends Exception {
             +" , operation failed from: " + node.nodeMsg().toString());
     }
     
-    public static BadCommitException commitNotSupportException(Node node, NodeMessage nodeMessage) {
+    public static BadCommitException typeNotSupportException(Node node, NodeMessage nodeMessage) {
         if (nodeMessage == null) {
             return new BadCommitException(
                 "Null commit message from: " + node.nodeMsg().toString());    
@@ -42,5 +42,8 @@ public class BadCommitException extends Exception {
         return new BadCommitException(
             "Commit not support:" + nodeMessage.json().toString() +
                 ", from: " + node.nodeMsg().toString());
+    }
+    public static BadCommitException requestNotSupport(Node node, String request) {
+        return new BadCommitException("Request of " + request + " not support from node: " + node.nodeMsg().toString());
     }
 }

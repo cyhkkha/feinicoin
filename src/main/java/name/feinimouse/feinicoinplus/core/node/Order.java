@@ -47,7 +47,7 @@ public class Order extends CacheNode {
         NodeMessage nodeMessage = carrier.getNodeMessage();
         if (nodeMessage.notMatch(NODE_ENTER, MSG_COMMIT_ORDER)
             && nodeMessage.notMatch(NODE_VERIFIER, MSG_CALLBACK_VERIFIER)) {
-            throw BadCommitException.commitNotSupportException(this, nodeMessage);
+            throw BadCommitException.typeNotSupportException(this, nodeMessage);
         }
     }
 
