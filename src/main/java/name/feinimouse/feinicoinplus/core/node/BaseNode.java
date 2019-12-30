@@ -104,7 +104,8 @@ public abstract class BaseNode extends Thread implements Node {
                     field.setAccessible(true);
                     // 如果未设置属性则抛出异常
                     if (field.get(this) == null) {
-                        throw NodeRunningException.uninitializedException(this, field.getName());
+                        throw NodeRunningException.uninitializedException(this,
+                            field.getName() + ":" + field.getType());
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
