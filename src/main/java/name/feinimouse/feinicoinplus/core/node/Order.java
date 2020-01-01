@@ -41,7 +41,14 @@ public class Order extends CacheNode {
 
     @Override
     protected Carrier resolveFetch(Carrier carrier) {
-        return fetchWait.poll(carrier.getFetchClass());
+        Carrier savedCarrier = fetchWait.poll(carrier.getFetchClass());
+        if (savedCarrier == null) {
+            return null;
+        }
+        NodeMessage message = carrier.getNodeMessage();
+        Carrier nextCarrier = genCarrier(message.getCallback(), MSG_CALLBACK_ORDER, savedCarrier.getAttachMessage());
+        nextCarrier.setPacker(savedCarrier.getPacker());
+        return nextCarrier;
     }
 
     @Override
@@ -50,6 +57,22 @@ public class Order extends CacheNode {
         if (nodeMessage.notMatch(NODE_ENTER, MSG_COMMIT_ORDER)
             && nodeMessage.notMatch(NODE_VERIFIER, MSG_CALLBACK_VERIFIER)) {
             throw BadCommitException.typeNotSupportException(this, nodeMessage);
+        }
+        Packer packer = carrier.getPacker();
+        if (packer.objClass().equals(Transaction.class)
+            && packer.excludeSign(((Transaction) packer.obj()).getSender())) {
+            throw new BadCommitException("Invalid packer signature");
+        } else if (packer.objClass().equals(AssetTrans.class)) {
+            AssetTrans assetTrans = (AssetTrans) packer.obj();
+            // 正常情况下仅判断操作者是否签了名
+            if (packer.excludeSign(assetTrans.getOperator())
+                // 如果为携带交易的asset，则判断交易者是否也一并签了名
+                || Optional.ofNullable(assetTrans.getTransaction())
+                .map(Transaction::getSender)
+                .map(packer::excludeSign)
+                .orElse(false)) {
+                throw new BadCommitException("Invalid packer signature");
+            }
         }
     }
 
@@ -145,8 +168,6 @@ public class Order extends CacheNode {
             if (attachMessage.getEnter() == null) {
                 attachMessage.setEnter(origin.getAttachMessage().getEnter());
             }
-            Carrier nextCarrier = genCarrier(null, MSG_FETCH_ORDER, attachMessage);
-            nextCarrier.setPacker(packer);
             fetchWait.put(carrier);
         } catch (UnrecognizedClassException | OverFlowException e) {
             // 理论上该错误不会发生
