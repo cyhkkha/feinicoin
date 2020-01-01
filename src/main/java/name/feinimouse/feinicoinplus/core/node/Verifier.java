@@ -14,6 +14,7 @@ import name.feinimouse.feinicoinplus.core.lambda.InOutRunner;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Optional;
 
 // verifier基类
 //@Component("verifier")
@@ -54,32 +55,26 @@ public class Verifier extends CacheNode {
 
     @Override
     protected void resolveCache() {
-        if (cacheWait.hasObject(Transaction.class)) {
-            Carrier carrier = cacheWait.poll(Transaction.class);
-            resolveVerify(carrier, packer -> ((Transaction) packer.obj()).getSender());
-        }
-        if (cacheWait.hasObject(AssetTrans.class)) {
-            Carrier carrier = cacheWait.poll(AssetTrans.class);
-            resolveVerify(carrier, packer -> ((AssetTrans) packer.obj()).getOperator());
-        }
+        Optional.ofNullable(cacheWait.poll(Transaction.class))
+            .ifPresent(carrier -> resolveVerify(carrier, packer -> ((Transaction) packer.obj()).getSender()));
+        Optional.ofNullable(cacheWait.poll(AssetTrans.class))
+            .ifPresent(carrier -> resolveVerify(carrier, packer -> ((AssetTrans) packer.obj()).getOperator()));
     }
 
     protected void resolveVerify(Carrier carrier, InOutRunner<Packer, String> runner) {
-        if (carrier != null) {
-            Packer packer = carrier.getPacker();
-            AttachMessage attachMessage = carrier.getAttachMessage();
-            NodeMessage nodeMessage = carrier.getNodeMessage();
-            String callbackAddress = nodeMessage.getCallback();
-            String signer = runner.run(packer);
-            // 验证并签名
-            attachMessage.setVerifier(address);
-            PublicKey key = publicKeyHub.getKey(signer);
-            attachMessage.setVerifiedResult(signGen.verify(key, packer, signer));
-            signGen.sign(privateKey, packer, address);
-            // 回调给Order
-            Carrier nextCarrier = genCarrier(callbackAddress, MSG_CALLBACK_VERIFIER, attachMessage);
-            commitToNetwork(nextCarrier, packer);
-        }
+        Packer packer = carrier.getPacker();
+        AttachMessage attachMessage = carrier.getAttachMessage();
+        NodeMessage nodeMessage = carrier.getNodeMessage();
+        String callbackAddress = nodeMessage.getCallback();
+        String signer = runner.run(packer);
+        // 验证并签名
+        attachMessage.setVerifier(address);
+        PublicKey key = publicKeyHub.getKey(signer);
+        attachMessage.setVerifiedResult(signGen.verify(key, packer, signer));
+        signGen.sign(privateKey, packer, address);
+        // 回调给Order
+        Carrier nextCarrier = genCarrier(callbackAddress, MSG_CALLBACK_VERIFIER, attachMessage);
+        commitToNetwork(nextCarrier, packer);
     }
 
 
