@@ -214,8 +214,12 @@ public abstract class BaseNode extends Thread implements Node {
         network.commit(carrier);
     }
 
-    protected Carrier fetchFromNetWork(Carrier carrier, Class<?> fetchClass) {
-        carrier.setFetchClass(fetchClass);
-        return network.fetch(carrier);
+    protected Carrier fetchFromNetWork(Carrier fetchCarrier, Class<?> fetchClass) throws BadCommitException {
+        fetchCarrier.setFetchClass(fetchClass);
+        Carrier carrier = network.fetch(fetchCarrier);
+        if (carrier != null) {
+            requestCheck(carrier);
+        }
+        return carrier;
     }
 }

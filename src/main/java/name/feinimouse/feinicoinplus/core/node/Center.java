@@ -66,47 +66,45 @@ public class Center extends AutoStopNode {
         super.working();
     }
 
-    @Override
-    protected void requestCheck(Carrier carrier) throws BadCommitException {
-        // 基本检查
-        super.requestCheck(carrier);
-        // 必须存在packer
-        Packer packer = carrier.getPacker();
-        if (packer == null) {
-            throw BadCommitException.illegalRequestException(this);
-        }
-        // 必须存在各级操作者的信息
-        AttachMessage attachM = carrier.getAttachMessage();
-        if (attachM.getEnter() == null
-            || attachM.getVerifier() == null
-            || attachM.getOrder() == null
-            || attachM.getVerifiedResult() == null) {
-            throw new BadCommitException("Invalid attach message");
-        }
-        // 必须存在验证者的签名，且必须通过
-        if (packer.excludeSign(attachM.getVerifier())
-            || attachM.getVerifiedResult()) {
-            throw new BadCommitException("Failed verification");
-        }
-    }
-
     /////////////////
     //   拉   取   //
     /////////////////
     protected Carrier fetchValidTrans(Class<?> tClass) throws ControllableException {
         Carrier fetchCarrier = genCarrier(ordersAddress, MSG_FETCH_ORDER, null);
-        Carrier carrier = Optional.ofNullable(fetchFromNetWork(fetchCarrier, tClass))
-            .orElseThrow(() -> new ControllableException("fetch failed"));
         try {
-            requestCheck(carrier);
+            Carrier carrier = fetchFromNetWork(fetchCarrier, tClass);
+            if (carrier == null) {
+                throw new ControllableException("fetch failed");
+            }
+
+            Packer packer = carrier.getPacker();
+            // 如果fetch的结果不含packer，且packer的类型不符则丢弃
+            if (!Optional.ofNullable(packer)
+                .map(Packer::objClass)
+                .map(c -> c.equals(tClass))
+                .orElse(false)) {
+                throw new ControllableException("Invalid fetch result");
+            }
+
+            AttachMessage attachM = carrier.getAttachMessage();
+            // 必须存在各级操作者的信息
+            if (attachM.getEnter() == null
+                || attachM.getVerifier() == null
+                || attachM.getOrder() == null
+                || attachM.getVerifiedResult() == null) {
+                throw new BadCommitException("Invalid attach message");
+            }
+            
+            // 必须存在验证者的签名，且必须验证通过
+            if (packer.excludeSign(attachM.getVerifier())
+                || attachM.getVerifiedResult()) {
+                throw new ControllableException("Failed verification");
+            }
+            return carrier;
         } catch (BadCommitException e) {
             e.printStackTrace();
             throw new ControllableException("Fetch format is incorrect");
         }
-        if (!carrier.getPacker().objClass().equals(tClass)) {
-            throw new ControllableException("Invalid fetch result");
-        }
-        return carrier;
     }
 
     protected void transactionLoop(RunnerStopper stopper) {
