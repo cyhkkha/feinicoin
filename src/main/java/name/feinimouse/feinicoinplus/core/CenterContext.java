@@ -5,10 +5,10 @@ import name.feinimouse.feinicoinplus.core.block.Asset;
 
 public interface CenterContext {
     Account getAccount(String address);
-    boolean noAccount(String address);
+    boolean excludeAccount(String address);
     Account[] getAccounts();
     Asset getAsset(String address, String owner);
-    boolean noAsset(String address, String owner);
+    boolean excludeAsset(String address, String owner);
     Asset[] getAssets();
     void putAsset(Asset asset);
 }

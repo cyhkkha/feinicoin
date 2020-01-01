@@ -42,7 +42,7 @@ public abstract class MapSignObj implements SignObj {
     }
 
     @Override
-    public boolean containSign(String signer) {
-        return signMap.containsKey(signer);
+    public boolean excludeSign(String signer) {
+        return !signMap.containsKey(signer);
     }
 }

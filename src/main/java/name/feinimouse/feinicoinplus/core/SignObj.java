@@ -7,7 +7,7 @@ public interface SignObj extends HashObj {
 
     SignObj putSign(String signer, String sign);
 
-    boolean containSign(String signer);
+    boolean excludeSign(String signer);
 
     int signSize();
 }
