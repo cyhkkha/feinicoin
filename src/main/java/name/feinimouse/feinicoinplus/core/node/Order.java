@@ -7,11 +7,13 @@ import name.feinimouse.feinicoinplus.core.block.AssetTrans;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
+import name.feinimouse.feinicoinplus.core.exception.ControllableException;
 import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.utils.OverFlowException;
 import name.feinimouse.utils.UnrecognizedClassException;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 // Order基类
@@ -68,22 +70,21 @@ public class Order extends CacheNode {
 
     @Override
     protected void resolveCache() {
-        if (cacheWait.hasObject(Transaction.class)) {
-            resolveCarrier(cacheWait.poll(Transaction.class));
-        }
-        if (cacheWait.hasObject(AssetTrans.class)) {
-            resolveCarrier(cacheWait.poll(AssetTrans.class));
-        }
+        Optional.ofNullable(cacheWait.poll(Transaction.class)).ifPresent(this::resolveCarrier);
+        Optional.ofNullable(cacheWait.poll(AssetTrans.class)).ifPresent(this::resolveCarrier);
     }
 
     protected void resolveCarrier(Carrier carrier) {
-        if (carrier != null) {
-            NodeMessage nodeMessage = carrier.getNodeMessage();
-            if (nodeMessage.getMsgType() == MSG_COMMIT_ORDER) {
-                recordToVerify(carrier);
-            }
-            if (nodeMessage.getMsgType() == MSG_CALLBACK_VERIFIER) {
+        NodeMessage nodeMessage = carrier.getNodeMessage();
+        if (nodeMessage.getMsgType() == MSG_COMMIT_ORDER) {
+            recordToVerify(carrier);
+        }
+        if (nodeMessage.getMsgType() == MSG_CALLBACK_VERIFIER) {
+            try {
                 resolveVerifyCallback(carrier);
+            } catch (ControllableException e) {
+                e.printStackTrace();
+                sendBackError();
             }
         }
     }
@@ -102,16 +103,15 @@ public class Order extends CacheNode {
         commitToNetwork(nextCarrier, packer);
     }
 
-    protected void resolveVerifyCallback(Carrier carrier) {
+    protected void resolveVerifyCallback(Carrier carrier) throws ControllableException {
         Packer packer = carrier.getPacker();
 
         // 查看是否备案
         String hash = packer.gainHash();
-        Carrier origin = verifyWait.get(hash);
-        // 若没有含verify的备案状态，则直接丢弃
-        if (origin == null) {
-            return;
-        }
+        // 检查是否含verify的备案状态
+        Carrier origin = Optional.ofNullable(verifyWait.get(hash))
+            .orElseThrow(() -> new ControllableException("Not filed"));
+
         // 删除该备案状态
         verifyWait.remove(hash);
 
@@ -121,26 +121,27 @@ public class Order extends CacheNode {
         if (attachMessage.getVerifier() == null) {
             try {
                 cacheWait.put(origin);
-            } catch (UnrecognizedClassException | OverFlowException ex) {
-                ex.printStackTrace();
-                sendBackError();
+            } catch (UnrecognizedClassException | OverFlowException e) {
+                e.printStackTrace();
+                throw new ControllableException("re-verify cache overflow");
             }
-            return;
         }
+
         // 如检测到verifier，但没有验证结果和签名，则证明是非法交易
-        if (attachMessage.getVerifiedResult() == null
-            || packer.getSign(attachMessage.getVerifier()) == null) {
-            sendBackError();
-            return;
+        if (packer.getSign(attachMessage.getVerifier()) == null) {
+            throw new ControllableException("Invalid verification");
         }
+
         // 若验证为非法交易则返回原因
-        if (!attachMessage.getVerifiedResult()) {
-            sendBackError();
-            return;
+        boolean verifyResult = Optional.ofNullable(attachMessage.getVerifiedResult())
+            .orElseThrow(() -> new ControllableException("Invalid verification"));
+        if (!verifyResult) {
+            throw new ControllableException("Verification failed");
         }
 
         try {
             attachMessage.setOrder(address);
+            // 若没有检测到Enter则先引用原始交易的Enter
             if (attachMessage.getEnter() == null) {
                 attachMessage.setEnter(origin.getAttachMessage().getEnter());
             }
