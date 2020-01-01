@@ -37,6 +37,14 @@ public abstract class CacheNode extends AutoStopNode {
     }
 
     @Override
+    protected void requestCheck(Carrier carrier) throws BadCommitException {
+        super.requestCheck(carrier);
+        if (carrier.getPacker() == null) {
+            throw BadCommitException.illegalRequestException(this);
+        }
+    }
+
+    @Override
     protected void resolveCommit(Carrier carrier) throws BadCommitException {
         pushContainer(cacheWait, carrier);
     }
