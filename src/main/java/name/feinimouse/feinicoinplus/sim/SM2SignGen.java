@@ -76,6 +76,9 @@ public class SM2SignGen implements SignGen {
 
     // 这里注意Signature对象是不能复用的（我写的时候没有找到复用的办法）
     public boolean verify(PublicKey key, String sign, String msg) {
+        if (sign == null || msg == null) {
+            return false;
+        }
         try {
             Signature signature = Signature.getInstance(
                 GMObjectIdentifiers.sm2sign_with_sm3.toString(),
