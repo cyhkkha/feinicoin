@@ -15,6 +15,7 @@ import name.feinimouse.feinicoinplus.core.exception.NodeStopException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 // 一个节点即是一个线程
 public abstract class BaseNode extends Thread implements Node {
@@ -144,13 +145,23 @@ public abstract class BaseNode extends Thread implements Node {
         if (isStop()) {
             throw BadCommitException.notWorkException(this);
         }
-        NodeMessage message = carrier.getNodeMessage();
-        if (message == null || message.getSender() == null) {
+        // 不存在NodeMessage则为非法交易
+        NodeMessage message = Optional.ofNullable(carrier)
+            .map(Carrier::getNodeMessage)
+            .orElseThrow(() -> BadCommitException.illegalRequestException(this));
+        // 消息必须有发送者
+        if (message.getSender() == null) {
             throw BadCommitException.noSenderException(this);
         }
+        // 接收者需要和本机一样
+        if (message.getReceiver() == null || !message.getReceiver().equals(address)) {
+            throw BadCommitException.receiverException(this, message);
+        }
+        // 回调人未指定，则将其设为发送者
         if (message.getCallback() == null) {
             message.setCallback(message.getSender());
         }
+        // 若没有附加信息则创建一个空的附加信息
         if (carrier.getAttachMessage() == null) {
             carrier.setAttachMessage(new AttachMessage());
         }
@@ -194,10 +205,8 @@ public abstract class BaseNode extends Thread implements Node {
         message.setReceiver(receiver);
         message.setSender(address);
         message.setCallback(address);
-        if (msg == null) {
-            msg = new AttachMessage();
-        }
-        return new Carrier(message, msg);
+        AttachMessage nextMsg = Optional.ofNullable(msg).orElseGet(AttachMessage::new).copy();
+        return new Carrier(message, nextMsg);
     }
 
     protected void commitToNetwork(Carrier carrier, Packer packer) {
