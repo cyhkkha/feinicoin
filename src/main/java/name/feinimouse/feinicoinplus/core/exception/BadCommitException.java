@@ -20,6 +20,15 @@ public class BadCommitException extends Exception {
         return new BadCommitException(
             "Commit without origin, and commit Failed from: " + node.nodeMsg().toString());
     }
+    
+    public static BadCommitException receiverException(Node node, NodeMessage message) {
+        return new BadCommitException(
+            "Error receiver of [" + message.getReceiver() + "] in Node: " + node.nodeMsg().toString());
+    }
+    
+    public static BadCommitException illegalRequestException(Node node) {
+        return new BadCommitException("Receive illegal request in node: " + node.nodeMsg().toString());
+    }
 
     public static BadCommitException commitOverflowException(Node node) {
         return new BadCommitException(
@@ -27,18 +36,11 @@ public class BadCommitException extends Exception {
     }
 
     public static BadCommitException classNotSupportException(Node node, Class<?> aClass) {
-        if (aClass == null) {
-            return new BadCommitException("Null operation class type, operation failed from: " + node.nodeMsg().toString());
-        }
         return new BadCommitException("Error operation class type of " + aClass
             +" , operation failed from: " + node.nodeMsg().toString());
     }
     
     public static BadCommitException typeNotSupportException(Node node, NodeMessage nodeMessage) {
-        if (nodeMessage == null) {
-            return new BadCommitException(
-                "Null commit message from: " + node.nodeMsg().toString());    
-        }
         return new BadCommitException(
             "Commit not support:" + nodeMessage.json().toString() +
                 ", from: " + node.nodeMsg().toString());
