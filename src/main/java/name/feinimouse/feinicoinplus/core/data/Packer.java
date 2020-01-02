@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.CoverObj;
 import name.feinimouse.feinicoinplus.core.HashObj;
-import name.feinimouse.feinicoinplus.core.JsonAble;
+import name.feinimouse.feinicoinplus.core.BlockObj;
 
-import java.util.Map;
+import java.util.HashMap;
 
 public class Packer extends MapSignObj implements HashObj, CoverObj {
 
@@ -17,12 +17,12 @@ public class Packer extends MapSignObj implements HashObj, CoverObj {
     @Setter
     private Class<?> objClass;
 
-    public Packer(JsonAble core) {
+    public Packer(BlockObj core) {
         super(core);
         objClass = core.getClass();
     }
 
-    public Packer(Object core, Map<String, String> signMap) {
+    public Packer(Object core, HashMap<String, String> signMap) {
         super(core, signMap);
     }
 

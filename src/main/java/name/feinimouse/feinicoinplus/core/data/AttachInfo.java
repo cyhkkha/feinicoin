@@ -1,10 +1,9 @@
 package name.feinimouse.feinicoinplus.core.data;
 
 import lombok.Data;
-import name.feinimouse.feinicoinplus.core.JsonAble;
 
 @Data
-public class AttachInfo implements JsonAble, Cloneable {
+public class AttachInfo implements Cloneable {
     private String msg;
     private Boolean verifiedResult;
     private String verifier;

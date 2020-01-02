@@ -1,10 +1,9 @@
 package name.feinimouse.feinicoinplus.core.data;
 
 import lombok.Data;
-import name.feinimouse.feinicoinplus.core.JsonAble;
 
 @Data
-public class NetInfo implements JsonAble {
+public class NetInfo {
     private String sender;
     private String receiver;
     private String network;

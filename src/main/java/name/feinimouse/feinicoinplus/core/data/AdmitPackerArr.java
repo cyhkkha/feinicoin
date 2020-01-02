@@ -1,10 +1,10 @@
 package name.feinimouse.feinicoinplus.core.data;
 
 import lombok.Data;
-import name.feinimouse.feinicoinplus.core.JsonAble;
+import name.feinimouse.feinicoinplus.core.HashObj;
 
 @Data
-public class AdmitPackerArr implements JsonAble, Cloneable {
+public class AdmitPackerArr implements HashObj, Cloneable {
     private String hash;
     private AdmitPacker[] arr;
     private Class<?> objClass;

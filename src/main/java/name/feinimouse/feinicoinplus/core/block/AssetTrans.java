@@ -1,12 +1,12 @@
 package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Data;
-import name.feinimouse.feinicoinplus.core.JsonAble;
+import name.feinimouse.feinicoinplus.core.BlockObj;
 
 import java.util.HashMap;
 
 @Data
-public class AssetTrans implements JsonAble {
+public class AssetTrans implements BlockObj {
     private String address;
     private String timestamp;
     private String operation;
