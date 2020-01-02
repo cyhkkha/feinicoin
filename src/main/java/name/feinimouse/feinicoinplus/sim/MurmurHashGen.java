@@ -4,8 +4,6 @@ import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
 import name.feinimouse.feinicoinplus.core.BlockObj;
 import name.feinimouse.feinicoinplus.core.HashGen;
-import name.feinimouse.feinicoinplus.core.SummaryUtils;
-import name.feinimouse.feinicoinplus.core.block.Block;
 import name.feinimouse.feinicoinplus.core.data.*;
 
 import java.nio.charset.StandardCharsets;
@@ -42,13 +40,13 @@ public class MurmurHashGen implements HashGen {
     }
     
     @Override
-    public SimpleHashObj hash(BlockObj blockObj, String summary) {
-        return new SimpleHashObj(blockObj, summary);
+    public HashCover hash(BlockObj blockObj, String summary) {
+        return new HashCover(blockObj, summary);
     }
     
     @Override
-    public MerkelObj hash(BlockObj[] blockObjs, String[] summaryArr, Class<?> aClass) {
-        SimpleHashObj[] objs = new SimpleHashObj[blockObjs.length];
+    public MerkelArr hash(BlockObj[] blockObjs, String[] summaryArr, Class<?> aClass) {
+        HashCover[] objs = new HashCover[blockObjs.length];
         for (int i = 0; i < blockObjs.length; i ++) {
             objs[i] = hash(blockObjs[i], summaryArr[i]);
         }
@@ -74,19 +72,19 @@ public class MurmurHashGen implements HashGen {
         return new AdmitPackerArr(hashTree[0], objArr, aClass);
     }
     
-    private MerkelObj hash(SimpleHashObj[] objArr, Class<?> aClass) {
+    private MerkelArr hash(HashCover[] objArr, Class<?> aClass) {
         if (objArr.length == 0) {
             return null;
         }
         if (objArr.length == 1) {
-            return new MerkelObj(objArr[0].getHash(), objArr, aClass);
+            return new MerkelArr(objArr[0].getHash(), objArr, aClass);
         }
         String[] hashTree = new String[objArr.length * 2 - 1];
         for (int i = objArr.length - 1; i >= 0; i--) {
             hashTree[i] = objArr[i].getHash();
         }
         genMerkelHash(0, hashTree);
-        return new MerkelObj(hashTree[0], objArr, aClass);
+        return new MerkelArr(hashTree[0], objArr, aClass);
     }
     
     private String genMerkelHash(int root, String[] hashTree) {

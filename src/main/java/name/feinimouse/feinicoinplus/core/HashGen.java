@@ -6,6 +6,6 @@ public interface HashGen {
     String hash(String content);
     Packer hash(Packer obj, String summary);
     AdmitPackerArr hash(AdmitPacker[] objArr, String[] summaryArr, Class<?> aClass);
-    MerkelObj hash(BlockObj[] blockObjs, String[] summaryArr, Class<?> aClass);
-    SimpleHashObj hash(BlockObj blockObj, String summary);
+    MerkelArr hash(BlockObj[] blockObjs, String[] summaryArr, Class<?> aClass);
+    HashCover hash(BlockObj blockObj, String summary);
 }

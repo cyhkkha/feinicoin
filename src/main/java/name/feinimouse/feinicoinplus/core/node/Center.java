@@ -112,7 +112,7 @@ public class Center extends AutoStopNode {
             }
             transTree = hashGen.hash(transArr, summaryArr, Transaction.class);
         }
-        MerkelObj accountTree;
+        MerkelArr accountTree;
         {
             Account[] accounts = content.getAccounts();
             String[] summaryArr = Arrays.stream(accounts).map(SummaryUtils::gen).toArray(String[]::new);
