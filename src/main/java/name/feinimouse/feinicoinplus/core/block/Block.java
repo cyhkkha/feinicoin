@@ -1,17 +1,18 @@
 package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Data;
-import name.feinimouse.feinicoinplus.core.JsonAble;
-import name.feinimouse.feinicoinplus.core.SignObj;
+import name.feinimouse.feinicoinplus.core.BlockObj;
+import name.feinimouse.feinicoinplus.core.data.AdmitPackerArr;
+import name.feinimouse.feinicoinplus.core.data.MerkelObj;
 
 import java.util.HashMap;
 
 @Data
-public class Block implements JsonAble {
+public class Block implements BlockObj {
     private int id;
-    private SignObj accounts;
-    private SignObj assets;
-    private SignObj transactions;
+    private MerkelObj accounts;
+    private MerkelObj assets;
+    private AdmitPackerArr transactions;
 
     private String preHash;
     private long timestamp;
