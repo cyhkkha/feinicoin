@@ -4,19 +4,20 @@ import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.*;
 import name.feinimouse.feinicoinplus.core.block.*;
-import name.feinimouse.feinicoinplus.core.data.AttachMessage;
-import name.feinimouse.feinicoinplus.core.data.Carrier;
-import name.feinimouse.feinicoinplus.core.data.Packer;
+import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.exception.*;
 import name.feinimouse.feinicoinplus.core.lambda.RunnerStopper;
+import name.feinimouse.utils.StopwatchExecutor;
+import name.feinimouse.utils.TimerExecutor;
 
 import java.security.PrivateKey;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Center extends AutoStopNode {
-    protected Queue<Packer> transCache;
+    protected Queue<Carrier> transCache;
 
     @Getter
     @Setter
@@ -46,8 +47,11 @@ public class Center extends AutoStopNode {
     protected PrivateKey privateKey;
 
     // 为了使出块时间控制在1s内，因此需要通过判断上一次网络的同步时间来设置fetch时间
-    protected int fetchTime = 3 * 100;
-    protected int lastSynchronizeTime = 8 * 100;
+    protected long fetchTime = 3 * 100;
+    @Getter @Setter
+    protected long periodTime = 1000;
+    @Getter @Setter
+    protected long fetchInterval = 10;
 
     public Center(PrivateKey privateKey) {
         super(NODE_CENTER);
@@ -62,14 +66,75 @@ public class Center extends AutoStopNode {
 
     @Override
     protected void working() throws NodeRunningException, NodeStopException {
-        // TODO
+
+        // 定时拉取并处理
+        StopwatchExecutor fetcher = new StopwatchExecutor(fetchInterval, fetchTime, stopper -> {
+            transactionLoop(stopper);
+            assetTransLoop(stopper);
+        });
+        fetcher.start();
+        
+        // 生产区块
+        TimerExecutor<Block> producer = new TimerExecutor<>(this::produceBlock);
+        Block block = producer.start();
+        long produceTime = producer.getRunTime();
+        
+        // 同步区块
+        TimerExecutor<?> synchronizer = new TimerExecutor<>(() -> synchronizeBlock(block));
+        synchronizer.start();
+        long syncTime = synchronizer.getRunTime();
+        
+        // 如果100ms的时间都不够拉取，则抛出异常
+        if (periodTime < syncTime + produceTime + 100) {
+            throw new NodeRunningException("sync or produce timeout: " 
+                + "[sync: "+ syncTime + ", produce: "+ produceTime +"]");
+        }
+        
+        fetchTime = periodTime - syncTime + produceTime;
+        
         super.working();
     }
 
+    private Block produceBlock() {
+        if (isStop()) {
+            return null;
+        }
+        AdmitPackerArr transTree;
+        {
+            int transSize = transCache.size();
+            AdmitPacker[] transArr = new AdmitPacker[transSize];
+            String[] summaryArr = new String[transSize];
+            for (int i = 0; i < transSize; i++) {
+                //noinspection ConstantConditions
+                AdmitPacker admitPacker = transCache.poll().admit();
+                summaryArr[i] = SummaryUtils.gen(admitPacker);
+                transArr[i] = admitPacker;
+            }
+            transTree = hashGen.hash(transArr, summaryArr, Transaction.class);
+        }
+        MerkelObj accountTree;
+        {
+            Account[] accounts = content.getAccounts();
+            String[] summaryArr = Arrays.stream(accounts).map(SummaryUtils::gen).toArray(String[]::new);
+            accountTree = hashGen.hash(accounts, summaryArr, Account.class);
+        }
+        
+        // TODO
+        return null;
+    }
+    
+    
+    private void synchronizeBlock(Block block) {
+        if (isStop() || block == null) {
+            return;
+        }
+        // TODO
+    }
+    
     /////////////////
     //   拉   取   //
     /////////////////
-    protected Carrier fetchValidTrans(Class<?> tClass) throws ControllableException {
+    private Carrier fetchValidTrans(Class<?> tClass) throws ControllableException {
         Carrier fetchCarrier = genCarrier(ordersAddress, MSG_FETCH_ORDER, null);
         try {
             Carrier carrier = fetchFromNetWork(fetchCarrier, tClass);
@@ -86,7 +151,7 @@ public class Center extends AutoStopNode {
                 throw new ControllableException("Invalid fetch result");
             }
 
-            AttachMessage attachM = carrier.getAttachMessage();
+            AttachInfo attachM = carrier.getAttachInfo();
             // 必须存在各级操作者的信息
             if (attachM.getEnter() == null
                 || attachM.getVerifier() == null
@@ -107,32 +172,32 @@ public class Center extends AutoStopNode {
         }
     }
 
-    protected void transactionLoop(RunnerStopper stopper) {
+    private void transactionLoop(RunnerStopper stopper) {
         if (isStop()) {
             stopper.stop();
             return;
         }
         try {
             Carrier carrier = fetchValidTrans(Transaction.class);
-            Packer packer = carrier.getPacker();
-            Transaction transaction = (Transaction) packer.obj();
+            Transaction transaction = (Transaction) carrier.getPacker().obj();
             content.admitTransaction(transaction);
-            transCache.add(packer);
+            transCache.add(carrier);
+            resetGap();
         } catch (ControllableException | TransAdmitFailedException e) {
             e.printStackTrace();
         }
     }
 
-    protected void assetTransLoop(RunnerStopper stopper) {
+    private void assetTransLoop(RunnerStopper stopper) {
         if (isStop()) {
             stopper.stop();
             return;
         }
         try {
             Carrier carrier = fetchValidTrans(AssetTrans.class);
-            Packer packer = carrier.getPacker();
-            AssetTrans assetTrans = (AssetTrans) packer.obj();
+            AssetTrans assetTrans = (AssetTrans) carrier.getPacker().obj();
             content.admitAssetTrans(assetTrans);
+            resetGap();
         } catch (ControllableException | TransAdmitFailedException e) {
             e.printStackTrace();
         }
