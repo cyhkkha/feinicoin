@@ -3,19 +3,28 @@ package name.feinimouse.feinicoinplus.core.data;
 import lombok.Data;
 import name.feinimouse.feinicoinplus.core.JsonAble;
 
-import java.util.HashMap;
-import java.util.Optional;
-
 @Data
-public class AdmitPackerArr<T extends JsonAble> implements JsonAble {
-    private String enter;
-    private String order;
-    private String verifier;
-    private HashMap<String, String> signMap;
+public class AdmitPackerArr implements JsonAble, Cloneable {
     private String hash;
-    private PackerArr<T> packerArr;
+    private AdmitPacker[] arr;
+    private Class<?> objClass;
+    
+    public AdmitPackerArr() {}
 
-    public String getHash() {
-        return Optional.ofNullable(hash).orElse(packerArr.getHash());
+    public AdmitPackerArr(String hash, AdmitPacker[] arr, Class<?> objClass) {
+        this.hash = hash;
+        this.arr = arr;
+        this.objClass = objClass;
+    }
+
+    public AdmitPackerArr copy() {
+        try {
+            AdmitPackerArr result = (AdmitPackerArr) clone();
+            result.setArr(arr.clone());
+            return result;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

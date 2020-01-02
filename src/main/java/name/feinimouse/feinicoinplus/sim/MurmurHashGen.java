@@ -3,10 +3,9 @@ package name.feinimouse.feinicoinplus.sim;
 import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
 import name.feinimouse.feinicoinplus.core.HashGen;
-import name.feinimouse.feinicoinplus.core.JsonAble;
 import name.feinimouse.feinicoinplus.core.data.AdmitPacker;
 import name.feinimouse.feinicoinplus.core.data.Packer;
-import name.feinimouse.feinicoinplus.core.data.PackerArr;
+import name.feinimouse.feinicoinplus.core.data.AdmitPackerArr;
 
 import java.nio.charset.StandardCharsets;
 import java.util.zip.Checksum;
@@ -42,7 +41,7 @@ public class MurmurHashGen implements HashGen {
     }
 
     @Override
-    public  <T extends JsonAble> PackerArr<T> hash(AdmitPacker<T>[] objArr, String[] summaryArr) {
+    public AdmitPackerArr hash(AdmitPacker[] objArr, String[] summaryArr, Class<?> aClass) {
         if (objArr.length != summaryArr.length) {
             return null;
         }
@@ -50,14 +49,14 @@ public class MurmurHashGen implements HashGen {
             return null;
         }
         if (objArr.length == 1) {
-            return new PackerArr<>(objArr, hash(summaryArr[0]));
+            return new AdmitPackerArr(hash(summaryArr[0]), objArr, aClass);
         }
         String[] hashTree = new String[objArr.length * 2 - 1];
         for (int i = objArr.length - 1; i >= 0; i--) {
             hashTree[i] = hash(summaryArr[i]);
         }
         genMerkelHash(0, hashTree);
-        return new PackerArr<>(objArr, hashTree[0]);
+        return new AdmitPackerArr(hashTree[0], objArr, aClass);
     }
     
 

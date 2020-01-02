@@ -25,4 +25,8 @@ public class Carrier {
         return netInfo.notMatch(nodeType, msgType) || !getFetchClass().equals(fetchClass);
     }
     
+    public AdmitPacker admit() {
+        return new AdmitPacker(attachInfo, packer);
+    }
+    
 }

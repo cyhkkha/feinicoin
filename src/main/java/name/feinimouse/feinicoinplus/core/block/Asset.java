@@ -2,7 +2,7 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Data;
 import name.feinimouse.feinicoinplus.core.JsonAble;
-import name.feinimouse.feinicoinplus.core.data.PackerArr;
+import name.feinimouse.feinicoinplus.core.data.AdmitPackerArr;
 
 import java.util.HashMap;
 
@@ -14,7 +14,7 @@ public class Asset implements JsonAble, Cloneable {
     private String issuer;
     private int number;
     
-    private PackerArr<AssetTrans> histories;
+    private AdmitPackerArr histories;
     private HashMap<String, String> exFunc;
 
     @Override
