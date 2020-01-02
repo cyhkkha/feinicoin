@@ -1,7 +1,7 @@
 package name.feinimouse.feinicoinplus.core.exception;
 
 import name.feinimouse.feinicoinplus.core.Node;
-import name.feinimouse.feinicoinplus.core.data.NodeMessage;
+import name.feinimouse.feinicoinplus.core.data.NetInfo;
 
 public class BadCommitException extends Exception {
     public BadCommitException() {
@@ -21,7 +21,7 @@ public class BadCommitException extends Exception {
             "Commit without origin, and commit Failed from: " + node.nodeMsg().toString());
     }
     
-    public static BadCommitException receiverException(Node node, NodeMessage message) {
+    public static BadCommitException receiverException(Node node, NetInfo message) {
         return new BadCommitException(
             "Error receiver of [" + message.getReceiver() + "] in Node: " + node.nodeMsg().toString());
     }
@@ -40,10 +40,10 @@ public class BadCommitException extends Exception {
             +" , operation failed from: " + node.nodeMsg().toString());
     }
     
-    public static BadCommitException typeNotSupportException(Node node, NodeMessage nodeMessage) {
+    public static BadCommitException typeNotSupportException(Node node, NetInfo netInfo) {
         return new BadCommitException(
-            "Commit not support:" + nodeMessage.json().toString() +
-                ", from: " + node.nodeMsg().toString());
+            "Commit not support: [ msgType: " + netInfo.getMsgType() + ", nodeType: " + netInfo.getNodeType() +
+                " ], from: " + node.nodeMsg().toString());
     }
     public static BadCommitException requestNotSupport(Node node, String request) {
         return new BadCommitException("Request of " + request + " not support from node: " + node.nodeMsg().toString());

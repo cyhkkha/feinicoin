@@ -1,45 +1,27 @@
 package name.feinimouse.feinicoinplus.core.block;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import name.feinimouse.feinicoinplus.core.JsonAble;
-import name.feinimouse.feinicoinplus.core.SignObj;
-import name.feinimouse.utils.JsonUtils;
-import org.json.JSONObject;
+import name.feinimouse.feinicoinplus.core.data.PackerArr;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.HashMap;
 
+@Data
 public class Asset implements JsonAble, Cloneable {
-    @Getter @Setter
     private String address;
-    @Getter @Setter
     private String type;
-    @Getter @Setter
     private String owner;
-    @Getter @Setter
     private String issuer;
-    @Getter @Setter
     private int number;
     
-    @Getter @Setter
-    private ConcurrentLinkedQueue<SignObj> histories;
-    @Getter @Setter
-    private ConcurrentHashMap<String, String> exFunc;
-    
-
-    @Override
-    public JSONObject json() {
-        return new JSONObject()
-            .put("obj", new JSONObject(this)
-                .put("histories", JsonUtils.genJson(histories)));
-    }
+    private PackerArr<AssetTrans> histories;
+    private HashMap<String, String> exFunc;
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
         Asset sub = (Asset) super.clone();
-        sub.setHistories(new ConcurrentLinkedQueue<>(histories));
-        sub.setExFunc(new ConcurrentHashMap<>(exFunc));
+        sub.setHistories(histories.copy());
+        sub.setExFunc(new HashMap<>(exFunc));
         return sub;
     }
 

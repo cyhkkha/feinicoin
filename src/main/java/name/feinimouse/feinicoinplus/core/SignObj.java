@@ -1,6 +1,6 @@
 package name.feinimouse.feinicoinplus.core;
 
-public interface SignObj extends HashObj {
+public interface SignObj {
     String getSign(String signer);
 
     String deleteSign(String signer);

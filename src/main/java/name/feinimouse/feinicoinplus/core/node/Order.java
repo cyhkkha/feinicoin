@@ -45,18 +45,18 @@ public class Order extends CacheNode {
         if (savedCarrier == null) {
             return null;
         }
-        NodeMessage message = carrier.getNodeMessage();
-        Carrier nextCarrier = genCarrier(message.getCallback(), MSG_CALLBACK_ORDER, savedCarrier.getAttachMessage());
+        NetInfo netInfo = carrier.getNetInfo();
+        Carrier nextCarrier = genCarrier(netInfo.getCallback(), MSG_CALLBACK_ORDER, savedCarrier.getAttachInfo());
         nextCarrier.setPacker(savedCarrier.getPacker());
         return nextCarrier;
     }
 
     @Override
     protected void beforeCommit(Carrier carrier) throws BadCommitException {
-        NodeMessage nodeMessage = carrier.getNodeMessage();
-        if (nodeMessage.notMatch(NODE_ENTER, MSG_COMMIT_ORDER)
-            && nodeMessage.notMatch(NODE_VERIFIER, MSG_CALLBACK_VERIFIER)) {
-            throw BadCommitException.typeNotSupportException(this, nodeMessage);
+        NetInfo netInfo = carrier.getNetInfo();
+        if (netInfo.notMatch(NODE_ENTER, MSG_COMMIT_ORDER)
+            && netInfo.notMatch(NODE_VERIFIER, MSG_CALLBACK_VERIFIER)) {
+            throw BadCommitException.typeNotSupportException(this, netInfo);
         }
         Packer packer = carrier.getPacker();
         if (packer.objClass().equals(Transaction.class)
@@ -98,11 +98,11 @@ public class Order extends CacheNode {
     }
 
     protected void resolveCarrier(Carrier carrier) {
-        NodeMessage nodeMessage = carrier.getNodeMessage();
-        if (nodeMessage.getMsgType() == MSG_COMMIT_ORDER) {
+        NetInfo netInfo = carrier.getNetInfo();
+        if (netInfo.getMsgType() == MSG_COMMIT_ORDER) {
             recordToVerify(carrier);
         }
-        if (nodeMessage.getMsgType() == MSG_CALLBACK_VERIFIER) {
+        if (netInfo.getMsgType() == MSG_CALLBACK_VERIFIER) {
             try {
                 resolveVerifyCallback(carrier);
             } catch (ControllableException e) {
@@ -115,13 +115,13 @@ public class Order extends CacheNode {
     protected void recordToVerify(Carrier carrier) {
         Packer packer = carrier.getPacker();
         // 对于重复交易直接忽略
-        if (verifyWait.containsKey(packer.gainHash())) {
+        if (verifyWait.containsKey(packer.getHash())) {
             return;
         }
         // 存入verifier备案
-        verifyWait.put(packer.gainHash(), carrier);
-        AttachMessage attachMessage = carrier.getAttachMessage();
-        Carrier nextCarrier = genCarrier(verifiersAddress, MSG_COMMIT_VERIFIER, attachMessage);
+        verifyWait.put(packer.getHash(), carrier);
+        AttachInfo attachInfo = carrier.getAttachInfo();
+        Carrier nextCarrier = genCarrier(verifiersAddress, MSG_COMMIT_VERIFIER, attachInfo);
         // 提交给verifier集群
         commitToNetwork(nextCarrier, packer);
     }
@@ -130,7 +130,7 @@ public class Order extends CacheNode {
         Packer packer = carrier.getPacker();
 
         // 查看是否备案
-        String hash = packer.gainHash();
+        String hash = packer.getHash();
         // 检查是否含verify的备案状态
         Carrier origin = Optional.ofNullable(verifyWait.get(hash))
             .orElseThrow(() -> new ControllableException("Not filed"));
@@ -139,9 +139,9 @@ public class Order extends CacheNode {
         verifyWait.remove(hash);
 
         // 查看是否为已验证交易
-        AttachMessage attachMessage = carrier.getAttachMessage();
+        AttachInfo attachInfo = carrier.getAttachInfo();
         // 没有标识验证者则尝试从新走验证流程，若缓存溢出则丢弃
-        if (attachMessage.getVerifier() == null) {
+        if (attachInfo.getVerifier() == null) {
             try {
                 cacheWait.put(origin);
             } catch (UnrecognizedClassException | OverFlowException e) {
@@ -151,22 +151,22 @@ public class Order extends CacheNode {
         }
 
         // 如检测到verifier，但没有验证结果和签名，则证明是非法交易
-        if (packer.getSign(attachMessage.getVerifier()) == null) {
+        if (packer.getSign(attachInfo.getVerifier()) == null) {
             throw new ControllableException("Invalid verification");
         }
 
         // 若验证为非法交易则返回原因
-        boolean verifyResult = Optional.ofNullable(attachMessage.getVerifiedResult())
+        boolean verifyResult = Optional.ofNullable(attachInfo.getVerifiedResult())
             .orElseThrow(() -> new ControllableException("Invalid verification"));
         if (!verifyResult) {
             throw new ControllableException("Verification failed");
         }
 
         try {
-            attachMessage.setOrder(address);
+            attachInfo.setOrder(address);
             // 若没有检测到Enter则先引用原始交易的Enter
-            if (attachMessage.getEnter() == null) {
-                attachMessage.setEnter(origin.getAttachMessage().getEnter());
+            if (attachInfo.getEnter() == null) {
+                attachInfo.setEnter(origin.getAttachInfo().getEnter());
             }
             fetchWait.put(carrier);
         } catch (UnrecognizedClassException | OverFlowException e) {

@@ -15,7 +15,6 @@ import name.feinimouse.feinicoinplus.core.lambda.InOutRunner;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 // verifier基类
 //@Component("verifier")
@@ -43,9 +42,9 @@ public class Verifier extends CacheNode {
 
     @Override
     protected void beforeCommit(Carrier carrier) throws BadCommitException {
-        NodeMessage nodeMessage = carrier.getNodeMessage();
-        if (nodeMessage.notMatch(NODE_ORDER, MSG_COMMIT_VERIFIER)) {
-            throw BadCommitException.typeNotSupportException(this, nodeMessage);
+        NetInfo netInfo = carrier.getNetInfo();
+        if (netInfo.notMatch(NODE_ORDER, MSG_COMMIT_VERIFIER)) {
+            throw BadCommitException.typeNotSupportException(this, netInfo);
         }
     }
 
@@ -87,15 +86,15 @@ public class Verifier extends CacheNode {
 
     protected void resolveVerify(Carrier carrier, InOutRunner<Packer, Boolean> verify) {
         Packer packer = carrier.getPacker();
-        AttachMessage attachMessage = carrier.getAttachMessage();
-        NodeMessage nodeMessage = carrier.getNodeMessage();
-        String callbackAddress = nodeMessage.getCallback();
+        AttachInfo attachInfo = carrier.getAttachInfo();
+        NetInfo netInfo = carrier.getNetInfo();
+        String callbackAddress = netInfo.getCallback();
         // 验证并签名
-        attachMessage.setVerifier(address);
-        attachMessage.setVerifiedResult(verify.run(packer));
+        attachInfo.setVerifier(address);
+        attachInfo.setVerifiedResult(verify.run(packer));
         signGen.sign(privateKey, packer, address);
         // 回调给Order
-        Carrier nextCarrier = genCarrier(callbackAddress, MSG_CALLBACK_VERIFIER, attachMessage);
+        Carrier nextCarrier = genCarrier(callbackAddress, MSG_CALLBACK_VERIFIER, attachInfo);
         commitToNetwork(nextCarrier, packer);
     }
 

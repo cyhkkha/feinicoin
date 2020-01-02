@@ -1,12 +1,13 @@
 package name.feinimouse.feinicoinplus.core.data;
 
+import lombok.Getter;
 import name.feinimouse.feinicoinplus.core.SignObj;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class MapSignObj implements SignObj {
-
+    @Getter
     protected Map<String, String> signMap;
     protected Object core;
 
@@ -20,8 +21,7 @@ public abstract class MapSignObj implements SignObj {
         this.signMap = signMap;
     }
 
-    @Override
-    public SignObj putSign(String signer, String sign) {
+    public MapSignObj putSign(String signer, String sign) {
         signMap.put(signer, sign);
         return this;
     }

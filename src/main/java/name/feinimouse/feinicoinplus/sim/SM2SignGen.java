@@ -1,7 +1,5 @@
 package name.feinimouse.feinicoinplus.sim;
 
-import name.feinimouse.feinicoinplus.core.HashObj;
-import name.feinimouse.feinicoinplus.core.SignObj;
 import name.feinimouse.feinicoinplus.core.SignGen;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 import org.bouncycastle.asn1.gm.GMNamedCurves;
@@ -58,21 +56,11 @@ public class SM2SignGen implements SignGen {
     }
 
     @Override
-    public SignObj sign(PrivateKey key, SignObj signObj, String signer) {
-        String s = sign(key, signObj.gainHash());
-        return signObj.putSign(signer, s);
+    public Packer sign(PrivateKey key, Packer packer, String signer) {
+        String s = sign(key, packer.getHash());
+        return (Packer) packer.putSign(signer, s);
     }
-
-    @Override
-    public SignObj sign(PrivateKey key, HashObj hashObj, String signer) {
-        Packer packer = new Packer(hashObj.obj());
-        packer.setSummary(hashObj.summary());
-        packer.setHash(hashObj.gainHash());
-        packer.setJson(hashObj.json());
-        packer.setObjClass(hashObj.objClass());
-        
-        return sign(key, packer, signer);
-    }
+    
 
     // 这里注意Signature对象是不能复用的（我写的时候没有找到复用的办法）
     public boolean verify(PublicKey key, String sign, String msg) {
@@ -95,8 +83,8 @@ public class SM2SignGen implements SignGen {
     }
 
     @Override
-    public boolean verify(PublicKey key, SignObj signObj, String signer) {
-        return verify(key, signObj.getSign(signer), signObj.gainHash());
+    public boolean verify(PublicKey key, Packer packer, String signer) {
+        return verify(key, packer.getSign(signer), packer.getHash());
     }
     
 

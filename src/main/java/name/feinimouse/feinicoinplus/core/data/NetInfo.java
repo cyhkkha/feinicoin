@@ -2,10 +2,9 @@ package name.feinimouse.feinicoinplus.core.data;
 
 import lombok.Data;
 import name.feinimouse.feinicoinplus.core.JsonAble;
-import org.json.JSONObject;
 
 @Data
-public class NodeMessage implements JsonAble {
+public class NetInfo implements JsonAble {
     private String sender;
     private String receiver;
     private String network;
@@ -13,10 +12,10 @@ public class NodeMessage implements JsonAble {
     private int nodeType;
     private int msgType;
 
-    public NodeMessage() {
+    public NetInfo() {
     }
 
-    public NodeMessage(int nodeType, String network) {
+    public NetInfo(int nodeType, String network) {
         this.network = network;
         this.nodeType = nodeType;
     }
@@ -25,9 +24,5 @@ public class NodeMessage implements JsonAble {
         return getNodeType() != nodeType
             || getMsgType() != msgType;
     }
-
-    @Override
-    public JSONObject json() {
-        return new JSONObject(this);
-    }
+    
 }

@@ -5,9 +5,9 @@ import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.Node;
 import name.feinimouse.feinicoinplus.core.NodeNetwork;
 import name.feinimouse.feinicoinplus.core.PropNeeded;
-import name.feinimouse.feinicoinplus.core.data.AttachMessage;
+import name.feinimouse.feinicoinplus.core.data.AttachInfo;
 import name.feinimouse.feinicoinplus.core.data.Carrier;
-import name.feinimouse.feinicoinplus.core.data.NodeMessage;
+import name.feinimouse.feinicoinplus.core.data.NetInfo;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
 import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
@@ -77,6 +77,7 @@ public abstract class BaseNode extends Thread implements Node {
             beforeWork();
         } catch (NodeRunningException e) {
             e.printStackTrace();
+            afterWork();
             return;
         }
         runningTag = true;
@@ -89,6 +90,7 @@ public abstract class BaseNode extends Thread implements Node {
                 }
             } catch (InterruptedException | NodeStopException | NodeRunningException ex) {
                 ex.printStackTrace();
+                runningTag = false;
             }
         }
         afterWork();
@@ -145,25 +147,25 @@ public abstract class BaseNode extends Thread implements Node {
         if (isStop()) {
             throw BadCommitException.notWorkException(this);
         }
-        // 不存在NodeMessage则为非法交易
-        NodeMessage message = Optional.ofNullable(carrier)
-            .map(Carrier::getNodeMessage)
+        // 不存在 NetInfo 则为非法交易
+        NetInfo netInfo = Optional.ofNullable(carrier)
+            .map(Carrier::getNetInfo)
             .orElseThrow(() -> BadCommitException.illegalRequestException(this));
         // 消息必须有发送者
-        if (message.getSender() == null) {
+        if (netInfo.getSender() == null) {
             throw BadCommitException.noSenderException(this);
         }
         // 接收者需要和本机一样
-        if (message.getReceiver() == null || !message.getReceiver().equals(address)) {
-            throw BadCommitException.receiverException(this, message);
+        if (netInfo.getReceiver() == null || !netInfo.getReceiver().equals(address)) {
+            throw BadCommitException.receiverException(this, netInfo);
         }
         // 回调人未指定，则将其设为发送者
-        if (message.getCallback() == null) {
-            message.setCallback(message.getSender());
+        if (netInfo.getCallback() == null) {
+            netInfo.setCallback(netInfo.getSender());
         }
         // 若没有附加信息则创建一个空的附加信息
-        if (carrier.getAttachMessage() == null) {
-            carrier.setAttachMessage(new AttachMessage());
+        if (carrier.getAttachInfo() == null) {
+            carrier.setAttachInfo(new AttachInfo());
         }
     }
 
@@ -199,14 +201,14 @@ public abstract class BaseNode extends Thread implements Node {
             .put("nodeType", nodeType);
     }
 
-    protected Carrier genCarrier(String receiver, int msgType, AttachMessage msg) {
-        NodeMessage message = new NodeMessage(nodeType, network.getAddress());
-        message.setMsgType(msgType);
-        message.setReceiver(receiver);
-        message.setSender(address);
-        message.setCallback(address);
-        AttachMessage nextMsg = Optional.ofNullable(msg).orElseGet(AttachMessage::new).copy();
-        return new Carrier(message, nextMsg);
+    protected Carrier genCarrier(String receiver, int msgType, AttachInfo attach) {
+        NetInfo netInfo = new NetInfo(nodeType, network.getAddress());
+        netInfo.setMsgType(msgType);
+        netInfo.setReceiver(receiver);
+        netInfo.setSender(address);
+        netInfo.setCallback(address);
+        AttachInfo nextMsg = Optional.ofNullable(attach).orElseGet(AttachInfo::new).copy();
+        return new Carrier(netInfo, nextMsg);
     }
 
     protected void commitToNetwork(Carrier carrier, Packer packer) {

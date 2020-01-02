@@ -1,31 +1,19 @@
 package name.feinimouse.feinicoinplus.core.block;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import name.feinimouse.feinicoinplus.core.JsonAble;
-import org.json.JSONObject;
 
+import java.util.HashMap;
+
+@Data
 public class AssetTrans implements JsonAble {
-    @Getter @Setter
     private String address;
-    @Getter @Setter
     private String timestamp;
-    @Getter @Setter
     private String operation;
-    @Getter @Setter
     private String receiver;
-    @Getter @Setter
     private String operator;
-    @Getter @Setter
     private int number;
-    @Getter @Setter
     private Transaction transaction;
+    private HashMap<String, String> exFunc;
 
-    @Override
-    public JSONObject json() {
-        return new JSONObject()
-            .put("obj", new JSONObject(this)
-                .put("transaction", transaction.json()));
-    }
-    
 }

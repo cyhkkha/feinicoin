@@ -1,63 +1,29 @@
 package name.feinimouse.feinicoinplus.core.data;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import lombok.Data;
+import name.feinimouse.feinicoinplus.core.JsonAble;
 
-import java.util.Map;
-
-public class PackerArr extends MapSignObj {
+@Data
+public class PackerArr<T extends JsonAble> implements JsonAble, Cloneable {
+    private String hash;
+    private AdmitPacker<T>[] obj;
     
-    @Getter @Setter
-    private String[] hashTree;
-    @Getter @Setter
-    private String[] summaryArr;
-    @Getter @Setter
-    private JSONObject json;
-    @Setter
-    private Class<?> aClass;
-
-    public PackerArr(Object[] core, Class<?> aClass) {
-        super(core);
-        this.aClass = aClass;
+    public PackerArr() {}
+    
+    public PackerArr(AdmitPacker<T>[] obj, String hash) {
+        this.hash = hash;
+        this.obj = obj;
     }
-
-    public PackerArr(Object[] core, Class<?> aClass, Map<String, String> signMap) {
-        super(core, signMap);
-        this.aClass = aClass;
-    }
-
-    @Override
-    public String gainHash() {
-        return hashTree != null && hashTree.length > 0 ? hashTree[0] : null;
-    }
-
-    @Override
-    public String summary() {
-        if (hashTree == null) {
-            return null;
+    
+    public PackerArr<T> copy() {
+        try {
+            @SuppressWarnings("unchecked")
+            PackerArr<T> result = (PackerArr<T>) clone();
+            result.setObj(obj.clone());
+            return result;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
         }
-        if (hashTree.length <1) {
-            return new JSONArray().toString();
-        }
-        return new JSONArray(summaryArr).toString();
-    }
-
-    @Override
-    public Object obj() {
-        return core;
-    }
-
-    @Override
-    public Class<?> objClass() {
-        return aClass;
-    }
-
-    @Override
-    public JSONObject json() {
-        return json
-            .put("hash", gainHash())
-            .put("sign", signMap);
+        return null;
     }
 }
