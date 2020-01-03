@@ -7,8 +7,9 @@ import name.feinimouse.feinicoinplus.core.block.*;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.exception.*;
 import name.feinimouse.feinicoinplus.core.lambda.RunnerStopper;
+import name.feinimouse.utils.InputTimer;
+import name.feinimouse.utils.ReturnTimer;
 import name.feinimouse.utils.StopwatchExecutor;
-import name.feinimouse.utils.TimerExecutor;
 
 import java.security.PrivateKey;
 import java.util.Optional;
@@ -47,11 +48,16 @@ public class Center extends AutoStopNode {
 
     // 为了使出块时间控制在1s内，因此需要通过判断上一次网络的同步时间来设置fetch时间
     protected long fetchTime = 3 * 100;
-    @Getter @Setter
+    @Getter
+    @Setter
     protected long periodTime = 1000;
-    @Getter @Setter
+    @Getter
+    @Setter
     protected long fetchInterval = 10;
 
+    private ReturnTimer<Block> producer = new ReturnTimer<>(this::produceBlock);
+    private InputTimer<Block> synchronizer = new InputTimer<>(this::synchronizeBlock);
+    
     public Center(PrivateKey privateKey) {
         super(NODE_CENTER);
         this.privateKey = privateKey;
@@ -72,25 +78,25 @@ public class Center extends AutoStopNode {
             assetTransLoop(stopper);
         });
         fetcher.start();
-        
+
         // 生产区块
-        TimerExecutor<Block> producer = new TimerExecutor<>(this::produceBlock);
+        
         Block block = producer.start();
         long produceTime = producer.getRunTime();
-        
+
         // 同步区块
-        TimerExecutor<?> synchronizer = new TimerExecutor<>(() -> synchronizeBlock(block));
-        synchronizer.start();
-        long syncTime = synchronizer.getRunTime();
         
+        synchronizer.start(block);
+        long syncTime = synchronizer.getRunTime();
+
         // 如果100ms的时间都不够拉取，则抛出异常
         if (periodTime < syncTime + produceTime + 100) {
-            throw new NodeRunningException("sync or produce timeout: " 
-                + "[sync: "+ syncTime + ", produce: "+ produceTime +"]");
+            throw new NodeRunningException("sync or produce timeout: "
+                + "[sync: " + syncTime + ", produce: " + produceTime + "]");
         }
-        
+
         fetchTime = periodTime - syncTime + produceTime;
-        
+
         super.working();
     }
 
@@ -98,30 +104,38 @@ public class Center extends AutoStopNode {
         if (isStop()) {
             return null;
         }
-        PackerArr transTree;
-        {
-            int transSize = transCache.size();
-            Packer[] transArr = new Packer[transSize];
-            for (int i = 0; i < transSize; i++) {
-                //noinspection ConstantConditions
-                transArr[i] = transCache.poll().getPacker();
-            }
-            transTree = hashGen.hash(transArr, Transaction.class);
+        int transSize = transCache.size();
+        Packer[] transArr = new Packer[transSize];
+        for (int i = 0; i < transSize; i++) {
+            //noinspection ConstantConditions
+            transArr[i] = transCache.poll().getPacker();
         }
+        PackerArr transTree = hashGen.hash(transArr, Transaction.class);
         PackerArr accountTree = hashGen.hash(content.getAccounts(), Account.class);
+        PackerArr assetTree = hashGen.hash(content.getAssets(), Asset.class);
+
+        Packer lastPacker = content.getLastBlock();
+        Block lastBlock = (Block) lastPacker.obj();
+        
+        Block block = new Block(accountTree, assetTree, transTree);
+        block.setId(lastBlock.getId());
+        block.setPreHash(lastPacker.getHash());
+        block.setProducer(address);
+        block.setTimestamp(System.currentTimeMillis());
+        
         
         // TODO
         return null;
     }
-    
-    
+
+
     private void synchronizeBlock(Block block) {
-        if (isStop() || block == null) {
-            return;
-        }
+//        if (isStop() || block == null) {
+//            return;
+//        }
         // TODO
     }
-    
+
     /////////////////
     //   拉   取   //
     /////////////////
@@ -150,7 +164,7 @@ public class Center extends AutoStopNode {
                 || attachM.getVerifiedResult() == null) {
                 throw new BadCommitException("Invalid attach message");
             }
-            
+
             // 必须存在验证者的签名，且必须验证通过
             if (packer.excludeSign(packer.getVerifier())
                 || attachM.getVerifiedResult()) {
