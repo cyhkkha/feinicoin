@@ -1,24 +1,24 @@
 package name.feinimouse.feinicoinplus.core.data;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.*;
 
 import java.util.Map;
 
-@Data
-public class Packer implements SignObj, HashObj, CoverObj {
-    
+public class Packer extends MapSignObj implements HashObj, CoverObj {
+
+    @Getter
+    @Setter
     private String hash;
-    protected Map<String, String> sign;
-
-    private String enter;
-    private String order;
-    private String verifier;
 
     @PropIgnore
-    private Class<?> objClass;
-    @PropIgnore
+    @Setter
     private BlockObj obj;
+    
+    @PropIgnore
+    @Setter
+    private Class<?> objClass;
 
     public Packer(BlockObj core) {
         obj = core;
@@ -26,8 +26,9 @@ public class Packer implements SignObj, HashObj, CoverObj {
     }
 
     public Packer(BlockObj core, Map<String, String> signMap) {
-        this(core);
-        sign = signMap;
+        super(signMap);
+        obj = core;
+        objClass = core.getClass();
     }
 
     @Override
@@ -40,30 +41,5 @@ public class Packer implements SignObj, HashObj, CoverObj {
         return objClass;
     }
 
-    @Override
-    public Packer putSign(String signer, String sign) {
-        this.sign.put(signer, sign);
-        return this;
-    }
 
-    @Override
-    public String getSign(String signer) {
-        return sign.get(signer);
-    }
-
-    @Override
-    public String deleteSign(String signer) {
-        return sign.remove(signer);
-    }
-
-    @Override
-    public int signSize() {
-        return sign.size();
-    }
-
-    @Override
-    public boolean excludeSign(String signer) {
-        return !sign.containsKey(signer);
-    }
-    
 }
