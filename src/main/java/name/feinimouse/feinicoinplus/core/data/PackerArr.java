@@ -9,7 +9,7 @@ import name.feinimouse.feinicoinplus.core.PropIgnore;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AdmitPackerArr extends MapSignObj implements HashObj, Cloneable, CoverObj {
+public class PackerArr extends MapSignObj implements HashObj, Cloneable, CoverObj {
     @Getter
     @Setter
     private String hash;
@@ -22,21 +22,21 @@ public class AdmitPackerArr extends MapSignObj implements HashObj, Cloneable, Co
     @Setter
     private Class<?> objClass;
 
-    public AdmitPackerArr(Packer[] arr) {
+    public PackerArr(Packer[] arr) {
         this.arr = arr;
     }
-    public AdmitPackerArr(Packer[] arr, Class<?> objClass) {
+    public PackerArr(Packer[] arr, Class<?> objClass) {
         this(arr);
         this.objClass = objClass;
     }
-    public AdmitPackerArr(String hash, Packer[] arr, Class<?> objClass) {
+    public PackerArr(String hash, Packer[] arr, Class<?> objClass) {
         this(arr, objClass);
         this.hash = hash;
     }
 
-    public AdmitPackerArr copy() {
+    public PackerArr copy() {
         try {
-            AdmitPackerArr result = (AdmitPackerArr) clone();
+            PackerArr result = (PackerArr) clone();
             result.setArr(arr.clone());
             Optional.ofNullable(sign).ifPresent(sign -> result.setSign(new ConcurrentHashMap<>(sign)));
             return result;

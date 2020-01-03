@@ -11,7 +11,6 @@ import name.feinimouse.utils.StopwatchExecutor;
 import name.feinimouse.utils.TimerExecutor;
 
 import java.security.PrivateKey;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -99,7 +98,7 @@ public class Center extends AutoStopNode {
         if (isStop()) {
             return null;
         }
-        AdmitPackerArr transTree;
+        PackerArr transTree;
         {
             int transSize = transCache.size();
             Packer[] transArr = new Packer[transSize];
@@ -109,7 +108,7 @@ public class Center extends AutoStopNode {
             }
             transTree = hashGen.hash(transArr, Transaction.class);
         }
-        AdmitPackerArr accountTree = hashGen.hash(content.getAccounts(), Account.class);
+        PackerArr accountTree = hashGen.hash(content.getAccounts(), Account.class);
         
         // TODO
         return null;

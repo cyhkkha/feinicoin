@@ -41,14 +41,14 @@ public class MurmurHashGen implements HashGen {
     }
 
     @Override
-    public AdmitPackerArr hash(BlockObj[] objArr, Class<?> aClass) {
+    public PackerArr hash(BlockObj[] objArr, Class<?> aClass) {
         int length = objArr.length;
         if (length <= 0 || !objArr[0].getClass().equals(aClass)) {
             return null;
         }
         if (length == 1) {
             Packer packer = hash(objArr[0]);
-            return new AdmitPackerArr(packer.getHash(), new Packer[] { packer }, aClass);
+            return new PackerArr(packer.getHash(), new Packer[] { packer }, aClass);
         }
         Packer[] packers = new Packer[length];
         String[] hashTree = new String[length * 2 - 1];
@@ -58,23 +58,23 @@ public class MurmurHashGen implements HashGen {
             hashTree[i + length - 1] = packer.getHash();
         }
         genMerkelHash(0, hashTree);
-        return new AdmitPackerArr(hashTree[0], packers, aClass);
+        return new PackerArr(hashTree[0], packers, aClass);
     }
 
-    public AdmitPackerArr hash(Packer[] objArr, Class<?> aClass) {
+    public PackerArr hash(Packer[] objArr, Class<?> aClass) {
         int length = objArr.length;
         if (length <= 0 || !objArr[0].objClass().equals(aClass)) {
             return null;
         }
         if (length == 1) {
-            return new AdmitPackerArr(objArr[0].getHash(), objArr, aClass);
+            return new PackerArr(objArr[0].getHash(), objArr, aClass);
         }
         String[] hashTree = new String[length * 2 - 1];
         for (int i = 0; i < length; i ++) {
             hashTree[i + length - 1] = objArr[i].getHash();
         }
         genMerkelHash(0, hashTree);
-        return new AdmitPackerArr(hashTree[0], objArr, aClass);
+        return new PackerArr(hashTree[0], objArr, aClass);
     }
     
     private String genMerkelHash(int root, String[] hashTree) {
