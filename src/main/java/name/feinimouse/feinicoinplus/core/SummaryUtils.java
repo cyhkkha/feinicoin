@@ -1,6 +1,5 @@
 package name.feinimouse.feinicoinplus.core;
 
-import name.feinimouse.feinicoinplus.core.data.AdmitPacker;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -8,36 +7,40 @@ import java.util.Map;
 import java.util.Optional;
 
 public class SummaryUtils {
-    public static String gen(AdmitPacker admitPacker) {
-        return new JSONObject()
-            .put("verifier", admitPacker.getVerifier())
-            .put("order", admitPacker.getOrder())
-            .put("enter", admitPacker.getEnter())
-            .put("hash", admitPacker.getPacker().getHash())
-            .put("sign", admitPacker.getPacker().getSignMap())
-            .toString();
-    }
-    
+
     public static String gen(BlockObj blockObj) {
         return genJson(blockObj).toString();
     }
-    
-    public static JSONObject genJson(BlockObj blockObj) {
+
+    public static JSONObject genJson(BlockObj obj) {
         JSONObject json = new JSONObject();
-        Class<?> c = blockObj.getClass();
+        Class<?> c = obj.getClass();
         Field[] fields = c.getDeclaredFields();
         for (Field field : fields) {
+            // PropIgnore 为不参加json化的标志
+            if (field.getAnnotation(PropIgnore.class) != null) {
+                continue;
+            }
+            Class<?> type = field.getType();
+            field.setAccessible(true);
             try {
-                Class<?> type = field.getType();
-                if (type.isPrimitive() || String.class.isAssignableFrom(type)) {
-                    Optional.ofNullable(field.get(blockObj)).ifPresent(o -> {
-                        field.setAccessible(true);
-                        json.put(field.getName(), o);
+                if (Map.class.isAssignableFrom(type)) {
+                    // Map 类型特殊处理
+                    Optional.ofNullable(field.get(obj)).ifPresent(o -> {
+                        Map<?, ?> map = (Map<?, ?>) o;
+                        if (!map.isEmpty()) {
+                            json.put(field.getName(), map);
+                        }
                     });
-                } else if (Map.class.isAssignableFrom(type)) {
-                    Optional.ofNullable(field.get(blockObj)).ifPresent(o -> {
-                        field.setAccessible(true);
-                        json.put(field.getName(), (Map<?, ?>) o);
+                } else if (BlockObj.class.isAssignableFrom(type)) {
+                    // BlockObj 特殊处理
+                    Optional.ofNullable(field.get(obj)).ifPresent(o -> {
+                        json.put(field.getName(), genJson((BlockObj) o));
+                    });
+                } else if (type.isPrimitive() || String.class.isAssignableFrom(type)) {
+                    // 普通类型
+                    Optional.ofNullable(field.get(obj)).ifPresent(o -> {
+                        json.put(field.getName(), o);
                     });
                 }
             } catch (IllegalAccessException e) {

@@ -6,9 +6,7 @@ import lombok.Data;
 public class AttachInfo implements Cloneable {
     private String msg;
     private Boolean verifiedResult;
-    private String verifier;
-    private String order;
-    private String enter;
+    private String account;
     private String password;
 
     @Override

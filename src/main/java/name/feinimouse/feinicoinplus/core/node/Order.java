@@ -59,20 +59,27 @@ public class Order extends CacheNode {
             throw BadCommitException.typeNotSupportException(this, netInfo);
         }
         Packer packer = carrier.getPacker();
+        if (packer.getEnter() == null) {
+            throw new BadCommitException("Invalid request origin");
+        }
         if (packer.objClass().equals(Transaction.class)
             && packer.excludeSign(((Transaction) packer.obj()).getSender())) {
             throw new BadCommitException("Invalid packer signature");
         } else if (packer.objClass().equals(AssetTrans.class)) {
             AssetTrans assetTrans = (AssetTrans) packer.obj();
             // 正常情况下仅判断操作者是否签了名
-            if (packer.excludeSign(assetTrans.getOperator())
-                // 如果为携带交易的asset，则判断交易者是否也一并签了名
-                || Optional.ofNullable(assetTrans.getTransaction())
+            if (packer.excludeSign(assetTrans.getOperator())) {
+                throw new BadCommitException("Invalid packer signature");
+            }
+            // 如果为携带交易的asset，则判断交易者是否也一并签了名
+            if (Optional.ofNullable(assetTrans.getTransaction())
                 .map(Transaction::getSender)
                 .map(packer::excludeSign)
                 .orElse(false)) {
                 throw new BadCommitException("Invalid packer signature");
             }
+            
+                
         }
     }
 
@@ -141,7 +148,7 @@ public class Order extends CacheNode {
         // 查看是否为已验证交易
         AttachInfo attachInfo = carrier.getAttachInfo();
         // 没有标识验证者则尝试从新走验证流程，若缓存溢出则丢弃
-        if (attachInfo.getVerifier() == null) {
+        if (packer.getVerifier() == null) {
             try {
                 cacheWait.put(origin);
             } catch (UnrecognizedClassException | OverFlowException e) {
@@ -151,7 +158,7 @@ public class Order extends CacheNode {
         }
 
         // 如检测到verifier，但没有验证结果和签名，则证明是非法交易
-        if (packer.getSign(attachInfo.getVerifier()) == null) {
+        if (packer.getSign(packer.getVerifier()) == null) {
             throw new ControllableException("Invalid verification");
         }
 
@@ -163,11 +170,7 @@ public class Order extends CacheNode {
         }
 
         try {
-            attachInfo.setOrder(address);
-            // 若没有检测到Enter则先引用原始交易的Enter
-            if (attachInfo.getEnter() == null) {
-                attachInfo.setEnter(origin.getAttachInfo().getEnter());
-            }
+            packer.setOrder(address);
             fetchWait.put(carrier);
         } catch (UnrecognizedClassException | OverFlowException e) {
             // 理论上该错误不会发生

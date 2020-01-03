@@ -90,7 +90,7 @@ public class Verifier extends CacheNode {
         NetInfo netInfo = carrier.getNetInfo();
         String callbackAddress = netInfo.getCallback();
         // 验证并签名
-        attachInfo.setVerifier(address);
+        packer.setVerifier(address);
         attachInfo.setVerifiedResult(verify.run(packer));
         signGen.sign(privateKey, packer, address);
         // 回调给Order

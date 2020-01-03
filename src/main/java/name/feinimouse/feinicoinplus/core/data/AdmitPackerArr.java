@@ -6,12 +6,12 @@ import name.feinimouse.feinicoinplus.core.HashObj;
 @Data
 public class AdmitPackerArr implements HashObj, Cloneable {
     private String hash;
-    private AdmitPacker[] arr;
+    private Packer[] arr;
     private Class<?> objClass;
     
     public AdmitPackerArr() {}
 
-    public AdmitPackerArr(String hash, AdmitPacker[] arr, Class<?> objClass) {
+    public AdmitPackerArr(String hash, Packer[] arr, Class<?> objClass) {
         this.hash = hash;
         this.arr = arr;
         this.objClass = objClass;
