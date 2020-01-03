@@ -2,6 +2,7 @@ package name.feinimouse.feinicoinplus.core.block;
 
 import lombok.Data;
 import name.feinimouse.feinicoinplus.core.BlockObj;
+import name.feinimouse.feinicoinplus.core.PropIgnore;
 import name.feinimouse.feinicoinplus.core.data.PackerArr;
 
 import java.util.HashMap;
@@ -14,8 +15,17 @@ public class Asset implements BlockObj, Cloneable {
     private String issuer;
     private int number;
     
+    @PropIgnore
     private PackerArr histories;
+    
     private HashMap<String, String> exFunc;
+
+    @Override
+    public String genSummary() {
+        return BlockObj.genJson(this)
+            .put("histories", histories.getHash())
+            .toString();
+    }
 
     @Override
     protected Object clone() throws CloneNotSupportedException {

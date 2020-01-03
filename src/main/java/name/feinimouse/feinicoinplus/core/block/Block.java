@@ -18,4 +18,12 @@ public class Block implements BlockObj {
     private String producer;
     
     private HashMap<String, String> exFunc;
+    
+    public Block() {}
+
+    public Block(PackerArr accounts, PackerArr assets, PackerArr transactions) {
+        this.accounts = accounts;
+        this.assets = assets;
+        this.transactions = transactions;
+    }
 }
