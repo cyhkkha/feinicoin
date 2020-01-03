@@ -1,7 +1,7 @@
 package name.feinimouse.utils;
 
-import name.feinimouse.feinicoinplus.core.lambda.OrdinaryRunner;
-import name.feinimouse.feinicoinplus.core.lambda.ReturnRunner;
+import name.feinimouse.lambda.OrdinaryRunner;
+import name.feinimouse.lambda.ReturnRunner;
 
 import java.util.Optional;
 

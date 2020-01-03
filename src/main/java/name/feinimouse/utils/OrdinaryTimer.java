@@ -1,7 +1,7 @@
 package name.feinimouse.utils;
 
 import lombok.Getter;
-import name.feinimouse.feinicoinplus.core.lambda.OrdinaryRunner;
+import name.feinimouse.lambda.OrdinaryRunner;
 
 public class OrdinaryTimer {
     private OrdinaryRunner ordinaryRunner;

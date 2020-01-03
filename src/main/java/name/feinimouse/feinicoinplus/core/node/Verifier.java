@@ -9,7 +9,7 @@ import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.SignGen;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
-import name.feinimouse.feinicoinplus.core.lambda.InOutRunner;
+import name.feinimouse.lambda.InOutRunner;
 
 
 import java.security.PrivateKey;

@@ -1,7 +1,7 @@
 package name.feinimouse.utils;
 
 import lombok.Getter;
-import name.feinimouse.feinicoinplus.core.lambda.InputRunner;
+import name.feinimouse.lambda.InputRunner;
 
 public class InputTimer<I> {
     private InputRunner<I> inputRunner;

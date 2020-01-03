@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.lambda;
+package name.feinimouse.lambda;
 
 public interface InOutRunner<I, O> {
     O run(I input);

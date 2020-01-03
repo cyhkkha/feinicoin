@@ -6,7 +6,7 @@ import name.feinimouse.feinicoinplus.core.*;
 import name.feinimouse.feinicoinplus.core.block.*;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.exception.*;
-import name.feinimouse.feinicoinplus.core.lambda.RunnerStopper;
+import name.feinimouse.lambda.RunnerStopper;
 import name.feinimouse.utils.InputTimer;
 import name.feinimouse.utils.ReturnTimer;
 import name.feinimouse.utils.StopwatchExecutor;

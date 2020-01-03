@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.lambda;
+package name.feinimouse.lambda;
 
 public interface OrdinaryRunner {
     void run();

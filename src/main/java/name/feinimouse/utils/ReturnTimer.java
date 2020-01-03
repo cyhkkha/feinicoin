@@ -1,7 +1,7 @@
 package name.feinimouse.utils;
 
 import lombok.Getter;
-import name.feinimouse.feinicoinplus.core.lambda.ReturnRunner;
+import name.feinimouse.lambda.ReturnRunner;
 
 public class ReturnTimer<T> {
     private ReturnRunner<T> returnRunner;

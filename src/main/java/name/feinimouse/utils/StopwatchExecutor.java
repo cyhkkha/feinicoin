@@ -2,8 +2,8 @@ package name.feinimouse.utils;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.lambda.InputRunner;
-import name.feinimouse.feinicoinplus.core.lambda.RunnerStopper;
+import name.feinimouse.lambda.InputRunner;
+import name.feinimouse.lambda.RunnerStopper;
 
 import java.util.LinkedList;
 
