@@ -6,7 +6,7 @@ import name.feinimouse.feinicoinplus.core.*;
 import java.util.Map;
 
 @Data
-public class Packer implements SignObj, HashObj, CoverObj, BlockObj {
+public class Packer implements SignObj, HashObj, CoverObj {
     
     private String hash;
     protected Map<String, String> sign;

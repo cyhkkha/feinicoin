@@ -102,22 +102,14 @@ public class Center extends AutoStopNode {
         AdmitPackerArr transTree;
         {
             int transSize = transCache.size();
-            AdmitPacker[] transArr = new AdmitPacker[transSize];
-            String[] summaryArr = new String[transSize];
+            Packer[] transArr = new Packer[transSize];
             for (int i = 0; i < transSize; i++) {
                 //noinspection ConstantConditions
-                AdmitPacker admitPacker = transCache.poll().admit();
-                summaryArr[i] = SummaryUtils.gen(admitPacker);
-                transArr[i] = admitPacker;
+                transArr[i] = transCache.poll().getPacker();
             }
-            transTree = hashGen.hash(transArr, summaryArr, Transaction.class);
+            transTree = hashGen.hash(transArr, Transaction.class);
         }
-        MerkelArr accountTree;
-        {
-            Account[] accounts = content.getAccounts();
-            String[] summaryArr = Arrays.stream(accounts).map(SummaryUtils::gen).toArray(String[]::new);
-            accountTree = hashGen.hash(accounts, summaryArr, Account.class);
-        }
+        AdmitPackerArr accountTree = hashGen.hash(content.getAccounts(), Account.class);
         
         // TODO
         return null;
@@ -153,15 +145,15 @@ public class Center extends AutoStopNode {
 
             AttachInfo attachM = carrier.getAttachInfo();
             // 必须存在各级操作者的信息
-            if (attachM.getEnter() == null
-                || attachM.getVerifier() == null
-                || attachM.getOrder() == null
+            if (packer.getEnter() == null
+                || packer.getVerifier() == null
+                || packer.getOrder() == null
                 || attachM.getVerifiedResult() == null) {
                 throw new BadCommitException("Invalid attach message");
             }
             
             // 必须存在验证者的签名，且必须验证通过
-            if (packer.excludeSign(attachM.getVerifier())
+            if (packer.excludeSign(packer.getVerifier())
                 || attachM.getVerifiedResult()) {
                 throw new ControllableException("Failed verification");
             }
