@@ -16,4 +16,5 @@ public interface CenterContext {
     void admitAssetTrans(AssetTrans assetTrans) throws TransAdmitFailedException;
     
     Packer getLastBlock();
+    void commitNewBlock(Packer packer);
 }

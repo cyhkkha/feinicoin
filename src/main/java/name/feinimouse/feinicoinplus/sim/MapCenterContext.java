@@ -5,7 +5,9 @@ import name.feinimouse.feinicoinplus.core.block.Account;
 import name.feinimouse.feinicoinplus.core.block.Asset;
 import name.feinimouse.feinicoinplus.core.block.AssetTrans;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
+import name.feinimouse.feinicoinplus.core.data.Packer;
 
+// TODO
 public class MapCenterContext implements CenterContext {
     @Override
     public Account getAccount(String address) {
@@ -53,6 +55,16 @@ public class MapCenterContext implements CenterContext {
 
     @Override
     public void admitAssetTrans(AssetTrans assetTrans) {
-        
+
+    }
+
+    @Override
+    public Packer getLastBlock() {
+        return null;
+    }
+
+    @Override
+    public void commitNewBlock(Packer packer) {
+
     }
 }

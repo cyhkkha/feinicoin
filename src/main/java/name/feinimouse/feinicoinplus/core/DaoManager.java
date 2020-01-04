@@ -1,8 +1,9 @@
 package name.feinimouse.feinicoinplus.core;
 
-import name.feinimouse.feinicoinplus.core.block.Block;
+import name.feinimouse.feinicoinplus.core.data.Packer;
+import name.feinimouse.feinicoinplus.core.exception.DaoException;
 
 public interface DaoManager {
-    Block findBlock(int id);
-    void saveBlock(Block block);
+    Packer findBlock(int id) throws DaoException;
+    void saveBlock(Packer packer) throws DaoException;
 }

@@ -44,6 +44,11 @@ public class Center extends AutoStopNode {
     @PropNeeded
     protected PublicKeyHub publicKeyHub;
 
+    @Setter
+    @Getter
+    @PropNeeded
+    protected ConsensusNetwork consensusNetwork;
+
     protected PrivateKey privateKey;
 
     // 为了使出块时间控制在1s内，因此需要通过判断上一次网络的同步时间来设置fetch时间
@@ -57,7 +62,7 @@ public class Center extends AutoStopNode {
 
     private ReturnTimer<Block> producer = new ReturnTimer<>(this::produceBlock);
     private InputTimer<Block> synchronizer = new InputTimer<>(this::synchronizeBlock);
-    
+
     public Center(PrivateKey privateKey) {
         super(NODE_CENTER);
         this.privateKey = privateKey;
@@ -80,12 +85,12 @@ public class Center extends AutoStopNode {
         fetcher.start();
 
         // 生产区块
-        
+
         Block block = producer.start();
         long produceTime = producer.getRunTime();
 
-        // 同步区块
-        
+        // 同步并存储区块
+
         synchronizer.start(block);
         long syncTime = synchronizer.getRunTime();
 
@@ -101,10 +106,10 @@ public class Center extends AutoStopNode {
     }
 
     private Block produceBlock() {
-        if (isStop()) {
+        int transSize = transCache.size();
+        if (isStop() || transSize <= 0) {
             return null;
         }
-        int transSize = transCache.size();
         Packer[] transArr = new Packer[transSize];
         for (int i = 0; i < transSize; i++) {
             //noinspection ConstantConditions
@@ -116,24 +121,35 @@ public class Center extends AutoStopNode {
 
         Packer lastPacker = content.getLastBlock();
         Block lastBlock = (Block) lastPacker.obj();
-        
+
         Block block = new Block(accountTree, assetTree, transTree);
         block.setId(lastBlock.getId());
         block.setPreHash(lastPacker.getHash());
         block.setProducer(address);
         block.setTimestamp(System.currentTimeMillis());
-        
-        
-        // TODO
-        return null;
+
+        resetGap();
+        return block;
     }
 
 
     private void synchronizeBlock(Block block) {
-//        if (isStop() || block == null) {
-//            return;
-//        }
-        // TODO
+        if (isStop() || block == null) {
+            return;
+        }
+        resetGap();
+        Packer blockPacker = hashGen.hash(block);
+        signGen.sign(privateKey, blockPacker, "center");
+        try {
+            boolean consensusResult = consensusNetwork.commit(blockPacker);
+            if (consensusResult) {
+                content.commitNewBlock(blockPacker);
+                daoManager.saveBlock(blockPacker);
+                resetGap();
+            }
+        } catch (ConsensusException | DaoException e) {
+            e.printStackTrace();
+        }
     }
 
     /////////////////
