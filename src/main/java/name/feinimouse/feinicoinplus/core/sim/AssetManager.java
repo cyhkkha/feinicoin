@@ -1,6 +1,8 @@
 package name.feinimouse.feinicoinplus.core.sim;
 
 import name.feinimouse.feinicoinplus.core.data.Asset;
+import name.feinimouse.feinicoinplus.core.data.AssetTrans;
+import name.feinimouse.feinicoinplus.core.data.PackerArr;
 
 public interface AssetManager {
     void genAsset(int number);
@@ -12,4 +14,7 @@ public interface AssetManager {
     Asset getRandomEx(Asset asset);
     int size();
     boolean remove(String address, String owner);
+
+    PackerArr pack();
+    boolean commit(AssetTrans assetTrans);
 }
