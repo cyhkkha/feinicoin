@@ -4,7 +4,8 @@ import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
 import name.feinimouse.feinicoinplus.core.BlockObj;
 import name.feinimouse.feinicoinplus.core.HashGen;
-import name.feinimouse.feinicoinplus.core.data.*;
+import name.feinimouse.feinicoinplus.core.Packer;
+import name.feinimouse.feinicoinplus.core.PackerArr;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentHashMap;

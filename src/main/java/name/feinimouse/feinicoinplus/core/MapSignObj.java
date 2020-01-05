@@ -1,12 +1,11 @@
-package name.feinimouse.feinicoinplus.core.data;
+package name.feinimouse.feinicoinplus.core;
 
 import lombok.Data;
-import name.feinimouse.feinicoinplus.core.SignObj;
 
 import java.util.Map;
 
 @Data
-public class MapSignObj implements SignObj {
+public abstract class MapSignObj implements HashSignCover {
     protected Map<String, String> sign;
 
     private String enter;

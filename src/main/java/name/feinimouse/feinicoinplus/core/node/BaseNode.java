@@ -8,7 +8,7 @@ import name.feinimouse.feinicoinplus.core.PropNeeded;
 import name.feinimouse.feinicoinplus.core.data.AttachInfo;
 import name.feinimouse.feinicoinplus.core.data.Carrier;
 import name.feinimouse.feinicoinplus.core.data.NetInfo;
-import name.feinimouse.feinicoinplus.core.data.Packer;
+import name.feinimouse.feinicoinplus.core.Packer;
 import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
 import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
 import name.feinimouse.feinicoinplus.core.exception.NodeStopException;

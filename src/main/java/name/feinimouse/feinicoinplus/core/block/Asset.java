@@ -3,7 +3,7 @@ package name.feinimouse.feinicoinplus.core.block;
 import lombok.Data;
 import name.feinimouse.feinicoinplus.core.BlockObj;
 import name.feinimouse.feinicoinplus.core.PropIgnore;
-import name.feinimouse.feinicoinplus.core.data.PackerArr;
+import name.feinimouse.feinicoinplus.core.PackerArr;
 
 import java.util.HashMap;
 

@@ -1,7 +1,5 @@
 package name.feinimouse.feinicoinplus.core;
 
-import name.feinimouse.feinicoinplus.core.data.Packer;
-
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;

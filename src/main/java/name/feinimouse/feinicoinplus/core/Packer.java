@@ -1,12 +1,11 @@
-package name.feinimouse.feinicoinplus.core.data;
+package name.feinimouse.feinicoinplus.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.*;
 
 import java.util.Map;
 
-public class Packer extends MapSignObj implements HashObj, CoverObj {
+public class Packer extends MapSignObj {
 
     @Getter
     @Setter

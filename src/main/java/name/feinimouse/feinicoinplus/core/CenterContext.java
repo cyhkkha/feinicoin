@@ -1,7 +1,6 @@
 package name.feinimouse.feinicoinplus.core;
 
 import name.feinimouse.feinicoinplus.core.block.*;
-import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.exception.TransAdmitFailedException;
 
 public interface CenterContext {

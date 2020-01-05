@@ -2,6 +2,7 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
+import name.feinimouse.feinicoinplus.core.Packer;
 import name.feinimouse.feinicoinplus.core.PropNeeded;
 import name.feinimouse.feinicoinplus.core.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.block.AssetTrans;

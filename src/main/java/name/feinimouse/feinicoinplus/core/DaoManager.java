@@ -1,6 +1,5 @@
 package name.feinimouse.feinicoinplus.core;
 
-import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.exception.DaoException;
 
 public interface DaoManager {

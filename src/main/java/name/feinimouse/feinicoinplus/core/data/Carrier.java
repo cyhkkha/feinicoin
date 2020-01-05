@@ -1,6 +1,7 @@
 package name.feinimouse.feinicoinplus.core.data;
 
 import lombok.Data;
+import name.feinimouse.feinicoinplus.core.Packer;
 
 @Data
 public class Carrier {

@@ -1,10 +1,7 @@
-package name.feinimouse.feinicoinplus.core.data;
+package name.feinimouse.feinicoinplus.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.CoverObj;
-import name.feinimouse.feinicoinplus.core.HashObj;
-import name.feinimouse.feinicoinplus.core.PropIgnore;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PackerArr extends MapSignObj implements HashObj, Cloneable, CoverObj {
+public class PackerArr extends MapSignObj implements Cloneable {
     @Getter
     @Setter
     private String hash;
