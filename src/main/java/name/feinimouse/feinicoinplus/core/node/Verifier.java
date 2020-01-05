@@ -1,6 +1,5 @@
 package name.feinimouse.feinicoinplus.core.node;
 
-import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.SignGenerator;
@@ -15,25 +14,20 @@ import java.util.Optional;
 
 // verifier基类
 public abstract class Verifier extends CacheNode {
-
-    // 签名串
-    protected PrivateKey privateKey;
-    // 公钥仓库
-    @Setter
-    @Getter
     @PropNeeded
     protected PublicKeyHub publicKeyHub;
-    // 签名机
-    @Setter
-    @Getter
     @PropNeeded
     protected SignGenerator signGen;
 
-    // 节点类型为Verifier
-    public Verifier(PrivateKey privateKey) {
+    // 签名串
+    @Setter
+    protected PrivateKey privateKey;
+
+    public Verifier(PublicKeyHub publicKeyHub, SignGenerator signGen) {
         // 默认缓存的初始容量为30
         super(NODE_VERIFIER, new CarrierAttachCMC(new Class[]{Transaction.class, AssetTrans.class}, 30));
-        this.privateKey = privateKey;
+        this.publicKeyHub = publicKeyHub;
+        this.signGen = signGen;
     }
 
     @Override

@@ -64,15 +64,10 @@ public abstract class CacheNode extends AutoStopNode {
             resolveCache();
             resetGap();
         }
-        // 先执行空窗任务，再判断是否空窗超时
-        resolveGapPeriod();
         super.working();
     }
 
     // 处理Transaction
     protected abstract void resolveCache() throws NodeRunningException, NodeStopException;
-
-    // 处理无工作的空窗期
-    protected abstract void resolveGapPeriod() throws NodeRunningException;
 
 }

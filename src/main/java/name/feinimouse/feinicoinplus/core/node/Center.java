@@ -1,6 +1,5 @@
 package name.feinimouse.feinicoinplus.core.node;
 
-import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.*;
 import name.feinimouse.feinicoinplus.core.data.*;
@@ -16,57 +15,39 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class Center extends AutoStopNode {
-    protected Queue<Carrier> transCache;
 
-    @Getter
-    @Setter
     @PropNeeded
     protected CenterContext content;
-    @Setter
-    @Getter
-    @PropNeeded
-    protected String ordersAddress;
-    @Setter
-    @Getter
-    @PropNeeded
-    protected CenterDao centerDao;
-    @Setter
-    @Getter
-    @PropNeeded
-    protected SignGenerator signGen;
-    @Setter
-    @Getter
     @PropNeeded
     protected HashGenerator hashGen;
-    @Setter
-    @Getter
-    @PropNeeded
-    protected PublicKeyHub publicKeyHub;
-
-    @Setter
-    @Getter
     @PropNeeded
     protected ConsensusNetwork consensusNetwork;
 
+    public Center(CenterContext content, HashGenerator hashGen, ConsensusNetwork consensusNetwork) {
+        super(NODE_CENTER);
+        this.content = content;
+        this.hashGen = hashGen;
+        this.consensusNetwork = consensusNetwork;
+        transCache = new ConcurrentLinkedQueue<>();
+    }
+
+    @PropNeeded
+    @Setter
+    protected String ordersAddress;
+    @PropNeeded
+    @Setter
     protected PrivateKey privateKey;
 
     // 为了使出块时间控制在1s内，因此需要通过判断上一次网络的同步时间来设置fetch时间
     protected long fetchTime = 3 * 100;
-    @Getter
     @Setter
     protected long periodTime = 1000;
-    @Getter
     @Setter
     protected long fetchInterval = 10;
 
     private ReturnTimer<Block> producer = new ReturnTimer<>(this::produceBlock);
     private InputTimer<Block> synchronizer = new InputTimer<>(this::synchronizeBlock);
-
-    public Center(PrivateKey privateKey) {
-        super(NODE_CENTER);
-        this.privateKey = privateKey;
-        transCache = new ConcurrentLinkedQueue<>();
-    }
+    protected Queue<Carrier> transCache;
 
     @Override
     protected void afterWork() {
@@ -109,24 +90,9 @@ public abstract class Center extends AutoStopNode {
         if (isStop()) {
             return null;
         }
-        Packer[] transArr = new Packer[transSize];
-        for (int i = 0; i < transSize; i++) {
-            //noinspection ConstantConditions
-            transArr[i] = transCache.poll().getPacker();
-        }
-        PackerArr transTree = hashGen.hash(transArr, Transaction.class);
-        PackerArr accountTree = hashGen.hash(content.getAccounts(), Account.class);
-        PackerArr assetTree = hashGen.hash(content.getAssets(), Asset.class);
-
-        Packer lastPacker = content.getLastBlock();
-        Block lastBlock = (Block) lastPacker.obj();
-
-        Block block = new Block(accountTree, assetTree, transTree);
-        block.setId(lastBlock.getId());
-        block.setPreHash(lastPacker.getHash());
-        block.setProducer(address);
-        block.setTimestamp(System.currentTimeMillis());
-
+        Packer[] transArr = transCache.stream().map(Carrier::getPacker).toArray(Packer[]::new);
+        transCache.clear();
+        Block block = content.pack(hashGen.hash(transArr, Transaction.class), address);
         resetGap();
         return block;
     }
@@ -137,13 +103,10 @@ public abstract class Center extends AutoStopNode {
             return;
         }
         resetGap();
-        Packer blockPacker = hashGen.hash(block);
-        signGen.sign(privateKey, blockPacker, "center");
         try {
-            boolean consensusResult = consensusNetwork.commit(blockPacker);
-            if (consensusResult) {
-                content.commitNewBlock(blockPacker);
-                centerDao.saveBlock(blockPacker);
+            Packer consensusResult = consensusNetwork.signAndCommit(privateKey, block);
+            if (consensusResult != null) {
+                content.admit(consensusResult);
                 resetGap();
             }
         } catch (ConsensusException | DaoException e) {
@@ -200,7 +163,7 @@ public abstract class Center extends AutoStopNode {
         try {
             Carrier carrier = fetchValidTrans(Transaction.class);
             Transaction transaction = (Transaction) carrier.getPacker().obj();
-            content.admitTransaction(transaction);
+            content.commit(transaction);
             transCache.add(carrier);
             resetGap();
         } catch (ControllableException | TransAdmitFailedException e) {
@@ -216,11 +179,11 @@ public abstract class Center extends AutoStopNode {
         try {
             Carrier carrier = fetchValidTrans(AssetTrans.class);
             AssetTrans assetTrans = (AssetTrans) carrier.getPacker().obj();
-            content.admitAssetTrans(assetTrans);
+            content.commit(assetTrans);
             resetGap();
         } catch (ControllableException | TransAdmitFailedException e) {
             e.printStackTrace();
         }
     }
-    
+
 }

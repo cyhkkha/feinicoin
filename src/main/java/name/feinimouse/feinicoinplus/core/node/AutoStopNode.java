@@ -36,6 +36,8 @@ public abstract class AutoStopNode extends BaseNode {
     // 超过工作时间则退出
     @Override
     protected void working() throws NodeRunningException, NodeStopException {
+        // 先执行空窗任务，再判断是否空窗超时
+        resolveGapPeriod();
         if (System.currentTimeMillis() - gapStartTime <= maxGapTime) {
             throw new NodeStopException("Gap timeout: " + nodeMsg().toString());
         }
@@ -53,4 +55,7 @@ public abstract class AutoStopNode extends BaseNode {
     protected void afterWork() {
         stopTime = System.currentTimeMillis();
     }
+
+    // 处理无工作的空窗期
+    protected abstract void resolveGapPeriod() throws NodeRunningException;
 }

@@ -23,9 +23,8 @@ public abstract class Order extends CacheNode {
     private Map<String, Carrier> verifyWait;
 
     // verifier群的地址
-    @Getter
-    @Setter
     @PropNeeded
+    @Setter
     protected String verifiersAddress;
 
     public Order() {
