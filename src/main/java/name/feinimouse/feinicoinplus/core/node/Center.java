@@ -3,9 +3,8 @@ package name.feinimouse.feinicoinplus.core.node;
 import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.*;
-import name.feinimouse.feinicoinplus.core.block.*;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.exception.*;
+import name.feinimouse.feinicoinplus.exception.*;
 import name.feinimouse.lambda.RunnerStopper;
 import name.feinimouse.utils.InputTimer;
 import name.feinimouse.utils.ReturnTimer;
@@ -16,7 +15,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Center extends AutoStopNode {
+public abstract class Center extends AutoStopNode {
     protected Queue<Carrier> transCache;
 
     @Getter
@@ -107,7 +106,7 @@ public class Center extends AutoStopNode {
 
     private Block produceBlock() {
         int transSize = transCache.size();
-        if (isStop() || transSize <= 0) {
+        if (isStop()) {
             return null;
         }
         Packer[] transArr = new Packer[transSize];
@@ -223,24 +222,5 @@ public class Center extends AutoStopNode {
             e.printStackTrace();
         }
     }
-
-    @Override
-    protected void beforeCommit(Carrier carrier) throws BadCommitException {
-        throw BadCommitException.requestNotSupport(this, "commit");
-    }
-
-    @Override
-    protected void beforeFetch(Carrier carrier) throws BadCommitException {
-        throw BadCommitException.requestNotSupport(this, "fetch");
-    }
-
-    @Override
-    protected void resolveCommit(Carrier carrier) throws BadCommitException {
-        throw BadCommitException.requestNotSupport(this, "commit");
-    }
-
-    @Override
-    protected Carrier resolveFetch(Carrier carrier) throws BadCommitException {
-        throw BadCommitException.requestNotSupport(this, "fetch");
-    }
+    
 }

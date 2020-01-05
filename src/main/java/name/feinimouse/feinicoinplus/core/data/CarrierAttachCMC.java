@@ -1,6 +1,5 @@
 package name.feinimouse.feinicoinplus.core.data;
 
-import name.feinimouse.feinicoinplus.core.Packer;
 import name.feinimouse.utils.ClassMapContainer;
 
 import java.util.Optional;

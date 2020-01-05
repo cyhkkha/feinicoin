@@ -2,14 +2,10 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.Packer;
-import name.feinimouse.feinicoinplus.core.PropNeeded;
 import name.feinimouse.feinicoinplus.core.PublicKeyHub;
-import name.feinimouse.feinicoinplus.core.block.AssetTrans;
-import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
+import name.feinimouse.feinicoinplus.exception.BadCommitException;
 import name.feinimouse.lambda.InOutRunner;
 
 
@@ -18,8 +14,7 @@ import java.security.PublicKey;
 import java.util.Optional;
 
 // verifier基类
-//@Component("verifier")
-public class Verifier extends CacheNode {
+public abstract class Verifier extends CacheNode {
 
     // 签名串
     protected PrivateKey privateKey;
@@ -50,26 +45,26 @@ public class Verifier extends CacheNode {
     }
 
     @Override
-    protected void beforeFetch(Carrier carrier) throws BadCommitException {
-        throw new BadCommitException("fetch not support: " + nodeMsg().toString());
-    }
-
-    @Override
     protected void resolveCache() {
+        // 普通交易
         Optional.ofNullable(cacheWait.poll(Transaction.class))
             .ifPresent(carrier -> resolveVerify(carrier, this::resolveTransactionVerify));
+        // 资产交易
         Optional.ofNullable(cacheWait.poll(AssetTrans.class))
             .ifPresent(carrier -> resolveVerify(carrier, this::resolveAssetVerify));
     }
 
+    // 验证资产交易
     private boolean resolveAssetVerify(Packer packer) {
         AssetTrans assetTrans = (AssetTrans) packer.obj();
         boolean result;
+        // 先验证资产签名
         {
             String signer = assetTrans.getOperator();
             PublicKey key = publicKeyHub.getKey(signer);
             result = signGen.verify(key, packer, signer);
         }
+        // 若有附加交易则验证附加交易
         if (assetTrans.getTransaction() != null) {
             String signer = assetTrans.getTransaction().getSender();
             PublicKey key = publicKeyHub.getKey(signer);
@@ -78,6 +73,7 @@ public class Verifier extends CacheNode {
         return result;
     }
     
+    // 验证普通交易
     private boolean resolveTransactionVerify(Packer packer) {
         Transaction trans = (Transaction) packer.obj();
         String signer = trans.getSender();
@@ -85,6 +81,7 @@ public class Verifier extends CacheNode {
         return signGen.verify(key, packer, signer);
     }
 
+    // 总体过程
     protected void resolveVerify(Carrier carrier, InOutRunner<Packer, Boolean> verify) {
         Packer packer = carrier.getPacker();
         AttachInfo attachInfo = carrier.getAttachInfo();
@@ -97,16 +94,5 @@ public class Verifier extends CacheNode {
         // 回调给Order
         Carrier nextCarrier = genCarrier(callbackAddress, MSG_CALLBACK_VERIFIER, attachInfo);
         commitToNetwork(nextCarrier, packer);
-    }
-
-
-    // 空窗期继续运行
-    @Override
-    protected void resolveGapPeriod() {
-    }
-
-    @Override
-    protected Carrier resolveFetch(Carrier carrier) throws BadCommitException {
-        throw new BadCommitException("fetch not support: " + nodeMsg().toString());
     }
 }

@@ -2,13 +2,9 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.Packer;
-import name.feinimouse.feinicoinplus.core.PropNeeded;
-import name.feinimouse.feinicoinplus.core.block.AssetTrans;
-import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
-import name.feinimouse.feinicoinplus.core.exception.ControllableException;
+import name.feinimouse.feinicoinplus.exception.BadCommitException;
+import name.feinimouse.feinicoinplus.exception.ControllableException;
 import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.utils.OverFlowException;
 import name.feinimouse.utils.UnrecognizedClassException;
@@ -19,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 // Order基类
 //@Component("order")
-public class Order extends CacheNode {
+public abstract class Order extends CacheNode {
 
     // 等待center拉取的交易
     private ClassMapContainer<Carrier> fetchWait;
@@ -60,9 +56,11 @@ public class Order extends CacheNode {
             throw BadCommitException.typeNotSupportException(this, netInfo);
         }
         Packer packer = carrier.getPacker();
+        // 必须有enter源
         if (packer.getEnter() == null) {
             throw new BadCommitException("Invalid request origin");
         }
+        // 必须有发起者的签名
         if (packer.objClass().equals(Transaction.class)
             && packer.excludeSign(((Transaction) packer.obj()).getSender())) {
             throw new BadCommitException("Invalid packer signature");
@@ -179,10 +177,5 @@ public class Order extends CacheNode {
         }
     }
 
-    protected void sendBackError() {
-    }
-
-    @Override
-    protected void resolveGapPeriod() {
-    }
+    protected abstract void sendBackError();
 }

@@ -1,9 +1,9 @@
 package name.feinimouse.feinicoinplus;
 
 import name.feinimouse.feinicoinplus.core.HashGenerator;
-import name.feinimouse.feinicoinplus.simple.MurmurHashGen;
+import name.feinimouse.feinicoinplus.simple.impl.MurmurHashGen;
 import name.feinimouse.feinicoinplus.core.SignGenerator;
-import name.feinimouse.feinicoinplus.simple.SM2SignGen;
+import name.feinimouse.feinicoinplus.simple.impl.SM2SignGen;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
