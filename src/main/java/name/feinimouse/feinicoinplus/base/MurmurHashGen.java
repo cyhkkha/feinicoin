@@ -6,7 +6,6 @@ import name.feinimouse.feinicoinplus.core.data.BlockObj;
 import name.feinimouse.feinicoinplus.core.HashGenerator;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.data.PackerArr;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;

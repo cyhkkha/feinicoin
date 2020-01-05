@@ -12,7 +12,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@SuppressWarnings("RedundantThrows")
 @Component("center")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SimpleCenter extends Center {
@@ -44,7 +43,7 @@ public class SimpleCenter extends Center {
     }
 
     @Override
-    protected void resolveGapPeriod() throws NodeRunningException {
+    protected void resolveGapPeriod() {
         
     }
 }

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.PrivateKey;
 
-@SuppressWarnings("RedundantThrows")
 @Component("verifier")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SimpleVerifier extends Verifier {
@@ -24,7 +23,7 @@ public class SimpleVerifier extends Verifier {
     }
 
     @Override
-    protected void resolveGapPeriod() throws NodeRunningException {
+    protected void resolveGapPeriod() {
         
     }
 
