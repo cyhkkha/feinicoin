@@ -1,5 +1,6 @@
 package name.feinimouse.feinicoinplus.sim;
 
+import name.feinimouse.feinicoinplus.core.block.Account;
 import name.feinimouse.feinicoinplus.core.block.Asset;
 
 import java.util.*;
@@ -26,9 +27,13 @@ public class AssetManager {
 
     public void genAsset(int number) {
         for (int i = 0; i < number; i++) {
+            Account account = accountManager.getRanAccount();
+            if (account == null) {
+                break;
+            }
+            String owner = account.getAddress();
             String address = addressManager.getAddress();
-            int coin = random.nextInt(100) + 500;
-            String owner = accountManager.getRanAccount().getAddress();
+            int coin = random.nextInt(100) + 1000;
             Asset asset = new Asset(address, owner, coin);
             putAsset(asset);
         }
