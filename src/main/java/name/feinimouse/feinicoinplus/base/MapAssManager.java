@@ -1,31 +1,38 @@
-package name.feinimouse.feinicoinplus.simple.impl;
+package name.feinimouse.feinicoinplus.base;
 
-import name.feinimouse.feinicoinplus.core.data.Account;
-import name.feinimouse.feinicoinplus.core.data.Asset;
+import name.feinimouse.feinicoinplus.core.HashGenerator;
+import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.sim.AccountManager;
 import name.feinimouse.feinicoinplus.core.sim.AddressManager;
 import name.feinimouse.feinicoinplus.core.sim.AssetManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SimpleAssMan implements AssetManager {
-    private Map<String, Map<String, Asset>> assetAddressMap;
-    private Map<String, Map<String, Asset>> userAssetMap;
-
+@Component("assetManager")
+public class MapAssManager implements AssetManager {
+    private HashGenerator hashGenerator;
     private AddressManager addressManager;
     private AccountManager accountManager;
+    
+    private Map<String, Map<String, Asset>> assetAddressMap;
+    private Map<String, Map<String, Asset>> userAssetMap;
 
     private Random random = new Random();
 
     private int size = 0;
 
-    public SimpleAssMan(AddressManager addressManager, AccountManager accountManager) {
+    @Autowired
+    public MapAssManager(HashGenerator hashGenerator, AddressManager addressManager, AccountManager accountManager) {
         assetAddressMap = new ConcurrentHashMap<>();
         userAssetMap = new ConcurrentHashMap<>();
         this.addressManager = addressManager;
         this.accountManager = accountManager;
+        this.hashGenerator = hashGenerator;
     }
 
     @Override
@@ -135,6 +142,23 @@ public class SimpleAssMan implements AssetManager {
             }
 
         }
+        return false;
+    }
+
+    @Override
+    public PackerArr pack() {
+        LinkedList<Asset> assets = new LinkedList<>();
+        for (String address : assetAddressMap.keySet()) {
+            Map<String, Asset> map = assetAddressMap.get(address);
+            for (String user : map.keySet()) {
+                assets.add(map.get(user));
+            }
+        }
+        return hashGenerator.hash(assets.toArray(Asset[]::new), Asset.class);
+    }
+
+    @Override
+    public synchronized boolean commit(AssetTrans assetTrans) {
         return false;
     }
 }

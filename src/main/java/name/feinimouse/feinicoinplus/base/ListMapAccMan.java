@@ -1,28 +1,35 @@
-package name.feinimouse.feinicoinplus.simple.impl;
+package name.feinimouse.feinicoinplus.base;
 
+import name.feinimouse.feinicoinplus.core.HashGenerator;
 import name.feinimouse.feinicoinplus.core.data.Account;
+import name.feinimouse.feinicoinplus.core.data.PackerArr;
+import name.feinimouse.feinicoinplus.core.data.Transaction;
 import name.feinimouse.feinicoinplus.core.sim.AccountManager;
 import name.feinimouse.feinicoinplus.core.sim.AddressManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SimpleAccMan implements AccountManager {
+@Component("accountManager")
+public class ListMapAccMan implements AccountManager {
+    
+    protected final HashGenerator hashGenerator;
+    protected final AddressManager addressManager;
+    
     private List<String> accountList;
     private Map<String, Account> accountMap;
 
-    private AddressManager addressManager;
 
     private Random random = new Random();
 
-    public SimpleAccMan() {
+    @Autowired
+    public ListMapAccMan(HashGenerator hashGenerator, AddressManager addressManager) {
+        this.hashGenerator = hashGenerator;
+        this.addressManager = addressManager;
         accountList = Collections.synchronizedList(new ArrayList<>());
         accountMap = new ConcurrentHashMap<>();
-    }
-
-    public SimpleAccMan(AddressManager addressManager) {
-        this();
-        this.addressManager = addressManager;
     }
     
     @Override
@@ -78,6 +85,27 @@ public class SimpleAccMan implements AccountManager {
                 accountList.remove(index);
             }
             accountMap.remove(address);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public PackerArr pack() {
+        Account[] accounts = accountList.stream().map(accountMap::get).toArray(Account[]::new);
+        return hashGenerator.hash(accounts, Account.class);
+    }
+
+    @Override
+    public boolean commit(Transaction trans) {
+        String sender = trans.getSender();
+        String receiver = trans.getReceiver();
+        if (contain(sender) && contain(receiver)) {
+            Account senderAcc = get(trans.getSender());
+            Account receiverAcc = get(trans.getReceiver());
+            int coin = trans.getNumber();
+            senderAcc.setCoin(senderAcc.getCoin() - coin);
+            receiverAcc.setCoin(receiverAcc.getCoin() + coin);
             return true;
         }
         return false;

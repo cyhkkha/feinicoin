@@ -1,10 +1,11 @@
-package name.feinimouse.feinicoinplus.simple.impl;
+package name.feinimouse.feinicoinplus.base;
 
 import name.feinimouse.feinicoinplus.core.node.NodeNetwork;
 import name.feinimouse.feinicoinplus.core.data.Carrier;
 import name.feinimouse.feinicoinplus.exception.NoSuchNodeException;
+import org.springframework.stereotype.Component;
 
-// TODO
+@Component("nodeNetwork")
 public class MapNodeNetwork implements NodeNetwork {
     @Override
     public String getAddress() {

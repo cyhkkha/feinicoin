@@ -1,31 +1,25 @@
-package name.feinimouse.feinicoinplus;
+package name.feinimouse.feinicoinplus.base;
 
 import name.feinimouse.feinicoinplus.core.HashGenerator;
-import name.feinimouse.feinicoinplus.simple.impl.MurmurHashGen;
 import name.feinimouse.feinicoinplus.core.SignGenerator;
-import name.feinimouse.feinicoinplus.simple.impl.SM2SignGen;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
 @Configuration
 @PropertySource("classpath:feinicoinplus-config.properties")
-public class Config {
-    @Value("${coin.hash.seed}")
-    private int hashSeed;
-    @Value("${coin.hash.long}")
-    private boolean hashLong;
+public class SimpleConfig {
     
-    // hash机
-    @Bean
-    public HashGenerator hashGen() {
-        return new MurmurHashGen(hashSeed, hashLong);
-    }
-    
-    // 签名机
-    @Bean
-    public SignGenerator signGen() {
-        return new SM2SignGen();
-    }
+//    // hash机
+//    @Bean
+//    public HashGenerator hashGen() {
+//        return new MurmurHashGen(hashSeed, hashLong);
+//    }
+//    
+//    // 签名机
+//    @Bean
+//    public SignGenerator signGen() {
+//        return new SM2SignGen();
+//    }
     
     // 公钥仓库
 //    @Bean

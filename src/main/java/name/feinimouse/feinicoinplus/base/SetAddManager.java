@@ -1,20 +1,24 @@
-package name.feinimouse.feinicoinplus.simple.impl;
+package name.feinimouse.feinicoinplus.base;
 
 import name.feinimouse.feinicoinplus.core.sim.AddressManager;
 import name.feinimouse.utils.HexUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class SimpleAddMan implements AddressManager {
+@Component("addressManager")
+public class SetAddManager implements AddressManager {
     private ConcurrentHashMap<String, Object> addressSet;
     private ConcurrentLinkedQueue<String> waitUse;
     private ConcurrentHashMap<String, Object> using;
 
     private static final Object PRESENT = new Object();
 
-    public SimpleAddMan() {
+    public SetAddManager() {
         addressSet = new ConcurrentHashMap<>();
+        waitUse = new ConcurrentLinkedQueue<>();
+        using = new ConcurrentHashMap<>();
     }
 
     @Override

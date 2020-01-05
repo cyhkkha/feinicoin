@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.simple.impl;
+package name.feinimouse.feinicoinplus.base;
 
 import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.Packer;
@@ -8,12 +8,14 @@ import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.util.encoders.Hex;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 
+@Component("signGenerator")
 public class SM2SignGen implements SignGenerator {
-    
+
     private KeyPairGenerator generator;
 
     public SM2SignGen() {
@@ -60,7 +62,7 @@ public class SM2SignGen implements SignGenerator {
         String s = sign(key, packer.getHash());
         return (Packer) packer.putSign(signer, s);
     }
-    
+
 
     // 这里注意Signature对象是不能复用的（我写的时候没有找到复用的办法）
     public boolean verify(PublicKey key, String sign, String msg) {
@@ -86,7 +88,7 @@ public class SM2SignGen implements SignGenerator {
     public boolean verify(PublicKey key, Packer packer, String signer) {
         return verify(key, packer.getSign(signer), packer.getHash());
     }
-    
+
 
     @Override
     public KeyPair genKeyPair() {
