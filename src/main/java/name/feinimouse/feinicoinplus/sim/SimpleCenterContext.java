@@ -8,7 +8,7 @@ import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 
 // TODO
-public class CenterContextImpl implements CenterContext {
+public class SimpleCenterContext implements CenterContext {
     
     private AccountManager accountManager;
 
