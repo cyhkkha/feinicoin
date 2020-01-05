@@ -1,6 +1,8 @@
 package name.feinimouse.utils;
 
 import lombok.Getter;
+import name.feinimouse.utils.exception.OverFlowException;
+import name.feinimouse.utils.exception.UnrecognizedClassException;
 
 import java.util.Collection;
 import java.util.Map;

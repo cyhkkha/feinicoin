@@ -6,8 +6,8 @@ import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.exception.BadCommitException;
 import name.feinimouse.feinicoinplus.exception.ControllableException;
 import name.feinimouse.utils.ClassMapContainer;
-import name.feinimouse.utils.OverFlowException;
-import name.feinimouse.utils.UnrecognizedClassException;
+import name.feinimouse.utils.exception.OverFlowException;
+import name.feinimouse.utils.exception.UnrecognizedClassException;
 
 import java.util.Map;
 import java.util.Optional;

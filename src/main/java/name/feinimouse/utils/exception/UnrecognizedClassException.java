@@ -1,4 +1,4 @@
-package name.feinimouse.utils;
+package name.feinimouse.utils.exception;
 
 public class UnrecognizedClassException extends Exception {
     public UnrecognizedClassException() {

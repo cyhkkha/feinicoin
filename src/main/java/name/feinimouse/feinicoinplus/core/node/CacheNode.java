@@ -5,8 +5,8 @@ import name.feinimouse.feinicoinplus.exception.BadCommitException;
 import name.feinimouse.feinicoinplus.exception.NodeStopException;
 import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.feinicoinplus.exception.NodeRunningException;
-import name.feinimouse.utils.OverFlowException;
-import name.feinimouse.utils.UnrecognizedClassException;
+import name.feinimouse.utils.exception.OverFlowException;
+import name.feinimouse.utils.exception.UnrecognizedClassException;
 
 
 // 一个提供消息缓存的节点基类

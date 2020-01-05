@@ -1,4 +1,4 @@
-package name.feinimouse.utils;
+package name.feinimouse.utils.exception;
 
 public class InconsistentClassException extends Exception {
     public InconsistentClassException() {
