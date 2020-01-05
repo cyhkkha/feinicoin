@@ -8,16 +8,9 @@ import name.feinimouse.feinicoinplus.core.block.Transaction;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 
 // TODO
-public class MapCenterContext implements CenterContext {
-    @Override
-    public Account getAccount(String address) {
-        return null;
-    }
-
-    @Override
-    public boolean excludeAccount(String address) {
-        return false;
-    }
+public class CenterContextImpl implements CenterContext {
+    
+    private AccountManager accountManager;
 
     @Override
     public Account[] getAccounts() {
@@ -25,32 +18,22 @@ public class MapCenterContext implements CenterContext {
     }
 
     @Override
-    public Asset getAsset(String address, String owner) {
-        return null;
-    }
-
-    @Override
-    public boolean excludeAsset(String address, String owner) {
-        return false;
-    }
-
-    @Override
     public Asset[] getAssets() {
         return new Asset[0];
     }
-
-    @Override
-    public void putAsset(Asset asset) {
-
-    }
+    
 
     @Override
     public void admitTransaction(Transaction trans) {
-        Account sender = getAccount(trans.getSender());
-        Account receiver = getAccount(trans.getReceiver());
-        int coin = trans.getNumber();
-        sender.setCoin(sender.getCoin() - coin);
-        receiver.setCoin(receiver.getCoin() + coin);
+        String sender = trans.getSender();
+        String receiver = trans.getReceiver();
+        if (accountManager.containAccount(sender) && accountManager.containAccount(receiver)) {
+            Account senderAcc = accountManager.getAccount(trans.getSender());
+            Account receiverAcc = accountManager.getAccount(trans.getReceiver());
+            int coin = trans.getNumber();
+            senderAcc.setCoin(senderAcc.getCoin() - coin);
+            receiverAcc.setCoin(receiverAcc.getCoin() + coin);
+        }
     }
 
     @Override
