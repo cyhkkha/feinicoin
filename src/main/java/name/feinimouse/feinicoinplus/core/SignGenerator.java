@@ -5,7 +5,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 // 这里注意一个原则，我们只对hash进行签名
-public interface SignGen {
+public interface SignGenerator {
     // 签名一段信息
     String sign(PrivateKey key, String msg);
     // 添加一个签名

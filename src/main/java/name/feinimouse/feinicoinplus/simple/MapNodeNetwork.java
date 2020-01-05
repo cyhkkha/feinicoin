@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.sim;
+package name.feinimouse.feinicoinplus.simple;
 
 import name.feinimouse.feinicoinplus.core.NodeNetwork;
 import name.feinimouse.feinicoinplus.core.data.Carrier;

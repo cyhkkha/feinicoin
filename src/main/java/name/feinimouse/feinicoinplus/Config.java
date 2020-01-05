@@ -1,9 +1,9 @@
 package name.feinimouse.feinicoinplus;
 
-import name.feinimouse.feinicoinplus.core.HashGen;
-import name.feinimouse.feinicoinplus.sim.MurmurHashGen;
-import name.feinimouse.feinicoinplus.core.SignGen;
-import name.feinimouse.feinicoinplus.sim.SM2SignGen;
+import name.feinimouse.feinicoinplus.core.HashGenerator;
+import name.feinimouse.feinicoinplus.simple.MurmurHashGen;
+import name.feinimouse.feinicoinplus.core.SignGenerator;
+import name.feinimouse.feinicoinplus.simple.SM2SignGen;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
@@ -17,13 +17,13 @@ public class Config {
     
     // hash机
     @Bean
-    public HashGen hashGen() {
+    public HashGenerator hashGen() {
         return new MurmurHashGen(hashSeed, hashLong);
     }
     
     // 签名机
     @Bean
-    public SignGen signGen() {
+    public SignGenerator signGen() {
         return new SM2SignGen();
     }
     

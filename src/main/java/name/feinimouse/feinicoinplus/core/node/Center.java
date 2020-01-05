@@ -30,15 +30,15 @@ public class Center extends AutoStopNode {
     @Setter
     @Getter
     @PropNeeded
-    protected DaoManager daoManager;
+    protected CenterDao centerDao;
     @Setter
     @Getter
     @PropNeeded
-    protected SignGen signGen;
+    protected SignGenerator signGen;
     @Setter
     @Getter
     @PropNeeded
-    protected HashGen hashGen;
+    protected HashGenerator hashGen;
     @Setter
     @Getter
     @PropNeeded
@@ -144,7 +144,7 @@ public class Center extends AutoStopNode {
             boolean consensusResult = consensusNetwork.commit(blockPacker);
             if (consensusResult) {
                 content.commitNewBlock(blockPacker);
-                daoManager.saveBlock(blockPacker);
+                centerDao.saveBlock(blockPacker);
                 resetGap();
             }
         } catch (ConsensusException | DaoException e) {

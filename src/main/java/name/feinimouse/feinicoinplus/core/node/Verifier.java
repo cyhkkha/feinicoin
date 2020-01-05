@@ -7,7 +7,7 @@ import name.feinimouse.feinicoinplus.core.PropNeeded;
 import name.feinimouse.feinicoinplus.core.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.block.AssetTrans;
 import name.feinimouse.feinicoinplus.core.block.Transaction;
-import name.feinimouse.feinicoinplus.core.SignGen;
+import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.exception.BadCommitException;
 import name.feinimouse.lambda.InOutRunner;
@@ -32,7 +32,7 @@ public class Verifier extends CacheNode {
     @Setter
     @Getter
     @PropNeeded
-    protected SignGen signGen;
+    protected SignGenerator signGen;
 
     // 节点类型为Verifier
     public Verifier(PrivateKey privateKey) {

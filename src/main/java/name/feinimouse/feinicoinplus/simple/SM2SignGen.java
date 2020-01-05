@@ -1,6 +1,6 @@
-package name.feinimouse.feinicoinplus.sim;
+package name.feinimouse.feinicoinplus.simple;
 
-import name.feinimouse.feinicoinplus.core.SignGen;
+import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.Packer;
 import org.bouncycastle.asn1.gm.GMNamedCurves;
 import org.bouncycastle.asn1.gm.GMObjectIdentifiers;
@@ -12,7 +12,7 @@ import org.bouncycastle.util.encoders.Hex;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 
-public class SM2SignGen implements SignGen {
+public class SM2SignGen implements SignGenerator {
     
     private KeyPairGenerator generator;
 
