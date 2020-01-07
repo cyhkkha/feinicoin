@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.core.sim;
+package name.feinimouse.feinicoinplus.core;
 
 import name.feinimouse.feinicoinplus.core.data.InitParam;
 import name.feinimouse.feinicoinplus.core.sim.ResultManager;

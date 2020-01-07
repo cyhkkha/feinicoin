@@ -29,6 +29,7 @@
         <!--使用注解来进行过滤-->
         <!--<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />-->
     </context:component-scan>
+    <context:component-scan base-package="name.feinimouse.feinicoinplus.test" />
     
     
     

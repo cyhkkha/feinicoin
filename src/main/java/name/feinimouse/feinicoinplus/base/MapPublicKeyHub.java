@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.PublicKey;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component("publicKeyHub")
@@ -29,5 +30,10 @@ public class MapPublicKeyHub extends ConcurrentHashMap<String, PublicKey> implem
     @Override
     public PublicKey deleteKey(String address) {
         return remove(address);
+    }
+
+    @Override
+    public Set<String> addressSet() {
+        return keySet();
     }
 }

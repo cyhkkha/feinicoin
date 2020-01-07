@@ -6,19 +6,11 @@ import name.feinimouse.feinicoinplus.core.node.Center;
 import name.feinimouse.feinicoinplus.core.node.CenterContext;
 import name.feinimouse.feinicoinplus.core.node.ConsensusNetwork;
 import name.feinimouse.feinicoinplus.exception.BadCommitException;
-import name.feinimouse.feinicoinplus.exception.NodeRunningException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component("center")
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SimpleCenter extends Center {
 
-    @Autowired
-    public SimpleCenter(CenterContext content, HashGenerator hashGen, ConsensusNetwork consensusNetwork) {
-        super(content, hashGen, consensusNetwork);
+    public SimpleCenter(CenterContext centerContext, HashGenerator hashGen, ConsensusNetwork consensusNetwork) {
+        super(centerContext, hashGen, consensusNetwork);
     }
 
     @Override
