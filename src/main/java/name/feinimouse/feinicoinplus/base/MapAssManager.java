@@ -8,28 +8,29 @@ import name.feinimouse.feinicoinplus.core.sim.AssetManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component("assetManager")
 public class MapAssManager implements AssetManager {
-    private HashGenerator hashGenerator;
-    private AddressManager addressManager;
-    private AccountManager accountManager;
     
+    private final HashGenerator hashGenerator;
+    private final AddressManager addressManager;
+    private final AccountManager accountManager;
+
     private Map<String, Map<String, Asset>> assetAddressMap;
-    private Map<String, Map<String, Asset>> userAssetMap;
+    private Map<String, Map<String, Queue<Packer>>> dynamicTrans;
 
     private Random random = new Random();
 
     private int size = 0;
 
     @Autowired
-    public MapAssManager(HashGenerator hashGenerator, AddressManager addressManager, AccountManager accountManager) {
+    public MapAssManager(HashGenerator hashGenerator, AddressManager addressManager
+        , AccountManager accountManager) {
         assetAddressMap = new ConcurrentHashMap<>();
-        userAssetMap = new ConcurrentHashMap<>();
+        dynamicTrans = new ConcurrentHashMap<>();
         this.addressManager = addressManager;
         this.accountManager = accountManager;
         this.hashGenerator = hashGenerator;
@@ -49,10 +50,12 @@ public class MapAssManager implements AssetManager {
             put(asset);
         }
     }
+
     @Override
     public boolean contain(String address) {
         return assetAddressMap.containsKey(address);
     }
+
     @Override
     public boolean contain(String address, String owner) {
         if (contain(address)) {
@@ -65,32 +68,44 @@ public class MapAssManager implements AssetManager {
     public synchronized boolean put(Asset asset) {
         String address = asset.getAddress();
         String owner = asset.getOwner();
+        // 非法账户不记录
         if (!accountManager.contain(owner)) {
             return false;
         }
 
-        if (userAssetMap.containsKey(owner) || assetAddressMap.containsKey(address)) {
-            return false;
-        }
-
-        Map<String, Asset> userMap = userAssetMap.get(owner);
-        if (userMap == null) {
-            userMap = new ConcurrentHashMap<>();
-            userAssetMap.put(owner, userMap);
-        }
-        userMap.put(address, asset);
-
+        // 记录资产
         Map<String, Asset> addressMap = assetAddressMap.get(address);
         if (addressMap == null) {
             addressMap = new ConcurrentHashMap<>();
             assetAddressMap.put(address, addressMap);
+            // 若账户已经存在则不记录
+        } else if (addressMap.containsKey(owner)) {
+            return false;
         }
         addressMap.put(owner, asset);
+
+        // 记录资产变更记录
+        Map<String, Queue<Packer>> transMap = dynamicTrans.get(address);
+        if (transMap == null) {
+            transMap = new ConcurrentHashMap<>();
+            dynamicTrans.put(address, transMap);
+        }
+
+        // 若资产存在变更记录则引用以前的记录
+        Queue<Packer> queue = new ConcurrentLinkedQueue<>();
+        if (asset.getHistories() != null) {
+            Packer[] histories = (Packer[]) asset.getHistories().obj();
+            Collections.addAll(queue, histories);
+        } else {
+            Packer packer = hashGenerator.hash(AssetTrans.init(asset));
+            queue.add(packer);
+        }
+        transMap.put(owner, queue);
 
         size++;
         return true;
     }
-    
+
     private <T> T getRandomFromMap(Map<?, T> map) {
         if (map.size() <= 0) {
             return null;
@@ -112,18 +127,12 @@ public class MapAssManager implements AssetManager {
     public Asset get(String address, String owner) {
         return assetAddressMap.get(address).get(owner);
     }
+
     @Override
     public int size() {
         return size;
     }
-    @Override
-    public Asset getRandomEx(Asset asset) {
-        Asset assetNext = getRandom();
-        while (asset == assetNext) {
-            assetNext = getRandom();
-        }
-        return assetNext;
-    }
+
     @Override
     public synchronized boolean remove(String address, String owner) {
         if (contain(address)) {
@@ -133,11 +142,6 @@ public class MapAssManager implements AssetManager {
                 if (map.size() <= 0) {
                     assetAddressMap.remove(address);
                 }
-                map = userAssetMap.get(owner);
-                map.remove(address);
-                if (map.size() <= 0) {
-                    userAssetMap.remove(owner);
-                }
                 return true;
             }
 
@@ -146,19 +150,62 @@ public class MapAssManager implements AssetManager {
     }
 
     @Override
-    public PackerArr pack() {
-        LinkedList<Asset> assets = new LinkedList<>();
+    public synchronized PackerArr pack() {
+        Queue<Asset> assets = new ConcurrentLinkedQueue<>();
         for (String address : assetAddressMap.keySet()) {
             Map<String, Asset> map = assetAddressMap.get(address);
             for (String user : map.keySet()) {
-                assets.add(map.get(user));
+                Asset asset = map.get(user);
+                Queue<Packer> queue = dynamicTrans.get(address).get(user);
+                Packer[] packers = queue.toArray(Packer[]::new);
+                PackerArr packerArr = hashGenerator.hash(packers, AssetTrans.class);
+                asset.setHistories(packerArr);
+                assets.add(asset);
             }
         }
         return hashGenerator.hash(assets.toArray(Asset[]::new), Asset.class);
     }
 
     @Override
-    public synchronized boolean commit(AssetTrans assetTrans) {
+    public synchronized boolean commit(Packer packer) {
+        if (!packer.objClass().equals(AssetTrans.class)) {
+            return false;
+        }
+
+        AssetTrans assetTrans = (AssetTrans) packer.obj();
+        String senderAdd = assetTrans.getOperator();
+        String receiverAdd = assetTrans.getReceiver();
+        String assetAdd = assetTrans.getAddress();
+
+        if (contain(assetAdd, senderAdd)) {
+            Asset sender = get(assetAdd, senderAdd);
+            Asset receiver = get(assetAdd, receiverAdd);
+            // 若接收方没有对应资产则创建
+            if (receiver == null) {
+                receiver = sender.copy();
+                receiver.setOwner(receiverAdd);
+                receiver.setNumber(0);
+                put(receiver);
+            }
+
+            // 改变资产的数额
+            int coin = assetTrans.getNumber();
+            receiver.setNumber(receiver.getNumber() + coin);
+            sender.setNumber(sender.getNumber() - coin);
+
+            // 引用变更记录
+            Queue<Packer> senderQ = dynamicTrans.get(assetAdd).get(senderAdd);
+            Queue<Packer> receiverQ = dynamicTrans.get(assetAdd).get(receiverAdd);
+            senderQ.add(packer);
+            receiverQ.add(packer);
+
+            // 若账户也发生变更，则做对应的更改
+            if (assetTrans.getTransaction() != null) {
+                accountManager.commit(assetTrans.getTransaction());
+            }
+
+            return true;
+        }
         return false;
     }
 }

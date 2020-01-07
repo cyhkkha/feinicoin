@@ -10,6 +10,8 @@ public class Account implements BlockObj {
     private String address;
     private int coin;
     private Map<String, String> exFunc;
+//    @PropIgnore
+//    private PublicKey publicKey;
 
     public Account(String address, int coin) {
         this();

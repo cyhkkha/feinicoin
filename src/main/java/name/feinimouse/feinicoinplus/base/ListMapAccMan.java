@@ -1,6 +1,8 @@
 package name.feinimouse.feinicoinplus.base;
 
 import name.feinimouse.feinicoinplus.core.HashGenerator;
+import name.feinimouse.feinicoinplus.core.PublicKeyHub;
+import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.Account;
 import name.feinimouse.feinicoinplus.core.data.PackerArr;
 import name.feinimouse.feinicoinplus.core.data.Transaction;
@@ -9,27 +11,36 @@ import name.feinimouse.feinicoinplus.core.sim.AddressManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.security.KeyPair;
+import java.security.PrivateKey;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component("accountManager")
 public class ListMapAccMan implements AccountManager {
     
-    protected final HashGenerator hashGenerator;
-    protected final AddressManager addressManager;
+    private final HashGenerator hashGenerator;
+    private final AddressManager addressManager;
+    private final PublicKeyHub publicKeyHub;
+    private final SignGenerator signGenerator;
     
     private List<String> accountList;
     private Map<String, Account> accountMap;
+    private Map<String, PrivateKey> keyMap;
 
 
     private Random random = new Random();
 
     @Autowired
-    public ListMapAccMan(HashGenerator hashGenerator, AddressManager addressManager) {
+    public ListMapAccMan(HashGenerator hashGenerator, AddressManager addressManager
+        , PublicKeyHub publicKeyHub, SignGenerator signGenerator) {
         this.hashGenerator = hashGenerator;
         this.addressManager = addressManager;
+        this.publicKeyHub = publicKeyHub;
+        this.signGenerator = signGenerator;
         accountList = Collections.synchronizedList(new ArrayList<>());
         accountMap = new ConcurrentHashMap<>();
+        keyMap = new ConcurrentHashMap<>();
     }
     
     @Override
@@ -39,8 +50,17 @@ public class ListMapAccMan implements AccountManager {
             int coin = random.nextInt(100) + 500;
             Account account = new Account(address, coin);
             put(account);
+            KeyPair keyPair = signGenerator.genKeyPair();
+            publicKeyHub.setKey(address, keyPair.getPublic());
+            keyMap.put(address, keyPair.getPrivate());
         }
     }
+
+    @Override
+    public PrivateKey getPrivateKey(String address) {
+        return keyMap.get(address);
+    }
+
     @Override
     public Account getRandom() {
         int index = random.nextInt(size());
@@ -50,11 +70,23 @@ public class ListMapAccMan implements AccountManager {
     @Override
     public Account getRandomEx(Account account) {
         Account accountNext = getRandom();
+        int i = 0;
         while (account == accountNext) {
+            i++;
             accountNext = getRandom();
+            if (i > 50) {
+                throw new RuntimeException("no enough account");
+            }
         }
         return accountNext;
     }
+
+    @Override
+    public Account getRandomEx(String address) {
+        Account account = get(address);
+        return getRandomEx(account);
+    }
+
     @Override
     public Account get(String address) {
         return accountMap.get(address);
