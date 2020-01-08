@@ -169,6 +169,8 @@ public abstract class Order extends CacheNode {
 
         try {
             packer.setOrder(address);
+            // 指定好Carrier的fetch类型存入缓存
+            carrier.setFetchClass(packer.objClass());
             fetchWait.put(carrier);
         } catch (UnrecognizedClassException | OverFlowException e) {
             // 理论上该错误不会发生
