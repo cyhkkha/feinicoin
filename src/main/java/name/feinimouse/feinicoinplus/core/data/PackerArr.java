@@ -23,12 +23,9 @@ public class PackerArr extends MapSignObj implements Cloneable {
     @PropIgnore
     @Setter
     private Class<?> objClass;
-
-    public PackerArr(Packer[] arr) {
-        this.arr = arr;
-    }
+    
     public PackerArr(Packer[] arr, Class<?> objClass) {
-        this(arr);
+        this.arr = arr;
         this.objClass = objClass;
     }
     public PackerArr(String hash, Packer[] arr, Class<?> objClass) {

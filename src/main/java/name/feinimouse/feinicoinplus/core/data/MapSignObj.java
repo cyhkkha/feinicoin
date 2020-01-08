@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Data
 public abstract class MapSignObj implements HashSignCover {
@@ -14,7 +15,9 @@ public abstract class MapSignObj implements HashSignCover {
     private String order;
     private String verifier;
 
-    public MapSignObj() {}
+    public MapSignObj() {
+        sign = new ConcurrentHashMap<>();
+    }
     
     public MapSignObj(Map<String, String> signMap) {
         sign = signMap;
