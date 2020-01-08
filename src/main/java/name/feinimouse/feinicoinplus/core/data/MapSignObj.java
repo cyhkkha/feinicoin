@@ -1,8 +1,10 @@
 package name.feinimouse.feinicoinplus.core.data;
 
 import lombok.Data;
+import org.json.JSONObject;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Data
 public abstract class MapSignObj implements HashSignCover {
@@ -42,5 +44,16 @@ public abstract class MapSignObj implements HashSignCover {
     @Override
     public boolean excludeSign(String signer) {
         return !sign.containsKey(signer);
+    }
+
+    public JSONObject genJson() {
+        JSONObject object = new JSONObject().put("hash", getHash());
+        Optional.ofNullable(getEnter()).ifPresent(e -> object.put("enter", e));
+        Optional.ofNullable(getOrder()).ifPresent(e -> object.put("order", e));
+        Optional.ofNullable(getVerifier()).ifPresent(e -> object.put("verifier", e));
+        if (!sign.isEmpty()) {
+            object.put("sign", sign);
+        }
+        return object;
     }
 }

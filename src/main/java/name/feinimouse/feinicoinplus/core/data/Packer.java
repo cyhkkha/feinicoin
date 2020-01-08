@@ -2,6 +2,7 @@ package name.feinimouse.feinicoinplus.core.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -40,5 +41,8 @@ public class Packer extends MapSignObj {
         return objClass;
     }
 
-
+    @Override
+    public JSONObject genJson() {
+        return super.genJson().put("obj", BlockObj.genJson(obj));
+    }
 }

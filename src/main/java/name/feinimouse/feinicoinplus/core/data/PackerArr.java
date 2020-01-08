@@ -2,6 +2,8 @@ package name.feinimouse.feinicoinplus.core.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -49,7 +51,9 @@ public class PackerArr extends MapSignObj implements Cloneable {
                         map = (Map<String, String>) con.newInstance(sign);
                         result.setSign(map);
                     }
-                } catch (ClassCastException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                } catch (ClassCastException | NoSuchMethodException 
+                    | IllegalAccessException | InstantiationException 
+                    | InvocationTargetException e) {
                     e.printStackTrace();
                 }
                 if (map == null) {
@@ -72,5 +76,14 @@ public class PackerArr extends MapSignObj implements Cloneable {
     @Override
     public Class<?> objClass() {
         return objClass;
+    }
+
+    @Override
+    public JSONObject genJson() {
+        JSONArray array = new JSONArray();
+        for (Packer packer : arr) {
+            array.put(packer.genJson());
+        }
+        return super.genJson().put("obj", array);
     }
 }

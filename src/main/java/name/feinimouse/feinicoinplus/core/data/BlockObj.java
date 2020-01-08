@@ -1,5 +1,6 @@
 package name.feinimouse.feinicoinplus.core.data;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -42,6 +43,14 @@ public interface BlockObj {
             }
         }
         return json;
+    }
+    
+    static JSONArray genJson(BlockObj[] blockObjs) {
+        JSONArray array = new JSONArray();
+        for (BlockObj blockObj : blockObjs) {
+            array.put(genJson(blockObj));
+        }
+        return array;
     }
     
     default String genSummary() {
