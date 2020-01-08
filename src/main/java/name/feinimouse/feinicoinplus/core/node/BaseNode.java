@@ -92,8 +92,16 @@ public abstract class BaseNode extends Thread implements Node {
 
     // 启动前的检查
     protected void runningCheck() throws NodeRunningException {
-        // 检查必要属性@PropNeeded
         Class<?> c = this.getClass();
+        interRunningCheck(c);
+        while (!c.getSuperclass().equals(Thread.class)) {
+            c = c.getSuperclass();
+            interRunningCheck(c);
+        }
+    }
+    
+    private void interRunningCheck(Class<?> c) throws NodeRunningException {
+        // 检查必要属性@PropNeeded
         Field[] fields = c.getDeclaredFields();
         for (Field field : fields) {
             if (field.getAnnotation(PropNeeded.class) != null) {
