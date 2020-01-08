@@ -5,6 +5,7 @@ import name.feinimouse.feinicoinplus.exception.BadCommitException;
 import org.json.JSONObject;
 
 public interface Node {
+    String getAddress();
     void commit(Carrier carrier) throws BadCommitException;
     Carrier fetch(Carrier carrier) throws BadCommitException;
     void stopNode();
