@@ -14,6 +14,7 @@ public interface SimConfig {
     CenterContext centerContext();
     ConsensusNetwork consensusNetwork();
     TransactionGenerator transactionGenerator();
+    NodeNetwork nodeNetWork();
     Order order();
     Verifier verifier();
     Center center();

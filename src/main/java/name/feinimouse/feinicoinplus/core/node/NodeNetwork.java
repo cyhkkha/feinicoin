@@ -7,4 +7,5 @@ public interface NodeNetwork {
     String getAddress();
     void commit(Carrier carrier) throws NoSuchNodeException;
     Carrier fetch(Carrier carrier) throws NoSuchNodeException;
+    void registerNode(Node node);
 }

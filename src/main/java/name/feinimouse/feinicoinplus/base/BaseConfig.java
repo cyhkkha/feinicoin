@@ -96,12 +96,20 @@ public class BaseConfig implements SimConfig {
 
     @Override
     @Bean
+    public NodeNetwork nodeNetWork() {
+        return new MapNodeNetwork();
+    }
+
+    @Override
+    @Bean
     public Verifier verifier() {
         Verifier verifier = new BaseVerifier(publicKeyHub(), signGenerator());
         verifier.setAddress(addressManager().getAddress());
         KeyPair vKeys = signGenerator().genKeyPair();
         verifier.setPrivateKey(vKeys.getPrivate());
         publicKeyHub().setKey(verifier.getAddress(), vKeys.getPublic());
+        nodeNetWork().registerNode(verifier);
+        verifier.setNetwork(nodeNetWork());
         return verifier;
     }
 
@@ -112,6 +120,8 @@ public class BaseConfig implements SimConfig {
         order.setAddress(addressManager().getAddress());
         order.setAddress(addressManager().getAddress());
         order.setVerifiersAddress(verifier().getAddress());
+        nodeNetWork().registerNode(order);
+        order.setNetwork(nodeNetWork());
         return order;
     }
 
@@ -124,6 +134,8 @@ public class BaseConfig implements SimConfig {
         KeyPair cKey = signGenerator().genKeyPair();
         center.setPrivateKey(cKey.getPrivate());
         publicKeyHub().setKey(center.getAddress(), cKey.getPublic());
+        nodeNetWork().registerNode(center);
+        center.setNetwork(nodeNetWork());
         return center;
     }
 
