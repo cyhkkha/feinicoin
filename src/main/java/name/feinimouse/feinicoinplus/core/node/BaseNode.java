@@ -14,25 +14,6 @@ import java.util.Optional;
 // 一个节点即是一个线程
 public abstract class BaseNode extends Thread implements Node {
 
-//    public static final int COMMIT_SUCCESS = 0;
-//    public static final int CACHE_OVERFLOW = 1;
-//    public static final int METHOD_NOT_SUPPORT = 2;
-//    public static final int CLASS_UNRECOGNIZED = 3;
-//    public static final int NODE_NOT_WORKING = 4;
-//    public static final int CLASS_INCONSISTENT = 5;
-//    public static final int BAD_COMMUNICATOR = 6;
-
-    public final static int NODE_ORDER = 200;
-    public final static int NODE_VERIFIER = 201;
-    public final static int NODE_CENTER = 202;
-    public final static int NODE_ENTER = 203;
-
-    public final static int MSG_COMMIT_ORDER = 100;
-    public final static int MSG_COMMIT_VERIFIER = 101;
-    public final static int MSG_CALLBACK_VERIFIER = 102;
-    public final static int MSG_FETCH_ORDER = 103;
-    public final static int MSG_CALLBACK_ORDER = 104;
-
     // 节点类型
     @Getter
     protected int nodeType;
@@ -52,7 +33,7 @@ public abstract class BaseNode extends Thread implements Node {
     // 线程执行间隔
     @Getter
     @Setter
-    protected long interval = 10;
+    protected long taskInterval = 10;
 
     // 是否正在运行
     protected boolean runningTag = false;
@@ -80,10 +61,13 @@ public abstract class BaseNode extends Thread implements Node {
             try {
                 working();
                 if (runningTag) {
-                    Thread.sleep(interval);
+                    Thread.sleep(taskInterval);
                 }
-            } catch (InterruptedException | NodeStopException | NodeRunningException ex) {
+            } catch (InterruptedException | NodeRunningException ex) {
                 ex.printStackTrace();
+                runningTag = false;
+            } catch (NodeStopException e) {
+                System.out.println(e.getMessage());
                 runningTag = false;
             }
         }
@@ -199,7 +183,7 @@ public abstract class BaseNode extends Thread implements Node {
     @Override
     public JSONObject nodeMsg() {
         return new JSONObject().put("nodeAddress", address)
-            .put("networkAddress", network.getAddress())
+            .put("networkAddress", Optional.ofNullable(network).map(NodeNetwork::getAddress).orElse(null))
             .put("nodeType", nodeType);
     }
 
