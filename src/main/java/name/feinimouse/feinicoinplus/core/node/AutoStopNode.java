@@ -17,7 +17,7 @@ public abstract class AutoStopNode extends BaseNode {
     private long gapStartTime;
     // 最大工作时间(默认20秒)
     @Setter
-    protected long maxGapTime = 20 * 1000;
+    protected long maxGapTime = 5 * 1000;
 
     public AutoStopNode(int nodeType) {
         super(nodeType);
@@ -38,7 +38,7 @@ public abstract class AutoStopNode extends BaseNode {
     protected void working() throws NodeRunningException, NodeStopException {
         // 先执行空窗任务，再判断是否空窗超时
         resolveGapPeriod();
-        if (System.currentTimeMillis() - gapStartTime <= maxGapTime) {
+        if (System.currentTimeMillis() - gapStartTime >= maxGapTime) {
             throw new NodeStopException("Gap timeout: " + nodeMsg().toString());
         }
     }
