@@ -13,14 +13,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.Random;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = BaseTestConfig.class)
 public class BaseTest {
     
     @Autowired
-    private ApplicationContext context;
+    ApplicationContext context;
     @Autowired
     TransactionGenerator transactionGenerator;
     @Autowired
@@ -95,20 +94,6 @@ public class BaseTest {
             Assert.assertEquals(historiesS.length, 2);
             Assert.assertEquals(historiesR.length, 2);
             Assert.assertEquals(historiesS[1], historiesR[1]);
-        }
-    }
-    
-    public void testVerifier() {
-        
-    }
-    
-    @Test
-    public void testJava() {
-        Random random = new Random();
-        int i = 0;
-        while (i < 10) {
-            System.out.println(random.nextInt(2));
-            i++;
         }
     }
 }
