@@ -8,7 +8,6 @@ import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.data.PackerArr;
 
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.Checksum;
 
 public class MurmurHashGen implements HashGenerator {
@@ -32,7 +31,7 @@ public class MurmurHashGen implements HashGenerator {
 
     @Override
     public Packer hash(BlockObj blockObj) {
-        Packer packer = new Packer(blockObj, new ConcurrentHashMap<>());
+        Packer packer = new Packer(blockObj);
         packer.setHash(hash(blockObj.genSummary()));
         return packer;
     }
@@ -78,7 +77,7 @@ public class MurmurHashGen implements HashGenerator {
         if (2 * root + 1 >= hashTree.length) {
             return hashTree[root];
         }
-        return hash(genMerkelHash(2 * root + 1, hashTree)
+        return hashTree[root] = hash(genMerkelHash(2 * root + 1, hashTree)
             + genMerkelHash(2 * root + 2, hashTree));
     }
 
