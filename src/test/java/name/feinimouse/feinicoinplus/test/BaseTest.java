@@ -1,11 +1,8 @@
-package name.feinimouse.feinicoinplus;
+package name.feinimouse.feinicoinplus.test;
 
 import name.feinimouse.feinicoinplus.core.HashGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.sim.AccountManager;
-import name.feinimouse.feinicoinplus.core.sim.AssetManager;
-import name.feinimouse.feinicoinplus.core.sim.TransactionGenerator;
-import name.feinimouse.feinicoinplus.test.BaseTestConfig;
+import name.feinimouse.feinicoinplus.core.sim.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,7 +98,9 @@ public class BaseTest {
         }
     }
     
-    
+    public void testVerifier() {
+        
+    }
     
     @Test
     public void testJava() {
