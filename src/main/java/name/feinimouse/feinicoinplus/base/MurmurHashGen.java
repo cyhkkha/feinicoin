@@ -33,7 +33,7 @@ public class MurmurHashGen implements HashGenerator {
     @Override
     public Packer hash(BlockObj blockObj) {
         Packer packer = new Packer(blockObj, new ConcurrentHashMap<>());
-        packer.setHash(blockObj.genSummary());
+        packer.setHash(hash(blockObj.genSummary()));
         return packer;
     }
 
