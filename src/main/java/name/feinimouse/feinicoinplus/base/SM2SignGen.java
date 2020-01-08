@@ -74,7 +74,8 @@ public class SM2SignGen implements SignGenerator {
             );
             signature.initVerify(key);
             signature.update(msg.getBytes(StandardCharsets.UTF_8));
-            return signature.verify(sign.getBytes(StandardCharsets.UTF_8));
+//            return signature.verify(sign.getBytes(StandardCharsets.UTF_8));
+            return signature.verify(Hex.decode(sign));
         } catch (SignatureException | NoSuchAlgorithmException | InvalidKeyException e) {
             e.printStackTrace();
             System.out.println("验签失败");
