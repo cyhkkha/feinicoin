@@ -9,14 +9,14 @@ public class Transaction implements BlockObj {
     private long timestamp;
     private String sender;
     private String receiver;
-    private int number;
+    private int coin;
     private HashMap<String, String> exFunc;
 
-    public Transaction(String sender, String receiver, int number) {
+    public Transaction(String sender, String receiver, int coin) {
         this();
         this.sender = sender;
         this.receiver = receiver;
-        this.number = number;
+        this.coin = coin;
     }
 
     public Transaction() {

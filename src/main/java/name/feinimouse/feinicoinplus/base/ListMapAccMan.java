@@ -131,7 +131,7 @@ public class ListMapAccMan implements AccountManager {
         if (contain(sender) && contain(receiver)) {
             Account senderAcc = get(trans.getSender());
             Account receiverAcc = get(trans.getReceiver());
-            int coin = trans.getNumber();
+            int coin = trans.getCoin();
             senderAcc.setCoin(senderAcc.getCoin() - coin);
             receiverAcc.setCoin(receiverAcc.getCoin() + coin);
             return true;
