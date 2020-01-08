@@ -6,8 +6,6 @@ import java.util.HashMap;
 
 @Data
 public class Asset implements BlockObj, Cloneable {
-    public static final String DEFAULT_ISSUER = "0000_0000_0000_0000";
-    public static final String DEFAULT_TYPE = "COIN";
     
     private String address;
     private String type = DEFAULT_TYPE;

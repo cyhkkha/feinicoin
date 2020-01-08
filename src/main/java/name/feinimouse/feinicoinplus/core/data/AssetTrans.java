@@ -6,8 +6,6 @@ import java.util.HashMap;
 
 @Data
 public class AssetTrans implements BlockObj {
-    public static final String OPERA_TYPE_DEFAULT = "default";
-    public static final String OPERA_TYPE_INIT = "init";
     
     private String address;
     private long timestamp;

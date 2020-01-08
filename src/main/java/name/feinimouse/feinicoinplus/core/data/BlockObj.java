@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface BlockObj {
+    String OPERA_TYPE_DEFAULT = "default";
+    String OPERA_TYPE_INIT = "init";
+    String DEFAULT_ISSUER = "0000_0000_0000_0000";
+    String DEFAULT_TYPE = "COIN";
     
     static JSONObject genJson(BlockObj blockObj) {
         JSONObject json = new JSONObject();
