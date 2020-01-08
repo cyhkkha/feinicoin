@@ -111,7 +111,7 @@ public class SimpleTransGen implements TransactionGenerator {
 
     @Override
     public Packer genAssetTrans(String address, String operator, String receiver, int number, int coin) {
-        Transaction transaction = new Transaction(operator, receiver, coin);
+        Transaction transaction = new Transaction(receiver, operator, coin);
         return genAssetTrans(address, operator, receiver, number, transaction);
     }
 }
