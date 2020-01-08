@@ -2,10 +2,7 @@ package name.feinimouse.feinicoinplus.base;
 
 import name.feinimouse.feinicoinplus.core.*;
 import name.feinimouse.feinicoinplus.core.node.*;
-import name.feinimouse.feinicoinplus.core.sim.AccountManager;
-import name.feinimouse.feinicoinplus.core.sim.AddressManager;
-import name.feinimouse.feinicoinplus.core.sim.AssetManager;
-import name.feinimouse.feinicoinplus.core.sim.TransactionGenerator;
+import name.feinimouse.feinicoinplus.core.sim.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +44,7 @@ public class BaseConfig implements SimConfig {
     }
 
     @Override
+    @Bean
     public CenterDao centerDao() {
         return new NullCenterDao();
     }
@@ -78,7 +76,7 @@ public class BaseConfig implements SimConfig {
     @Override
     @Bean
     public CenterContext centerContext() {
-        return new BaseCenCon(accountManager(), assetManager(), centerDao());
+        return new BaseCenContext(accountManager(), assetManager(), centerDao());
     }
 
     @Override
@@ -88,6 +86,7 @@ public class BaseConfig implements SimConfig {
     }
 
     @Override
+    @Bean
     public TransactionGenerator transactionGenerator() {
         SimpleTransGen generator = new SimpleTransGen(accountManager()
             , assetManager(), hashGenerator(), signGenerator());
@@ -129,6 +128,7 @@ public class BaseConfig implements SimConfig {
     }
 
     @Override
+    @Bean
     public SimRunner simRunner() {
         return null;
     }

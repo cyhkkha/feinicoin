@@ -1,10 +1,7 @@
 package name.feinimouse.feinicoinplus.core;
 
 import name.feinimouse.feinicoinplus.core.node.*;
-import name.feinimouse.feinicoinplus.core.sim.AccountManager;
-import name.feinimouse.feinicoinplus.core.sim.AddressManager;
-import name.feinimouse.feinicoinplus.core.sim.AssetManager;
-import name.feinimouse.feinicoinplus.core.sim.TransactionGenerator;
+import name.feinimouse.feinicoinplus.core.sim.*;
 
 public interface SimConfig {
     AddressManager addressManager();
