@@ -11,6 +11,7 @@ public interface AssetManager {
     boolean put(Asset asset);
     Asset get(String address, String owner);
     Asset getRandom();
+    Packer[] getHistories(String address, String owner);
     int size();
     boolean remove(String address, String owner);
 

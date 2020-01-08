@@ -6,10 +6,7 @@ import name.feinimouse.feinicoinplus.core.sim.AccountManager;
 import name.feinimouse.feinicoinplus.core.sim.AddressManager;
 import name.feinimouse.feinicoinplus.core.sim.AssetManager;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -123,8 +120,18 @@ public class MapAssManager implements AssetManager {
     }
 
     @Override
+    public Packer[] getHistories(String address, String owner) {
+        return Optional.ofNullable(dynamicTrans.get(address))
+            .map(map -> map.get(owner))
+            .map(q -> q.toArray(Packer[]::new))
+            .orElse(null);
+    }
+
+    @Override
     public Asset get(String address, String owner) {
-        return assetAddressMap.get(address).get(owner);
+        return Optional.ofNullable(assetAddressMap.get(address))
+            .map(map -> map.get(owner))
+            .orElse(null);
     }
 
     @Override
