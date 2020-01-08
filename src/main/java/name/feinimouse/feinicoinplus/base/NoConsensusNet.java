@@ -5,18 +5,14 @@ import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.Block;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.node.ConsensusNetwork;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.security.PrivateKey;
 
-@Component("consensusNetwork")
-public class SimpleConsenNet implements ConsensusNetwork {
-    private final SignGenerator signGenerator;
-    private final HashGenerator hashGenerator;
+public class NoConsensusNet implements ConsensusNetwork {
+    private SignGenerator signGenerator;
+    private HashGenerator hashGenerator;
 
-    @Autowired
-    public SimpleConsenNet(SignGenerator signGenerator, HashGenerator hashGenerator) {
+    public NoConsensusNet(SignGenerator signGenerator, HashGenerator hashGenerator) {
         this.signGenerator = signGenerator;
         this.hashGenerator = hashGenerator;
     }

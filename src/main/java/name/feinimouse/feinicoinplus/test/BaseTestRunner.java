@@ -1,24 +1,20 @@
 package name.feinimouse.feinicoinplus.test;
 
 import name.feinimouse.feinicoinplus.core.PublicKeyHub;
+import name.feinimouse.feinicoinplus.core.SimRunner;
 import name.feinimouse.feinicoinplus.core.data.InitParam;
 import name.feinimouse.feinicoinplus.core.node.Center;
 import name.feinimouse.feinicoinplus.core.node.Order;
 import name.feinimouse.feinicoinplus.core.node.Verifier;
 import name.feinimouse.feinicoinplus.core.sim.ResultManager;
-import name.feinimouse.feinicoinplus.core.SimRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Controller;
 
 
-@Controller("runner")
-public class SimpleRunner implements SimRunner {
+public class BaseTestRunner implements SimRunner {
     
     private final ApplicationContext context;
 
-    @Autowired
-    public SimpleRunner(ApplicationContext context) {
+    public BaseTestRunner(ApplicationContext context) {
         this.context = context;
     }
 

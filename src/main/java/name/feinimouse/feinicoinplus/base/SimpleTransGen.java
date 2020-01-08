@@ -1,38 +1,33 @@
 package name.feinimouse.feinicoinplus.base;
 
+import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.HashGenerator;
 import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.sim.AccountManager;
-import name.feinimouse.feinicoinplus.core.sim.AddressManager;
 import name.feinimouse.feinicoinplus.core.sim.AssetManager;
 import name.feinimouse.feinicoinplus.core.sim.TransactionGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.security.PrivateKey;
 import java.util.Random;
 
-@Component("TransactionGenerator")
 public class SimpleTransGen implements TransactionGenerator {
-    private final AccountManager accountManager;
-    private final AssetManager assetManager;
-    private final HashGenerator hashGenerator;
-    private final SignGenerator signGenerator;
+    private AccountManager accountManager;
+    private AssetManager assetManager;
+    private HashGenerator hashGenerator;
+    private SignGenerator signGenerator;
     
+    @Setter
     private String address;
     private Random random = new Random();
 
-    @Autowired
     public SimpleTransGen(AccountManager accountManager
         , AssetManager assetManager, HashGenerator hashGenerator
-        , SignGenerator signGenerator
-        , AddressManager addressManager) {
+        , SignGenerator signGenerator) {
         this.accountManager = accountManager;
         this.assetManager = assetManager;
         this.hashGenerator = hashGenerator;
         this.signGenerator = signGenerator;
-        address = addressManager.getAddress();
     }
     
     private AssetTrans genA(String address, String operator, String receiver, int number) {

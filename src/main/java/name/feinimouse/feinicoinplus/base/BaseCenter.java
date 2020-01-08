@@ -7,9 +7,9 @@ import name.feinimouse.feinicoinplus.core.node.CenterContext;
 import name.feinimouse.feinicoinplus.core.node.ConsensusNetwork;
 import name.feinimouse.feinicoinplus.exception.BadCommitException;
 
-public class SimpleCenter extends Center {
+public class BaseCenter extends Center {
 
-    public SimpleCenter(CenterContext centerContext, HashGenerator hashGen, ConsensusNetwork consensusNetwork) {
+    public BaseCenter(CenterContext centerContext, HashGenerator hashGen, ConsensusNetwork consensusNetwork) {
         super(centerContext, hashGen, consensusNetwork);
     }
 
@@ -36,6 +36,5 @@ public class SimpleCenter extends Center {
 
     @Override
     protected void resolveGapPeriod() {
-        
     }
 }

@@ -178,8 +178,7 @@ public abstract class Center extends AutoStopNode {
         }
         try {
             Carrier carrier = fetchValidTrans(AssetTrans.class);
-            AssetTrans assetTrans = (AssetTrans) carrier.getPacker().obj();
-            content.commit(assetTrans);
+            content.commit(carrier.getPacker());
             resetGap();
         } catch (ControllableException | TransAdmitFailedException e) {
             e.printStackTrace();

@@ -3,8 +3,9 @@ package name.feinimouse.feinicoinplus;
 import name.feinimouse.feinicoinplus.core.data.InitParam;
 import name.feinimouse.feinicoinplus.core.SimRunner;
 import name.feinimouse.feinicoinplus.core.sim.ResultManager;
+import name.feinimouse.feinicoinplus.test.BaseTestConfig;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class Main {
     public static final String ENV_TEST_BASE = "TEST_BASE";
@@ -16,9 +17,8 @@ public class Main {
         ResultManager resultM;
         
         if (ENV.equals(ENV_TEST_BASE)) {
-            ApplicationContext context = new ClassPathXmlApplicationContext(
-                "spring-feinicoin-test.xml");
-            SimRunner runner = (SimRunner) context.getBean("runner");
+            ApplicationContext context = new AnnotationConfigApplicationContext(BaseTestConfig.class);
+            SimRunner runner = (SimRunner) context.getBean("simRunner");
             resultM = runner.start(new InitParam());
         }
     }

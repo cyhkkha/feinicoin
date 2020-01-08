@@ -5,19 +5,19 @@ import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.sim.AccountManager;
 import name.feinimouse.feinicoinplus.core.sim.AddressManager;
 import name.feinimouse.feinicoinplus.core.sim.AssetManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Component("assetManager")
 public class MapAssManager implements AssetManager {
     
-    private final HashGenerator hashGenerator;
-    private final AddressManager addressManager;
-    private final AccountManager accountManager;
+    private HashGenerator hashGenerator;
+    private AddressManager addressManager;
+    private AccountManager accountManager;
 
     private Map<String, Map<String, Asset>> assetAddressMap;
     private Map<String, Map<String, Queue<Packer>>> dynamicTrans;
@@ -26,7 +26,6 @@ public class MapAssManager implements AssetManager {
 
     private int size = 0;
 
-    @Autowired
     public MapAssManager(HashGenerator hashGenerator, AddressManager addressManager
         , AccountManager accountManager) {
         assetAddressMap = new ConcurrentHashMap<>();

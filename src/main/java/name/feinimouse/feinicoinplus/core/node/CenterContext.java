@@ -8,9 +8,9 @@ import name.feinimouse.feinicoinplus.exception.TransAdmitFailedException;
 
 
 public abstract class CenterContext {
-    protected final AccountManager accountManager;
-    protected final AssetManager assetManager;
-    protected final CenterDao centerDao;
+    protected AccountManager accountManager;
+    protected AssetManager assetManager;
+    protected CenterDao centerDao;
     
     public CenterContext(AccountManager accountManager, AssetManager assetManager, CenterDao centerDao) {
         this.accountManager = accountManager;
@@ -26,8 +26,8 @@ public abstract class CenterContext {
         }
     }
 
-    public void commit(AssetTrans assetTrans) throws TransAdmitFailedException {
-        if (!assetManager.commit(assetTrans)) {
+    public void commit(Packer packer) throws TransAdmitFailedException {
+        if (!assetManager.commit(packer)) {
             throw new TransAdmitFailedException();
         }
     }

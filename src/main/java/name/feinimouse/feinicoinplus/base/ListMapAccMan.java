@@ -8,21 +8,18 @@ import name.feinimouse.feinicoinplus.core.data.PackerArr;
 import name.feinimouse.feinicoinplus.core.data.Transaction;
 import name.feinimouse.feinicoinplus.core.sim.AccountManager;
 import name.feinimouse.feinicoinplus.core.sim.AddressManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component("accountManager")
 public class ListMapAccMan implements AccountManager {
     
-    private final HashGenerator hashGenerator;
-    private final AddressManager addressManager;
-    private final PublicKeyHub publicKeyHub;
-    private final SignGenerator signGenerator;
+    private HashGenerator hashGenerator;
+    private AddressManager addressManager;
+    private PublicKeyHub publicKeyHub;
+    private SignGenerator signGenerator;
     
     private List<String> accountList;
     private Map<String, Account> accountMap;
@@ -31,7 +28,6 @@ public class ListMapAccMan implements AccountManager {
 
     private Random random = new Random();
 
-    @Autowired
     public ListMapAccMan(HashGenerator hashGenerator, AddressManager addressManager
         , PublicKeyHub publicKeyHub, SignGenerator signGenerator) {
         this.hashGenerator = hashGenerator;

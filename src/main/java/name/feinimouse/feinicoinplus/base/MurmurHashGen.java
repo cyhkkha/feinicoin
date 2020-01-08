@@ -2,25 +2,20 @@ package name.feinimouse.feinicoinplus.base;
 
 import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
-import name.feinimouse.feinicoinplus.core.data.BlockObj;
 import name.feinimouse.feinicoinplus.core.HashGenerator;
+import name.feinimouse.feinicoinplus.core.data.BlockObj;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.data.PackerArr;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.Checksum;
 
-@Component("hashGenerator")
-@PropertySource("classpath:feinicoinplus-config.properties")
 public class MurmurHashGen implements HashGenerator {
 
     private Checksum murmur;
 
-    public MurmurHashGen(@Value("${coin.hash.seed}") int seed, @Value("${coin.hash.long}") boolean isLong) {
+    public MurmurHashGen(int seed, boolean isLong) {
         if (isLong) {
             murmur = new Murmur3F(seed);
         } else {

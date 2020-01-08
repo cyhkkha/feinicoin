@@ -6,15 +6,14 @@ import name.feinimouse.feinicoinplus.core.data.Carrier;
 import name.feinimouse.feinicoinplus.core.node.Verifier;
 import name.feinimouse.feinicoinplus.exception.BadCommitException;
 
-public class SimpleVerifier extends Verifier {
+public class BaseVerifier extends Verifier {
 
-    public SimpleVerifier(PublicKeyHub publicKeyHub, SignGenerator signGen) {
+    public BaseVerifier(PublicKeyHub publicKeyHub, SignGenerator signGen) {
         super(publicKeyHub, signGen);
     }
 
     @Override
     protected void resolveGapPeriod() {
-        
     }
 
     @Override
