@@ -64,7 +64,7 @@ public abstract class ClassMapContainer<T> {
     
     public ClassMapContainer<T> put(T t) throws UnrecognizedClassException, OverFlowException {
         Class<?> c = getCoverClass(t);
-        if (!containClass(c)) {
+        if (c == null || !containClass(c)) {
             throw new UnrecognizedClassException(c);
         }
         synchronized (size) {
