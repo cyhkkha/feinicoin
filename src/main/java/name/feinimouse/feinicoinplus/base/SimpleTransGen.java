@@ -4,6 +4,8 @@ import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.HashGenerator;
 import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
+import name.feinimouse.feinicoinplus.core.node.BaseNode;
+import name.feinimouse.feinicoinplus.core.node.Node;
 import name.feinimouse.feinicoinplus.core.sim.AccountManager;
 import name.feinimouse.feinicoinplus.core.sim.AssetManager;
 import name.feinimouse.feinicoinplus.core.sim.TransactionGenerator;
@@ -85,6 +87,18 @@ public class SimpleTransGen implements TransactionGenerator {
                 random.nextInt(51) + 1
             );
         }
+    }
+
+    @Override
+    public Carrier genCarrier(Packer packer, String receiver) {
+        NetInfo netInfo = new NetInfo(Node.NODE_ENTER, null);
+        netInfo.setMsgType(Node.MSG_COMMIT_ORDER);
+        netInfo.setSender(this.address);
+        netInfo.setReceiver(receiver);
+        AttachInfo attachInfo = new AttachInfo();
+        Carrier carrier = new Carrier(netInfo, attachInfo);
+        carrier.setPacker(packer);
+        return carrier;
     }
 
     @Override
