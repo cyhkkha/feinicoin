@@ -6,7 +6,7 @@ import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.node.Center;
 import name.feinimouse.feinicoinplus.core.node.Order;
 import name.feinimouse.feinicoinplus.core.node.Verifier;
-import name.feinimouse.feinicoinplus.exception.BadCommitException;
+import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
 import name.feinimouse.utils.LoopUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class BaseNodeTest extends BaseTest {
             Carrier carrier = transactionGenerator.genCarrier(packer, order.getAddress());
             try {
                 order.commit(carrier);
-            } catch (BadCommitException e) {
+            } catch (BadRequestException e) {
                 e.printStackTrace();
             }
         });

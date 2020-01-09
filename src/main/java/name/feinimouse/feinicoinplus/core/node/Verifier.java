@@ -4,7 +4,8 @@ import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.exception.BadCommitException;
+import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
+import name.feinimouse.feinicoinplus.core.node.exception.RequestNotSupportException;
 import name.feinimouse.lambda.InOutRunner;
 
 
@@ -25,16 +26,18 @@ public abstract class Verifier extends CacheNode {
 
     public Verifier(PublicKeyHub publicKeyHub, SignGenerator signGen) {
         // 默认缓存的初始容量为30
-        super(NODE_VERIFIER, new CarrierAttachCMC(new Class[]{Transaction.class, AssetTrans.class}, 30));
+        super(NODE_VERIFIER, new CarrierAttachCMC(
+            new Class[]{Transaction.class, AssetTrans.class}, 30));
         this.publicKeyHub = publicKeyHub;
         this.signGen = signGen;
     }
 
     @Override
-    protected void beforeCommit(Carrier carrier) throws BadCommitException {
+    protected void beforeCommit(Carrier carrier) throws BadRequestException {
+        // NetInfo类型必须支持
         NetInfo netInfo = carrier.getNetInfo();
         if (netInfo.notMatch(NODE_ORDER, MSG_COMMIT_VERIFIER)) {
-            throw BadCommitException.typeNotSupportException(this, netInfo);
+            throw new RequestNotSupportException(this, netInfo, "not support");
         }
     }
 
@@ -46,6 +49,21 @@ public abstract class Verifier extends CacheNode {
         // 资产交易
         Optional.ofNullable(cacheWait.poll(AssetTrans.class))
             .ifPresent(carrier -> resolveVerify(carrier, this::resolveAssetVerify));
+    }
+
+    // 总体过程
+    private void resolveVerify(Carrier carrier, InOutRunner<Packer, Boolean> verify) {
+        Packer packer = carrier.getPacker();
+        AttachInfo attachInfo = carrier.getAttachInfo();
+        NetInfo netInfo = carrier.getNetInfo();
+        String callbackAddress = netInfo.getCallback();
+        // 验证并签名
+        packer.setVerifier(address);
+        attachInfo.setVerifiedResult(verify.run(packer));
+        signGen.sign(privateKey, packer, address);
+        // 回调给Order
+        Carrier nextCarrier = genCarrier(callbackAddress, MSG_CALLBACK_VERIFIER, attachInfo);
+        commitToNetwork(nextCarrier, packer);
     }
 
     // 验证资产交易
@@ -74,19 +92,5 @@ public abstract class Verifier extends CacheNode {
         PublicKey key = publicKeyHub.getKey(signer);
         return signGen.verify(key, packer, signer);
     }
-
-    // 总体过程
-    protected void resolveVerify(Carrier carrier, InOutRunner<Packer, Boolean> verify) {
-        Packer packer = carrier.getPacker();
-        AttachInfo attachInfo = carrier.getAttachInfo();
-        NetInfo netInfo = carrier.getNetInfo();
-        String callbackAddress = netInfo.getCallback();
-        // 验证并签名
-        packer.setVerifier(address);
-        attachInfo.setVerifiedResult(verify.run(packer));
-        signGen.sign(privateKey, packer, address);
-        // 回调给Order
-        Carrier nextCarrier = genCarrier(callbackAddress, MSG_CALLBACK_VERIFIER, attachInfo);
-        commitToNetwork(nextCarrier, packer);
-    }
+    
 }

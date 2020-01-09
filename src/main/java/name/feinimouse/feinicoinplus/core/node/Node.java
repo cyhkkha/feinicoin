@@ -1,27 +1,25 @@
 package name.feinimouse.feinicoinplus.core.node;
 
 import name.feinimouse.feinicoinplus.core.data.Carrier;
-import name.feinimouse.feinicoinplus.exception.BadCommitException;
-import org.json.JSONObject;
+import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
 
 public interface Node {
-    int NODE_ORDER = 200;
-    int NODE_VERIFIER = 201;
-    int NODE_CENTER = 202;
-    int NODE_ENTER = 203;
+    String NODE_ORDER = "ORDER";
+    String NODE_VERIFIER = "VERIFIER";
+    String NODE_CENTER = "CENTER";
+    String NODE_ENTER = "ENTER";
 
-    int MSG_COMMIT_ORDER = 100;
-    int MSG_COMMIT_VERIFIER = 101;
-    int MSG_CALLBACK_VERIFIER = 102;
-    int MSG_FETCH_ORDER = 103;
-    int MSG_CALLBACK_ORDER = 104;
+    String MSG_COMMIT_ORDER = "COMMIT_ORDER";
+    String MSG_COMMIT_VERIFIER = "COMMIT_VERIFIER";
+    String MSG_CALLBACK_VERIFIER = "CALLBACK_VERIFIER";
+    String MSG_FETCH_ORDER = "FETCH_ORDER";
+    String MSG_CALLBACK_ORDER = "CALLBACK_ORDER";
     
     String getAddress();
-    int getNodeType();
-    void commit(Carrier carrier) throws BadCommitException;
-    Carrier fetch(Carrier carrier) throws BadCommitException;
+    String getNodeType();
+    void commit(Carrier carrier) throws BadRequestException;
+    Carrier fetch(Carrier carrier) throws BadRequestException;
     void stopNode();
     boolean isStop();
-    JSONObject nodeMsg();
     void start();
 }

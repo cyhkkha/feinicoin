@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--status：log4j本身的打印日志的级别-->
+<!--monitorInterval：表示30秒刷新一次配置文件-->
+<Configuration status="WARN" monitorInterval="30">
+    <!-- 可选的输出方式 -->
+    <Appenders>
+        <!--控制台输出-->
+        <!-- target输出目标：SYSTEM_OUT 或 SYSTEM_ERR -->
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss,SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <!--文件输出-->
+        <!--append表示是否直接追加-->
+        <File name="file" fileName="C:\Workspace\feinicoin.log" append="false">
+            <PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss,SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </File>
+    </Appenders>
+    
+    <!--日志对象-->
+    <Loggers>
+        <!--默认日志-->
+        <Root level="ALL">
+            <!--ref引用对应的appender-->
+            <AppenderRef ref="console"/>
+        </Root>
+        <!--Logger会继承自Logger默认日志-->
+        <Logger name="name.feinimouse.feinicoinplus.base" level="DEBUG"/>
+        <!--spring的DEBUG信息屏蔽-->
+        <logger name="org.springframework" level="INFO"/>
+    </Loggers>
+</Configuration>

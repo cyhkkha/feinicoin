@@ -1,6 +1,6 @@
-package name.feinimouse.feinicoinplus.exception;
+package name.feinimouse.feinicoinplus.core.node.exception;
 
-public class DaoException extends Exception {
+public class DaoException extends NodeException {
     public DaoException() {
     }
 

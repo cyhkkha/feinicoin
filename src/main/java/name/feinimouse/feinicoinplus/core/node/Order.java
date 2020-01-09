@@ -1,10 +1,10 @@
 package name.feinimouse.feinicoinplus.core.node;
 
-import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.exception.BadCommitException;
-import name.feinimouse.feinicoinplus.exception.ControllableException;
+import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
+import name.feinimouse.feinicoinplus.core.node.exception.ControllableException;
+import name.feinimouse.feinicoinplus.core.node.exception.RequestNotSupportException;
 import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.utils.exception.OverFlowException;
 import name.feinimouse.utils.exception.UnrecognizedClassException;
@@ -36,56 +36,57 @@ public abstract class Order extends CacheNode {
     }
 
     @Override
+    protected void beforeFetch(Carrier carrier) throws BadRequestException {
+        if (carrier.notMatchFetch(NODE_CENTER, MSG_FETCH_ORDER, Transaction.class)
+            || carrier.notMatchFetch(NODE_CENTER, MSG_FETCH_ORDER, AssetTrans.class)) {
+            throw new RequestNotSupportException(this, carrier.getNetInfo()
+                , "class not support: " + carrier.getFetchClass());
+        }
+    }
+    
+    @Override
     protected Carrier resolveFetch(Carrier carrier) {
         Carrier savedCarrier = fetchWait.poll(carrier.getFetchClass());
         if (savedCarrier == null) {
             return null;
         }
         NetInfo netInfo = carrier.getNetInfo();
-        Carrier nextCarrier = genCarrier(netInfo.getCallback(), MSG_CALLBACK_ORDER, savedCarrier.getAttachInfo());
+        Carrier nextCarrier = genCarrier(netInfo.getCallback()
+            , MSG_CALLBACK_ORDER, savedCarrier.getAttachInfo());
         nextCarrier.setPacker(savedCarrier.getPacker());
         return nextCarrier;
     }
 
     @Override
-    protected void beforeCommit(Carrier carrier) throws BadCommitException {
+    protected void beforeCommit(Carrier carrier) throws BadRequestException {
+        // NetInfo类型必须支持
         NetInfo netInfo = carrier.getNetInfo();
         if (netInfo.notMatch(NODE_ENTER, MSG_COMMIT_ORDER)
             && netInfo.notMatch(NODE_VERIFIER, MSG_CALLBACK_VERIFIER)) {
-            throw BadCommitException.typeNotSupportException(this, netInfo);
+            throw new RequestNotSupportException(this, netInfo, "not support");
         }
         Packer packer = carrier.getPacker();
         // 必须有enter源
         if (packer.getEnter() == null) {
-            throw new BadCommitException("Invalid request origin");
+            throw new BadRequestException("Invalid request origin");
         }
         // 必须有发起者的签名
         if (packer.objClass().equals(Transaction.class)
             && packer.excludeSign(((Transaction) packer.obj()).getSender())) {
-            throw new BadCommitException("Invalid packer signature");
+            throw new BadRequestException("Invalid packer signature");
         } else if (packer.objClass().equals(AssetTrans.class)) {
             AssetTrans assetTrans = (AssetTrans) packer.obj();
             // 正常情况下仅判断操作者是否签了名
             if (packer.excludeSign(assetTrans.getOperator())) {
-                throw new BadCommitException("Invalid packer signature");
+                throw new BadRequestException("Invalid packer signature");
             }
             // 如果为携带交易的asset，则判断交易者是否也一并签了名
             if (Optional.ofNullable(assetTrans.getTransaction())
                 .map(Transaction::getSender)
                 .map(packer::excludeSign)
                 .orElse(false)) {
-                throw new BadCommitException("Invalid packer signature");
+                throw new BadRequestException("Invalid packer signature");
             }
-            
-                
-        }
-    }
-
-    @Override
-    protected void beforeFetch(Carrier carrier) throws BadCommitException {
-        if (carrier.notMatchFetch(NODE_CENTER, MSG_FETCH_ORDER, Transaction.class)
-            || carrier.notMatchFetch(NODE_CENTER, MSG_FETCH_ORDER, AssetTrans.class)) {
-            throw BadCommitException.classNotSupportException(this, carrier.getFetchClass());
         }
     }
 
@@ -102,12 +103,13 @@ public abstract class Order extends CacheNode {
         Optional.ofNullable(cacheWait.poll(AssetTrans.class)).ifPresent(this::resolveCarrier);
     }
 
-    protected void resolveCarrier(Carrier carrier) {
+    
+    private void resolveCarrier(Carrier carrier) {
         NetInfo netInfo = carrier.getNetInfo();
-        if (netInfo.getMsgType() == MSG_COMMIT_ORDER) {
+        if (netInfo.getMsgType().equals(MSG_COMMIT_ORDER)) {
             recordToVerify(carrier);
         }
-        if (netInfo.getMsgType() == MSG_CALLBACK_VERIFIER) {
+        if (netInfo.getMsgType().equals(MSG_CALLBACK_VERIFIER)) {
             try {
                 resolveVerifyCallback(carrier);
             } catch (ControllableException e) {
@@ -117,7 +119,7 @@ public abstract class Order extends CacheNode {
         }
     }
 
-    protected void recordToVerify(Carrier carrier) {
+    private void recordToVerify(Carrier carrier) {
         Packer packer = carrier.getPacker();
         // 对于重复交易直接忽略
         if (verifyWait.containsKey(packer.getHash())) {
@@ -131,7 +133,7 @@ public abstract class Order extends CacheNode {
         commitToNetwork(nextCarrier, packer);
     }
 
-    protected void resolveVerifyCallback(Carrier carrier) throws ControllableException {
+    private void resolveVerifyCallback(Carrier carrier) throws ControllableException {
         Packer packer = carrier.getPacker();
 
         // 查看是否备案
@@ -178,5 +180,6 @@ public abstract class Order extends CacheNode {
         }
     }
 
-    protected abstract void sendBackError();
+    // 将交易错误的信息返回enter
+    protected void sendBackError() {}
 }

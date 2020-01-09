@@ -1,8 +1,8 @@
-package name.feinimouse.feinicoinplus.exception;
+package name.feinimouse.feinicoinplus.core.node.exception;
 
 import lombok.Getter;
 
-public class ControllableException extends Exception {
+public class ControllableException extends NodeException {
     @Getter
     private int type;
     private String message;

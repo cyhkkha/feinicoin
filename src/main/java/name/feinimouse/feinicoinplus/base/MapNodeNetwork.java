@@ -6,8 +6,8 @@ import name.feinimouse.feinicoinplus.core.data.Carrier;
 import name.feinimouse.feinicoinplus.core.data.NetInfo;
 import name.feinimouse.feinicoinplus.core.node.Node;
 import name.feinimouse.feinicoinplus.core.node.NodeNetwork;
-import name.feinimouse.feinicoinplus.exception.BadCommitException;
-import name.feinimouse.feinicoinplus.exception.NoSuchNodeException;
+import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
+import name.feinimouse.feinicoinplus.core.node.exception.NoSuchNodeException;
 
 import java.util.Map;
 import java.util.Optional;
@@ -38,7 +38,7 @@ public class MapNodeNetwork implements NodeNetwork {
         String receiver = checkCarrier(carrier);
         try {
             nodeMap.get(receiver).commit(carrier);
-        } catch (BadCommitException e) {
+        } catch (BadRequestException e) {
             e.printStackTrace();
         }
     }
@@ -48,7 +48,7 @@ public class MapNodeNetwork implements NodeNetwork {
         String receiver = checkCarrier(carrier);
         try {
             return nodeMap.get(receiver).fetch(carrier);
-        } catch (BadCommitException e) {
+        } catch (BadRequestException e) {
             e.printStackTrace();
         }
         return null;

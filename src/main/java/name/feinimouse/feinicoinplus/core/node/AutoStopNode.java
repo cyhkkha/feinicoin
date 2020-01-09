@@ -3,8 +3,8 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.exception.NodeRunningException;
-import name.feinimouse.feinicoinplus.exception.NodeStopException;
+import name.feinimouse.feinicoinplus.core.node.exception.NodeRunningException;
+import name.feinimouse.feinicoinplus.core.node.exception.NodeStopException;
 
 public abstract class AutoStopNode extends BaseNode {
 
@@ -19,7 +19,7 @@ public abstract class AutoStopNode extends BaseNode {
     @Setter
     protected long maxGapTime = 5 * 1000;
 
-    public AutoStopNode(int nodeType) {
+    public AutoStopNode(String nodeType) {
         super(nodeType);
     }
 
@@ -35,17 +35,16 @@ public abstract class AutoStopNode extends BaseNode {
 
     // 超过工作时间则退出
     @Override
-    protected void working() throws NodeRunningException, NodeStopException {
+    protected void working() throws NodeRunningException {
         // 先执行空窗任务，再判断是否空窗超时
-        resolveGapPeriod();
+        gapWorking();
         if (System.currentTimeMillis() - gapStartTime >= maxGapTime) {
-            throw new NodeStopException("Gap timeout: " + nodeMsg().toString());
+            throw new NodeStopException(this, "Node gap time out !!");
         }
     }
 
     @Override
-    @SuppressWarnings("RedundantThrows")
-    protected void beforeWork() throws NodeRunningException {
+    protected void beforeWork() {
         startTime = System.currentTimeMillis();
         startTime = 0;
         resetGap();
@@ -56,6 +55,6 @@ public abstract class AutoStopNode extends BaseNode {
         stopTime = System.currentTimeMillis();
     }
 
-    // 处理无工作的空窗期
-    protected abstract void resolveGapPeriod() throws NodeRunningException;
+    // 处理空窗期任务
+    protected abstract void gapWorking() throws NodeRunningException;
 }

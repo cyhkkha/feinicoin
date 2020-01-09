@@ -17,11 +17,11 @@ public class Carrier {
         this.attachInfo = attachInfo;
     }
     
-    public boolean notMatchAttach(int nodeType, int msgType, Class<?> attachClass) {
+    public boolean notMatchAttach(String nodeType, String msgType, Class<?> attachClass) {
         return netInfo.notMatch(nodeType, msgType) || !packer.objClass().equals(attachClass);
     }
     
-    public boolean notMatchFetch(int nodeType, int msgType, Class<?> fetchClass) {
+    public boolean notMatchFetch(String nodeType, String msgType, Class<?> fetchClass) {
         return netInfo.notMatch(nodeType, msgType) || !getFetchClass().equals(fetchClass);
     }
     

@@ -8,20 +8,20 @@ public class NetInfo {
     private String receiver;
     private String network;
     private String callback;
-    private int nodeType;
-    private int msgType;
+    private String nodeType;
+    private String msgType;
 
     public NetInfo() {
     }
 
-    public NetInfo(int nodeType, String network) {
+    public NetInfo(String nodeType, String network) {
         this.network = network;
         this.nodeType = nodeType;
     }
 
-    public boolean notMatch(int nodeType, int msgType) {
-        return getNodeType() != nodeType
-            || getMsgType() != msgType;
+    public boolean notMatch(String nodeType, String msgType) {
+        return !getNodeType().equals(nodeType)
+            || !getMsgType().equals(msgType);
     }
     
 }

@@ -1,6 +1,6 @@
-package name.feinimouse.feinicoinplus.exception;
+package name.feinimouse.feinicoinplus.core.node.exception;
 
-public class ConsensusException extends Exception {
+public class ConsensusException extends NodeException {
     public ConsensusException() {
     }
 

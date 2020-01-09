@@ -3,7 +3,8 @@ package name.feinimouse.feinicoinplus.base;
 import name.feinimouse.feinicoinplus.core.HashGenerator;
 import name.feinimouse.feinicoinplus.core.TransactionGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.sim.*;
+import name.feinimouse.feinicoinplus.core.sim.AccountManager;
+import name.feinimouse.feinicoinplus.core.sim.AssetManager;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +15,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = BaseConfig.class)
@@ -33,11 +33,7 @@ public class BaseTest {
     
     @Test
     public void testLog() {
-        Logger log = Logger.getLogger("test");
-        log.info("info-----");
-        log.warning("warn-----");
-        Logger.getGlobal().info("info========");
-        Logger.getGlobal().warning("warning=======");
+
     }
     
     @Test

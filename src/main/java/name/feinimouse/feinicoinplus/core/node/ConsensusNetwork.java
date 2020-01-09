@@ -2,7 +2,7 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import name.feinimouse.feinicoinplus.core.data.Block;
 import name.feinimouse.feinicoinplus.core.data.Packer;
-import name.feinimouse.feinicoinplus.exception.ConsensusException;
+import name.feinimouse.feinicoinplus.core.node.exception.ConsensusException;
 
 import java.security.PrivateKey;
 

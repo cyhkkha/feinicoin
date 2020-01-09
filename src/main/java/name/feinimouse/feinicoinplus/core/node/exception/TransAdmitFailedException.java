@@ -1,6 +1,6 @@
-package name.feinimouse.feinicoinplus.exception;
+package name.feinimouse.feinicoinplus.core.node.exception;
 
-public class TransAdmitFailedException extends Exception {
+public class TransAdmitFailedException extends NodeException {
     public TransAdmitFailedException() {
     }
 

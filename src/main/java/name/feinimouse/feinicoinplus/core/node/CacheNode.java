@@ -1,10 +1,8 @@
 package name.feinimouse.feinicoinplus.core.node;
 
 import name.feinimouse.feinicoinplus.core.data.Carrier;
-import name.feinimouse.feinicoinplus.exception.BadCommitException;
-import name.feinimouse.feinicoinplus.exception.NodeStopException;
+import name.feinimouse.feinicoinplus.core.node.exception.*;
 import name.feinimouse.utils.ClassMapContainer;
-import name.feinimouse.feinicoinplus.exception.NodeRunningException;
 import name.feinimouse.utils.exception.OverFlowException;
 import name.feinimouse.utils.exception.UnrecognizedClassException;
 
@@ -14,7 +12,7 @@ public abstract class CacheNode extends AutoStopNode {
 
     protected ClassMapContainer<Carrier> cacheWait;
 
-    public CacheNode(int nodeType, ClassMapContainer<Carrier> cacheWait) {
+    public CacheNode(String nodeType, ClassMapContainer<Carrier> cacheWait) {
         super(nodeType);
         this.cacheWait = cacheWait;
     }
@@ -24,29 +22,30 @@ public abstract class CacheNode extends AutoStopNode {
     }
 
 
-    public void pushContainer(ClassMapContainer<Carrier> container, Carrier carrier) throws BadCommitException {
+    public void pushContainer(ClassMapContainer<Carrier> container, Carrier carrier) throws BadRequestException {
         try {
             container.put(carrier);
         } catch (UnrecognizedClassException e) {
             e.printStackTrace();
-            throw BadCommitException.classNotSupportException(this, carrier.getPacker().objClass());
+            throw new RequestNotSupportException(this, carrier.getNetInfo()
+                , "Class not support: " + carrier.getPacker().objClass());
         } catch (OverFlowException e) {
             e.printStackTrace();
-            throw BadCommitException.commitOverflowException(this);
+            throw new NodeBusyException(this);
         }
     }
 
     @Override
-    protected void requestCheck(Carrier carrier) throws BadCommitException {
+    protected void requestCheck(Carrier carrier) throws BadRequestException {
         super.requestCheck(carrier);
         // 必须携带packer
         if (carrier.getPacker() == null) {
-            throw BadCommitException.illegalRequestException(this);
+            throw new RequestNotSupportException(this, carrier.getNetInfo(), "message without packer");
         }
     }
 
     @Override
-    protected void resolveCommit(Carrier carrier) throws BadCommitException {
+    protected void resolveCommit(Carrier carrier) throws BadRequestException {
         pushContainer(cacheWait, carrier);
     }
 
@@ -58,16 +57,15 @@ public abstract class CacheNode extends AutoStopNode {
     }
 
     @Override
-    protected void working() throws NodeRunningException, NodeStopException {
+    protected void gapWorking() throws NodeRunningException {
         // 处理Cache
         if (cacheWait.size() > 0) {
             resolveCache();
             resetGap();
         }
-        super.working();
     }
 
     // 处理Transaction
-    protected abstract void resolveCache() throws NodeRunningException, NodeStopException;
+    protected abstract void resolveCache() throws NodeRunningException;
 
 }

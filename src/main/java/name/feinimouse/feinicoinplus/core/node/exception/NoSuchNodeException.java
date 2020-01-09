@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.exception;
+package name.feinimouse.feinicoinplus.core.node.exception;
 
 public class NoSuchNodeException extends NullPointerException {
     public NoSuchNodeException(String address) {

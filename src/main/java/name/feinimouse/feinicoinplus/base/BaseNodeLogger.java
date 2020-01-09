@@ -7,9 +7,6 @@ import org.aspectj.lang.annotation.*;
 
 @Aspect
 public class BaseNodeLogger implements NodeLogger {
-    public BaseNodeLogger() {
-    }
-
     @Pointcut("execution(* name.feinimouse.feinicoinplus.core.node.Node.commit(..))")
     public void commit(){}
 

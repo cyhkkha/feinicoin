@@ -11,7 +11,7 @@ public class CarrierFetchCMC extends ClassMapContainer<Carrier> {
 
     @Override
     public Class<?> getCoverClass(Carrier carrier) {
-        return Optional.ofNullable(carrier).map(Carrier::getFetchClass).orElse(null);
+        return Optional.ofNullable(carrier).map(Carrier::getFetchClass).get();
     }
 
     public CarrierFetchCMC(Class<?>[] supportClass, int max) {

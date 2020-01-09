@@ -25,11 +25,6 @@ public class BaseConfig implements SimConfig {
     public static final int SEED = 1214;
 
 
-    public BaseConfig() {
-        Logger.getGlobal().setLevel(Level.WARNING);
-    }
-
-
     @Override
     @Bean
     public NodeLogger nodeLogger() {

@@ -3,7 +3,8 @@ package name.feinimouse.feinicoinplus.core.node;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.*;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.exception.*;
+import name.feinimouse.feinicoinplus.core.node.exception.*;
+import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
 import name.feinimouse.lambda.RunnerStopper;
 import name.feinimouse.utils.InputTimer;
 import name.feinimouse.utils.ReturnTimer;
@@ -47,46 +48,43 @@ public abstract class Center extends AutoStopNode {
 
     private ReturnTimer<Block> producer = new ReturnTimer<>(this::produceBlock);
     private InputTimer<Block> synchronizer = new InputTimer<>(this::synchronizeBlock);
-    protected Queue<Carrier> transCache;
+    private Queue<Carrier> transCache;
 
     @Override
     protected void afterWork() {
         transCache.clear();
+        super.afterWork();
     }
 
     @Override
-    protected void working() throws NodeRunningException, NodeStopException {
-
+    protected void gapWorking() throws NodeRunningException {
         // 定时拉取并处理
-        StopwatchExecutor fetcher = new StopwatchExecutor(fetchInterval, fetchTime, stopper -> {
+        StopwatchExecutor fetcher = new StopwatchExecutor(fetchInterval
+            , fetchTime, stopper -> {
             transactionLoop(stopper);
             assetTransLoop(stopper);
         });
         fetcher.start();
 
         // 生产区块
-
         Block block = producer.start();
         long produceTime = producer.getRunTime();
 
         // 同步并存储区块
-
         synchronizer.start(block);
         long syncTime = synchronizer.getRunTime();
 
-        // 如果100ms的时间都不够拉取，则抛出异常
+        // 至少留100ms的时间用于拉取，否则抛出异常
         if (periodTime < syncTime + produceTime + 100) {
             throw new NodeRunningException("sync or produce timeout: "
                 + "[sync: " + syncTime + ", produce: " + produceTime + "]");
         }
 
         fetchTime = periodTime - syncTime + produceTime;
-
-        super.working();
     }
 
+    // 生产区块
     private Block produceBlock() {
-        int transSize = transCache.size();
         if (isStop()) {
             return null;
         }
@@ -97,20 +95,23 @@ public abstract class Center extends AutoStopNode {
         return block;
     }
 
-
+    // 同步区块
     private void synchronizeBlock(Block block) {
         if (isStop() || block == null) {
             return;
         }
-        resetGap();
         try {
+            // 同步完，获取联合签名后的区块
             Packer consensusResult = consensusNetwork.signAndCommit(privateKey, block);
+            resetGap();
+            // 若同步成功则提交写入
             if (consensusResult != null) {
                 content.admit(consensusResult);
                 resetGap();
             }
         } catch (ConsensusException | DaoException e) {
             e.printStackTrace();
+            resetGap();
         }
     }
 
@@ -140,7 +141,7 @@ public abstract class Center extends AutoStopNode {
                 || packer.getVerifier() == null
                 || packer.getOrder() == null
                 || attachM.getVerifiedResult() == null) {
-                throw new BadCommitException("Invalid attach message");
+                throw new BadRequestException("Invalid attach message");
             }
 
             // 必须存在验证者的签名，且必须验证通过
@@ -149,7 +150,7 @@ public abstract class Center extends AutoStopNode {
                 throw new ControllableException("Failed verification");
             }
             return carrier;
-        } catch (BadCommitException e) {
+        } catch (BadRequestException e) {
             e.printStackTrace();
             throw new ControllableException("Fetch format is incorrect");
         }
