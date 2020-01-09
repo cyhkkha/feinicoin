@@ -65,10 +65,10 @@ public abstract class BaseNode extends Thread implements Node {
                 }
             } catch (InterruptedException | NodeRunningException ex) {
                 ex.printStackTrace();
-                runningTag = false;
+                stopNode();
             } catch (NodeStopException e) {
                 System.out.println(e.getMessage());
-                runningTag = false;
+                stopNode();
             }
         }
         afterWork();
@@ -170,7 +170,6 @@ public abstract class BaseNode extends Thread implements Node {
     public synchronized void stopNode() {
         if (runningTag) {
             runningTag = false;
-            interrupt();
         }
     }
 
