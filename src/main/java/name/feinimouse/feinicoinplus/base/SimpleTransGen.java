@@ -4,11 +4,10 @@ import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.HashGenerator;
 import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.node.BaseNode;
 import name.feinimouse.feinicoinplus.core.node.Node;
 import name.feinimouse.feinicoinplus.core.sim.AccountManager;
 import name.feinimouse.feinicoinplus.core.sim.AssetManager;
-import name.feinimouse.feinicoinplus.core.sim.TransactionGenerator;
+import name.feinimouse.feinicoinplus.core.TransactionGenerator;
 
 import java.security.PrivateKey;
 import java.util.Random;
