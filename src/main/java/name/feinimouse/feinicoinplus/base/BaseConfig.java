@@ -3,25 +3,38 @@ package name.feinimouse.feinicoinplus.base;
 import name.feinimouse.feinicoinplus.core.*;
 import name.feinimouse.feinicoinplus.core.node.*;
 import name.feinimouse.feinicoinplus.core.sim.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 import java.security.KeyPair;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Configuration
-@PropertySource("classpath:feinicoinplus-config.properties")
 public class BaseConfig implements SimConfig {
 
-    // 非单例的prototype
-    // @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-
-    @Value("${coin.hash.seed}")
-    private int seed; 
+    //////////////////////////////////////////////////////////////////
+    // 可能会用到的的注解：
+    // @ComponentScan("name.feinimouse.feinicoinplus.test")
+    // @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) // 非单例的bean注解
+    // @PropertySource("classpath:feinicoinplus-config.properties")
+    // @Value("${coin.hash.seed}")
+    //////////////////////////////////////////////////////////////////
     
-    @Value("${coin.hash.long}") 
-    private boolean isLong;
+    
+    public static final int SEED = 1214;
+
+
+    public BaseConfig() {
+        Logger.getGlobal().setLevel(Level.WARNING);
+    }
+
+
+    @Override
+    @Bean
+    public NodeLogger nodeLogger() {
+        return new BaseNodeLogger();
+    }
 
     @Override
     @Bean
@@ -40,7 +53,7 @@ public class BaseConfig implements SimConfig {
     @Override
     @Bean
     public HashGenerator hashGenerator() {
-        return new MurmurHashGen(seed, isLong);
+        return new MurmurHashGen(SEED, true);
     }
 
     @Override

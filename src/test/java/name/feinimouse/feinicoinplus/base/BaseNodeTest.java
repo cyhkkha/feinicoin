@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.test;
+package name.feinimouse.feinicoinplus.base;
 
 import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.Carrier;

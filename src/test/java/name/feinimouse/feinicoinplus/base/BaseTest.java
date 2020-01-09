@@ -1,6 +1,7 @@
-package name.feinimouse.feinicoinplus.test;
+package name.feinimouse.feinicoinplus.base;
 
 import name.feinimouse.feinicoinplus.core.HashGenerator;
+import name.feinimouse.feinicoinplus.core.TransactionGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.sim.*;
 import org.junit.Assert;
@@ -13,9 +14,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = BaseTestConfig.class)
+@ContextConfiguration(classes = BaseConfig.class)
 public class BaseTest {
     
     @Autowired
@@ -28,6 +30,15 @@ public class BaseTest {
     AssetManager assetManager;
     @Autowired
     HashGenerator hashGenerator;
+    
+    @Test
+    public void testLog() {
+        Logger log = Logger.getLogger("test");
+        log.info("info-----");
+        log.warning("warn-----");
+        Logger.getGlobal().info("info========");
+        Logger.getGlobal().warning("warning=======");
+    }
     
     @Test
     public void testTransGen() {

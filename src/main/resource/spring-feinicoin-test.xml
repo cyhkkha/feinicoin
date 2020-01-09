@@ -9,14 +9,17 @@
         http://www.springframework.org/schema/context/spring-context.xsd"
     default-destroy-method="destroy"
 >
-<!--  
-  - - - -
-  - 本文件只做参考，后续将使用纯javaConfig的方式运行Spring
-  - - - -
-  -->
+    
+    
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - - - 本文件只做参考，已不再使用 - - - - - - - - - - - - - - - - - -
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    
+    
     
     <!--使用default-init-method="init" default-destroy-method="destroy"配置全局的初始化和销毁方法-->
-
     
     <!--  IOC  -->
     <!--读取静态配置文件-->
@@ -30,12 +33,12 @@
     <!--component-scan 用于扫描基于类的注解-->
     <!--annotation-config用于扫描基于方法等的注解被属于前者的子集-->
     
-    <context:component-scan base-package="name.feinimouse.feinicoinplus.test">
+<!--    <context:component-scan base-package="name.feinimouse.feinicoinplus.test">-->
         <!--使用通配符来进行过滤-->
         <!--<context:include-filter type="regex" expression=".*Guitar" />-->
         <!--使用注解来进行过滤-->
         <!--<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />-->
-    </context:component-scan>
+<!--    </context:component-scan>-->
     
     
 <!--    <bean id="hhw" class="name.feinimouse.study.bandparty.band.impl.HelloHappy">-->
