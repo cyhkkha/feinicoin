@@ -8,6 +8,8 @@ import name.feinimouse.feinicoinplus.core.node.exception.RequestNotSupportExcept
 import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.utils.exception.OverFlowException;
 import name.feinimouse.utils.exception.UnrecognizedClassException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 import java.util.Optional;
@@ -16,11 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
 // Order基类
 //@Component("order")
 public abstract class Order extends CacheNode {
+    private Logger logger = LogManager.getLogger(Order.class);
 
     // 等待center拉取的交易
-    private ClassMapContainer<Carrier> fetchWait;
+    protected ClassMapContainer<Carrier> fetchWait;
     // 已经发往verifier等待结果中的交易消息，String为该条消息携带交易的hash
-    private Map<String, Carrier> verifyWait;
+    protected Map<String, Carrier> verifyWait;
 
     // verifier群的地址
     @PropNeeded
@@ -43,7 +46,7 @@ public abstract class Order extends CacheNode {
                 , "class not support: " + carrier.getFetchClass());
         }
     }
-    
+
     @Override
     protected Carrier resolveFetch(Carrier carrier) {
         Carrier savedCarrier = fetchWait.poll(carrier.getFetchClass());
@@ -92,9 +95,9 @@ public abstract class Order extends CacheNode {
 
     @Override
     protected void afterWork() {
+        super.afterWork();
         fetchWait.clear();
         verifyWait.clear();
-        super.afterWork();
     }
 
     @Override
@@ -103,17 +106,19 @@ public abstract class Order extends CacheNode {
         Optional.ofNullable(cacheWait.poll(AssetTrans.class)).ifPresent(this::resolveCarrier);
     }
 
-    
+
     private void resolveCarrier(Carrier carrier) {
         NetInfo netInfo = carrier.getNetInfo();
         if (netInfo.getMsgType().equals(MSG_COMMIT_ORDER)) {
             recordToVerify(carrier);
+            logger.trace("已处理Enter缓存，交由Verifier验证");
         }
         if (netInfo.getMsgType().equals(MSG_CALLBACK_VERIFIER)) {
             try {
                 resolveVerifyCallback(carrier);
+                logger.trace("已处理验证结果缓存，存入待拉取缓存");
             } catch (ControllableException e) {
-                e.printStackTrace();
+                logger.warn(e.getMessage());
                 sendBackError();
             }
         }
@@ -176,10 +181,11 @@ public abstract class Order extends CacheNode {
             fetchWait.put(carrier);
         } catch (UnrecognizedClassException | OverFlowException e) {
             // 理论上该错误不会发生
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
     // 将交易错误的信息返回enter
-    protected void sendBackError() {}
+    protected void sendBackError() {
+    }
 }

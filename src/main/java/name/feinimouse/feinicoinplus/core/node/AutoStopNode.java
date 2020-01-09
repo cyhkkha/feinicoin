@@ -52,6 +52,7 @@ public abstract class AutoStopNode extends BaseNode {
 
     @Override
     protected void afterWork() {
+        super.afterWork();
         stopTime = System.currentTimeMillis();
     }
 

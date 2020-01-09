@@ -24,4 +24,9 @@ public class NetInfo {
             || !getMsgType().equals(msgType);
     }
     
+    @Override
+    public String toString() {
+        return String.format("[%s](%s@%s -> %s)}", msgType, nodeType, sender, receiver);
+    }
+    
 }

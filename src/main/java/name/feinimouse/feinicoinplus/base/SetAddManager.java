@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Component("addressManager")
 public class SetAddManager implements AddressManager {
     private ConcurrentHashMap<String, Object> addressSet;
     private ConcurrentLinkedQueue<String> waitUse;

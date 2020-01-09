@@ -7,29 +7,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.security.KeyPair;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Configuration
 public class BaseConfig implements SimConfig {
 
     //////////////////////////////////////////////////////////////////
     // 可能会用到的的注解：
-    // @ComponentScan("name.feinimouse.feinicoinplus.test")
     // @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) // 非单例的bean注解
+    // @ComponentScan("name.feinimouse.feinicoinplus.base")
     // @PropertySource("classpath:feinicoinplus-config.properties")
     // @Value("${coin.hash.seed}")
     //////////////////////////////////////////////////////////////////
     
     
     public static final int SEED = 1214;
-
-
-    @Override
-    @Bean
-    public NodeLogger nodeLogger() {
-        return new BaseNodeLogger();
-    }
 
     @Override
     @Bean

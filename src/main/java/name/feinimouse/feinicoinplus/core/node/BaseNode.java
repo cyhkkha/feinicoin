@@ -4,13 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.node.exception.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
 
 // 一个节点即是一个线程
 public abstract class BaseNode extends Thread implements Node {
-
+    private Logger logger = LogManager.getLogger(BaseNode.class);
     // 节点类型
     @Getter
     protected String nodeType;
@@ -23,7 +25,6 @@ public abstract class BaseNode extends Thread implements Node {
 
     // 节点在网络中的地址
     @Getter
-    @Setter
     @PropNeeded
     protected String address;
 
@@ -40,6 +41,11 @@ public abstract class BaseNode extends Thread implements Node {
         this.nodeType = nodeType;
     }
 
+    public void setAddress(String address) {
+        this.address = address;
+        setName(nodeType + "@" + address);
+    }
+
     // 线程运行的具体内容，节点运行完毕后必须调用reset方法重置节点才能再次运行
     @Override
     public void run() {
@@ -53,6 +59,7 @@ public abstract class BaseNode extends Thread implements Node {
             return;
         }
         runningTag = true;
+        logger.trace("即将开始运行");
         while (runningTag) {
             // 真正的线程运行内容在这里
             try {
@@ -61,7 +68,7 @@ public abstract class BaseNode extends Thread implements Node {
                     Thread.sleep(taskInterval);
                 }
             } catch (NodeStopException | InterruptedException e) {
-                System.out.println(e.getMessage());
+                logger.info(e.getMessage());
                 stopNode();
             } catch (NodeRunningException e) {
                 resolveRunningException(e);
@@ -110,6 +117,7 @@ public abstract class BaseNode extends Thread implements Node {
 
     // 节点运行后的动作，一般来说用来释放资源
     protected void afterWork() {
+        logger.trace("即将停止运行");
     }
 
     // 真正的节点的运行工作
@@ -121,6 +129,7 @@ public abstract class BaseNode extends Thread implements Node {
         requestCheck(carrier);
         beforeCommit(carrier);
         resolveCommit(carrier);
+        logger.trace("已收到并处理消息({})", carrier.getNetInfo());
     }
 
     // 向节点拉取一条信息，节点将返回拉取的结果
@@ -128,7 +137,10 @@ public abstract class BaseNode extends Thread implements Node {
     public Carrier fetch(Carrier carrier) throws BadRequestException {
         requestCheck(carrier);
         beforeFetch(carrier);
-        return resolveFetch(carrier);
+        Carrier ret = resolveFetch(carrier);
+        logger.trace("消息({})拉取了数据({})"
+            , carrier.getNetInfo(), ret.getNetInfo());
+        return ret;
     }
 
     // 请求的统一检查

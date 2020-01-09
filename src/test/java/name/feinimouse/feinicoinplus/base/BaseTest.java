@@ -5,6 +5,8 @@ import name.feinimouse.feinicoinplus.core.TransactionGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.sim.AccountManager;
 import name.feinimouse.feinicoinplus.core.sim.AssetManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +35,11 @@ public class BaseTest {
     
     @Test
     public void testLog() {
-
+        Logger logger = LogManager.getLogger(this.getClass());
+        logger.debug("debug");
+        logger.info("info");
+        logger.warn("warn");
+        logger.error("test");
     }
     
     @Test

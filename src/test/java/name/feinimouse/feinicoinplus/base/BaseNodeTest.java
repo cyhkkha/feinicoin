@@ -14,29 +14,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class BaseNodeTest extends BaseTest {
     @Autowired
     SignGenerator signGenerator;
-    
+
     @Autowired
     Verifier verifier;
     @Autowired
     Order order;
     @Autowired
     Center center;
-    
+
     @Test
-    public void testVerifier() throws InterruptedException {
+    public void testVerifier() throws InterruptedException, BadRequestException {
         order.start();
         verifier.start();
         Thread.sleep(1000);
-        LoopUtils.loop(1, () -> {
+        for (int i = 0; i < 5; i++) {
             Packer packer = transactionGenerator.genRandomTrans();
             Carrier carrier = transactionGenerator.genCarrier(packer, order.getAddress());
-            try {
-                order.commit(carrier);
-            } catch (BadRequestException e) {
-                e.printStackTrace();
-            }
-        });
+            order.commit(carrier);
+            Thread.yield();
+        }
         Thread.sleep(8 * 1000);
     }
-    
+
 }

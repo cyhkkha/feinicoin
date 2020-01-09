@@ -52,8 +52,8 @@ public abstract class CacheNode extends AutoStopNode {
 
     @Override
     protected void afterWork() {
-        cacheWait.clear();
         super.afterWork();
+        cacheWait.clear();
     }
 
     @Override

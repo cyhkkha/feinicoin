@@ -4,7 +4,6 @@ import name.feinimouse.feinicoinplus.core.node.*;
 import name.feinimouse.feinicoinplus.core.sim.*;
 
 public interface SimConfig {
-    NodeLogger nodeLogger();
 
     AddressManager addressManager();
 

@@ -9,6 +9,8 @@ import name.feinimouse.lambda.RunnerStopper;
 import name.feinimouse.utils.InputTimer;
 import name.feinimouse.utils.ReturnTimer;
 import name.feinimouse.utils.StopwatchExecutor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.PrivateKey;
 import java.util.Optional;
@@ -16,6 +18,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class Center extends AutoStopNode {
+    private Logger logger = LogManager.getLogger(this.getClass());
 
     @PropNeeded
     protected CenterContext content;
@@ -52,8 +55,8 @@ public abstract class Center extends AutoStopNode {
 
     @Override
     protected void afterWork() {
-        transCache.clear();
         super.afterWork();
+        transCache.clear();
     }
 
     @Override
@@ -167,7 +170,9 @@ public abstract class Center extends AutoStopNode {
             content.commit(transaction);
             transCache.add(carrier);
             resetGap();
-        } catch (ControllableException | TransAdmitFailedException e) {
+        } catch (ControllableException e) {
+            logger.warn(e.getMessage());
+        } catch (TransAdmitFailedException e) {
             e.printStackTrace();
         }
     }
@@ -181,7 +186,9 @@ public abstract class Center extends AutoStopNode {
             Carrier carrier = fetchValidTrans(AssetTrans.class);
             content.commit(carrier.getPacker());
             resetGap();
-        } catch (ControllableException | TransAdmitFailedException e) {
+        } catch (ControllableException e) {
+            logger.warn(e.getMessage());
+        } catch (TransAdmitFailedException e) {
             e.printStackTrace();
         }
     }

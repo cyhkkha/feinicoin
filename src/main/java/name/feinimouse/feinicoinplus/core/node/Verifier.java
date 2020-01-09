@@ -7,6 +7,8 @@ import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
 import name.feinimouse.feinicoinplus.core.node.exception.RequestNotSupportException;
 import name.feinimouse.lambda.InOutRunner;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import java.security.PrivateKey;
@@ -15,6 +17,8 @@ import java.util.Optional;
 
 // verifier基类
 public abstract class Verifier extends CacheNode {
+    Logger logger = LogManager.getLogger(Verifier.class);
+    
     @PropNeeded
     protected PublicKeyHub publicKeyHub;
     @PropNeeded
@@ -82,6 +86,7 @@ public abstract class Verifier extends CacheNode {
             PublicKey key = publicKeyHub.getKey(signer);
             result = result || signGen.verify(key, packer, signer);
         }
+        logger.trace("已验证资产交易");
         return result;
     }
     
@@ -90,7 +95,9 @@ public abstract class Verifier extends CacheNode {
         Transaction trans = (Transaction) packer.obj();
         String signer = trans.getSender();
         PublicKey key = publicKeyHub.getKey(signer);
-        return signGen.verify(key, packer, signer);
+        boolean result = signGen.verify(key, packer, signer);
+        logger.trace("已验证普通交易");
+        return result;
     }
     
 }
