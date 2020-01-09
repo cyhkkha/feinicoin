@@ -124,14 +124,14 @@ public class MapAssManager implements AssetManager {
         return Optional.ofNullable(dynamicTrans.get(address))
             .map(map -> map.get(owner))
             .map(q -> q.toArray(Packer[]::new))
-            .get();
+            .orElse(null);
     }
 
     @Override
     public Asset get(String address, String owner) {
         return Optional.ofNullable(assetAddressMap.get(address))
             .map(map -> map.get(owner))
-            .get();
+            .orElse(null);
     }
 
     @Override
