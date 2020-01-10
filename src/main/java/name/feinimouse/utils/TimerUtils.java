@@ -1,18 +1,15 @@
 package name.feinimouse.utils;
 
-import name.feinimouse.lambda.CustomRunner;
-import name.feinimouse.lambda.InputRunner;
-import name.feinimouse.lambda.OrdinaryRunner;
-import name.feinimouse.lambda.ReturnRunner;
+import name.feinimouse.lambda.*;
 
 import java.util.Optional;
 
 public class TimerUtils {
-    public static class InternalTimerResult<T> implements TimerResult<T> {
+    public static class InternalResult<T> implements TimerResult<T> {
         private T obj;
         private long time;
 
-        public InternalTimerResult(long time, T obj) {
+        public InternalResult(long time, T obj) {
             this.time = time;
             this.obj = obj;
         }
@@ -35,7 +32,7 @@ public class TimerUtils {
                 r.run();
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                return new InternalTimerResult<>(runTime, null);
+                return new InternalResult<>(runTime, null);
             }).orElse(null);
     }
 
@@ -46,7 +43,7 @@ public class TimerUtils {
                 T result = r.run();
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                return new InternalTimerResult<>(runTime, result);
+                return new InternalResult<>(runTime, result);
             }).orElse(null);
     }
 
@@ -57,7 +54,7 @@ public class TimerUtils {
     public static <I, O> TimerResult<O> run(CustomRunner<I, O> runner, I input) {
         return getRunner(runner).run(input);
     }
-    
+
     public static <I> CustomRunner<I, TimerResult<?>> getRunner(InputRunner<I> runner) {
         return Optional.ofNullable(runner)
             .map(r -> (CustomRunner<I, TimerResult<?>>) input -> {
@@ -65,7 +62,7 @@ public class TimerUtils {
                 r.run(input);
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                return new InternalTimerResult<>(runTime, null);
+                return new InternalResult<>(runTime, null);
             }).orElse(null);
     }
 
@@ -76,7 +73,7 @@ public class TimerUtils {
                 O result = r.run(input);
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                return new InternalTimerResult<>(runTime, result);
+                return new InternalResult<>(runTime, result);
             }).orElse(null);
     }
 

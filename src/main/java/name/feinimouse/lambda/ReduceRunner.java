@@ -1,5 +1,5 @@
 package name.feinimouse.lambda;
 
-public interface DiffCumulativeRunner<T, E> {
+public interface ReduceRunner<T, E> {
     E run(E accumulate, T pram);
 }

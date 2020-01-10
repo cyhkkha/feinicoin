@@ -31,9 +31,13 @@ public class BaseNodeTest extends BaseTest {
             Packer packer = transactionGenerator.genRandomTrans();
             Carrier carrier = transactionGenerator.genCarrier(packer, order.getAddress());
             order.commit(carrier);
-            Thread.yield();
         }
         Thread.sleep(8 * 1000);
+    }
+    
+    @Test
+    public void testCenter() {
+        
     }
 
 }

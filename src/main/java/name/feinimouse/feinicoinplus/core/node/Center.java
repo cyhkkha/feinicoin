@@ -5,9 +5,8 @@ import name.feinimouse.feinicoinplus.core.*;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.node.exception.*;
 import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
-import name.feinimouse.utils.StopwatchExecutor;
-import name.feinimouse.utils.TimerResult;
-import name.feinimouse.utils.TimerUtils;
+import name.feinimouse.lambda.RunnerStopper;
+import name.feinimouse.utils.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,25 +58,15 @@ public abstract class Center extends AutoStopNode {
     @Override
     protected void gapWorking() throws NodeRunningException {
         // 定时拉取并处理
-        StopwatchExecutor fetcher = new StopwatchExecutor(
-            fetchInterval, fetchTime, stopper -> {
-            if (isStop()) {
-                stopper.stop();
-                return;
-            }
-            try {
-                transactionLoop();
-                assetTransLoop();
-            } catch (ControllableException e) {
-                logger.warn(e.getMessage());
-                resetGap();
-            } catch (TransAdmitFailedException e) {
-                logger.error(e.getMessage());
-                e.printStackTrace();
-                resetGap();
-            }
+        StopwatchResult<?> fetchResult = StopwatchUtils.run(
+            fetchTime, fetchInterval, stopper -> {
+            fetchLoop(Transaction.class, this::handleTransaction, stopper);
+            fetchLoop(AssetTrans.class, this::handleAssetTrans, stopper);
         });
-        fetcher.start();
+
+        logger.trace("拉取交易持续了 {}ms ，预期持续时间为 {}ms 。"
+            , fetchResult.getTotalRunTime()
+            , fetchTime);
 
         // 生产区块
         TimerResult<Block> produceResult = TimerUtils.run(this::produceBlock);
@@ -85,8 +74,7 @@ public abstract class Center extends AutoStopNode {
         long produceTime = produceResult.getTime();
 
         // 同步并存储区块
-        TimerResult<?> syncResult = TimerUtils.run(this::synchronizeBlock, block);
-        long syncTime = syncResult.getTime();
+        long syncTime = TimerUtils.run(this::synchronizeBlock, block).getTime();
 
         // 至少留100ms的时间用于拉取，否则抛出异常
         if (periodTime < syncTime + produceTime + 100) {
@@ -105,6 +93,7 @@ public abstract class Center extends AutoStopNode {
         Packer[] transArr = transCache.stream().map(Carrier::getPacker).toArray(Packer[]::new);
         transCache.clear();
         Block block = centerContext.pack(hashGen.hash(transArr, Transaction.class), address);
+        logger.trace("已完成区块生产");
         resetGap();
         return block;
     }
@@ -117,10 +106,12 @@ public abstract class Center extends AutoStopNode {
         try {
             // 同步完，获取联合签名后的区块
             Packer consensusResult = consensusNetwork.signAndCommit(privateKey, block);
+            logger.trace("已完成同步");
             resetGap();
             // 若同步成功则提交写入
             if (consensusResult != null) {
                 centerContext.admit(consensusResult);
+                logger.trace("已完成写入");
                 resetGap();
             }
         } catch (ConsensusException | DaoException e) {
@@ -169,27 +160,45 @@ public abstract class Center extends AutoStopNode {
             throw new ControllableException("Fetch format is incorrect");
         }
     }
-
-    private void transactionLoop() throws ControllableException, TransAdmitFailedException {
-        Carrier carrier = fetchValidTrans(Transaction.class);
-        if (carrier == null) {
+    
+    private interface FetchHandler {
+        void run(Carrier carrier) throws TransAdmitFailedException;
+    }
+    
+    private void fetchLoop(Class<?> fetchClass, FetchHandler handler, RunnerStopper stopper) {
+        if (isStop()) {
+            stopper.stop();
             return;
         }
+        try {
+            Carrier carrier = fetchValidTrans(fetchClass);
+            if (carrier != null) {
+                handler.run(carrier);
+                resetGap();
+            }
+        } catch (ControllableException e) {
+            logger.warn(e.getMessage());
+            resetGap();
+        } catch (TransAdmitFailedException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+            resetGap();
+        }
+    }
+    
+    private void handleTransaction(Carrier carrier) throws TransAdmitFailedException {
         Transaction transaction = (Transaction) carrier.getPacker().obj();
-        logger.trace("已拉取普通交易({})", transaction);
         centerContext.commit(transaction);
         transCache.add(carrier);
+        logger.trace("已处理普通交易({})", transaction);
         resetGap();
+
     }
 
-    private void assetTransLoop() throws ControllableException, TransAdmitFailedException {
-        Carrier carrier = fetchValidTrans(AssetTrans.class);
-        if (carrier == null) {
-            return;
-        }
+    private void handleAssetTrans(Carrier carrier) throws TransAdmitFailedException {
         AssetTrans assetTrans = (AssetTrans) carrier.getPacker().obj(); 
-        logger.trace("已拉取资产交易({})", assetTrans);
         centerContext.commit(carrier.getPacker());
+        logger.trace("已处理资产交易({})", assetTrans);
         resetGap();
     }
 
