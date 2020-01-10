@@ -39,4 +39,9 @@ public class AssetTrans implements BlockObj {
         assetTrans.setOperation(OPERA_TYPE_INIT);
         return assetTrans;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("[%d](%s -> %s)@%s<%s>", number, operator, receiver, address, transaction);
+    }
 }

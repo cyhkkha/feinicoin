@@ -23,4 +23,9 @@ public class Transaction implements BlockObj {
         timestamp = System.currentTimeMillis();
         exFunc = new HashMap<>();
     }
+    
+    @Override
+    public String toString() {
+        return String.format("[%d](%s -> %s)", coin, sender, receiver);
+    }
 }
