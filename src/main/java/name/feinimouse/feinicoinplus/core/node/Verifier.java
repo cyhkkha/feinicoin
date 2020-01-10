@@ -6,7 +6,7 @@ import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
 import name.feinimouse.feinicoinplus.core.node.exception.RequestNotSupportException;
-import name.feinimouse.lambda.InOutRunner;
+import name.feinimouse.lambda.CustomRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,8 +19,10 @@ import java.util.Optional;
 public abstract class Verifier extends CacheNode {
     Logger logger = LogManager.getLogger(Verifier.class);
     
+    @Setter
     @PropNeeded
     protected PublicKeyHub publicKeyHub;
+    @Setter
     @PropNeeded
     protected SignGenerator signGen;
 
@@ -28,12 +30,10 @@ public abstract class Verifier extends CacheNode {
     @Setter
     protected PrivateKey privateKey;
 
-    public Verifier(PublicKeyHub publicKeyHub, SignGenerator signGen) {
+    public Verifier() {
         // 默认缓存的初始容量为30
         super(NODE_VERIFIER, new CarrierAttachCMC(
             new Class[]{Transaction.class, AssetTrans.class}, 30));
-        this.publicKeyHub = publicKeyHub;
-        this.signGen = signGen;
     }
 
     @Override
@@ -56,7 +56,7 @@ public abstract class Verifier extends CacheNode {
     }
 
     // 总体过程
-    private void resolveVerify(Carrier carrier, InOutRunner<Packer, Boolean> verify) {
+    private void resolveVerify(Carrier carrier, CustomRunner<Packer, Boolean> verify) {
         Packer packer = carrier.getPacker();
         AttachInfo attachInfo = carrier.getAttachInfo();
         NetInfo netInfo = carrier.getNetInfo();
