@@ -1,5 +1,5 @@
 package name.feinimouse.lambda;
 
-public interface InOutRunner<I, O> {
+public interface CustomRunner<I, O> {
     O run(I input);
 }
