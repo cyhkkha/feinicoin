@@ -11,7 +11,9 @@ import name.feinimouse.feinicoinplus.core.node.exception.RequestNotSupportExcept
 public class BaseCenter extends Center {
 
     public BaseCenter(CenterContext centerContext, HashGenerator hashGen, ConsensusNetwork consensusNetwork) {
-        super(centerContext, hashGen, consensusNetwork);
+        setCenterContext(centerContext);
+        setHashGen(hashGen);
+        setConsensusNetwork(consensusNetwork);
     }
     
     @Override

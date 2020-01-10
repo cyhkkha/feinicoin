@@ -10,7 +10,8 @@ import name.feinimouse.feinicoinplus.core.node.exception.RequestNotSupportExcept
 public class BaseVerifier extends Verifier {
 
     public BaseVerifier(PublicKeyHub publicKeyHub, SignGenerator signGen) {
-        super(publicKeyHub, signGen);
+        setPublicKeyHub(publicKeyHub);
+        setSignGen(signGen);
     }
     
     @Override
