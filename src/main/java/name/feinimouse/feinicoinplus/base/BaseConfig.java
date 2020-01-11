@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.security.KeyPair;
+import java.security.PrivateKey;
 
 @Configuration
 public class BaseConfig implements SimConfig {
@@ -21,12 +22,18 @@ public class BaseConfig implements SimConfig {
     
     
     public static final int SEED = 1214;
+    public static final int NODE_INTERVAL = 5;
+    public static final int FETCH_INTERVAL = 5;
+    
+    public static final int NUMBER_ACCOUNT = 100;
+    public static final int NUMBER_ASSET = 40;
+    public static final int NUMBER_ADDRESS = 200;
 
     @Override
     @Bean
     public AddressManager addressManager() {
         AddressManager addressManager = new SetAddManager();
-        addressManager.genAddress(200);
+        addressManager.genAddress(NUMBER_ADDRESS);
         return addressManager;
     }
 
@@ -59,7 +66,7 @@ public class BaseConfig implements SimConfig {
     public AccountManager accountManager() {
         AccountManager manager = new ListMapAccMan(hashGenerator()
             , addressManager(), publicKeyHub(), signGenerator());
-        manager.genAccount(100);
+        manager.genAccount(NUMBER_ACCOUNT);
         return manager;
     }
 
@@ -68,7 +75,7 @@ public class BaseConfig implements SimConfig {
     public AssetManager assetManager() {
         AssetManager manager = new MapAssManager(hashGenerator()
             , addressManager(), accountManager());
-        manager.genAsset(40);
+        manager.genAsset(NUMBER_ASSET);
         return manager;
     }
     
@@ -99,16 +106,26 @@ public class BaseConfig implements SimConfig {
         return new MapNodeNetwork();
     }
 
+    private void initNode(BaseNode node) {
+        node.setAddress(addressManager().getAddress());
+        nodeNetWork().registerNode(node);
+        node.setNetwork(nodeNetWork());
+        node.setTaskInterval(NODE_INTERVAL);
+    }
+    
+    private PrivateKey genPrivateKey(Node node) {
+        KeyPair vKeys = signGenerator().genKeyPair();
+        publicKeyHub().setKey(node.getAddress(), vKeys.getPublic());
+        return vKeys.getPrivate();
+    }
+    
     @Override
     @Bean
     public Verifier verifier() {
         Verifier verifier = new BaseVerifier(publicKeyHub(), signGenerator());
-        verifier.setAddress(addressManager().getAddress());
-        KeyPair vKeys = signGenerator().genKeyPair();
-        verifier.setPrivateKey(vKeys.getPrivate());
-        publicKeyHub().setKey(verifier.getAddress(), vKeys.getPublic());
-        nodeNetWork().registerNode(verifier);
-        verifier.setNetwork(nodeNetWork());
+        initNode(verifier);
+        
+        verifier.setPrivateKey(genPrivateKey(verifier));
         return verifier;
     }
 
@@ -116,11 +133,9 @@ public class BaseConfig implements SimConfig {
     @Bean
     public Order order() {
         Order order = new BaseOrder();
-        order.setAddress(addressManager().getAddress());
-        order.setAddress(addressManager().getAddress());
+        initNode(order);
+        
         order.setVerifiersAddress(verifier().getAddress());
-        nodeNetWork().registerNode(order);
-        order.setNetwork(nodeNetWork());
         return order;
     }
 
@@ -128,13 +143,11 @@ public class BaseConfig implements SimConfig {
     @Bean
     public Center center() {
         Center center = new BaseCenter(centerContext(), hashGenerator(), consensusNetwork());
-        center.setAddress(addressManager().getAddress());
+        initNode(center);
+        
+        center.setPrivateKey(genPrivateKey(center));
         center.setOrdersAddress(order().getAddress());
-        KeyPair cKey = signGenerator().genKeyPair();
-        center.setPrivateKey(cKey.getPrivate());
-        publicKeyHub().setKey(center.getAddress(), cKey.getPublic());
-        nodeNetWork().registerNode(center);
-        center.setNetwork(nodeNetWork());
+        center.setFetchInterval(FETCH_INTERVAL);
         return center;
     }
 
