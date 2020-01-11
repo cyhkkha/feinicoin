@@ -99,7 +99,7 @@ public class StopwatchUtils {
                 if (taskStopTime + intervalTime > stopTime) {
                     Thread.sleep(stopTime - taskStopTime);
                     break;
-                } else {
+                } else if (intervalTime > 0) {
                     Thread.sleep(intervalTime);
                 }
             } catch (InterruptedException e) {

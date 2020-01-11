@@ -33,6 +33,10 @@ public class PackerArr extends MapSignObj implements Cloneable {
         this.hash = hash;
     }
 
+    public int size() {
+        return arr.length;
+    }
+    
     public PackerArr copy() {
         try {
             PackerArr result = (PackerArr) clone();

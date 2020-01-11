@@ -45,7 +45,7 @@ public class BaseConfig implements SimConfig {
     @Override
     @Bean
     public CenterDao centerDao() {
-        return new NullCenterDao();
+        return new SleepCenterDao();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class BaseConfig implements SimConfig {
     @Override
     @Bean
     public ConsensusNetwork consensusNetwork() {
-        return new NoConsensusNet(signGenerator(), hashGenerator());
+        return new SleepConsensusNet(signGenerator(), hashGenerator());
     }
 
     @Override

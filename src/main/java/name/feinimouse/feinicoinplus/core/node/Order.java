@@ -2,9 +2,7 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
-import name.feinimouse.feinicoinplus.core.node.exception.ControllableException;
-import name.feinimouse.feinicoinplus.core.node.exception.RequestNotSupportException;
+import name.feinimouse.feinicoinplus.core.node.exception.*;
 import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.utils.exception.OverFlowException;
 import name.feinimouse.utils.exception.UnrecognizedClassException;
@@ -32,7 +30,7 @@ public abstract class Order extends CacheNode {
 
     public Order() {
         // 缓存的默认容量是30
-        super(NODE_ORDER, new CarrierAttachCMC(new Class[]{Transaction.class, AssetTrans.class}, 30));
+        super(NODE_ORDER, new CarrierAttachCMC(new Class[]{Transaction.class, AssetTrans.class}));
         // 供拉取的缓存默认容量是无限
         fetchWait = new CarrierFetchCMC(new Class[]{Transaction.class, AssetTrans.class});
         verifyWait = new ConcurrentHashMap<>();
@@ -40,8 +38,9 @@ public abstract class Order extends CacheNode {
 
     @Override
     protected void beforeFetch(Carrier carrier) throws BadRequestException {
+        super.beforeFetch(carrier);
         if (carrier.notMatchFetch(NODE_CENTER, MSG_FETCH_ORDER, Transaction.class)
-            || carrier.notMatchFetch(NODE_CENTER, MSG_FETCH_ORDER, AssetTrans.class)) {
+            && carrier.notMatchFetch(NODE_CENTER, MSG_FETCH_ORDER, AssetTrans.class)) {
             throw new RequestNotSupportException(this, carrier.getNetInfo()
                 , "class not support: " + carrier.getFetchClass());
         }
@@ -62,6 +61,7 @@ public abstract class Order extends CacheNode {
 
     @Override
     protected void beforeCommit(Carrier carrier) throws BadRequestException {
+        super.beforeCommit(carrier);
         // NetInfo类型必须支持
         NetInfo netInfo = carrier.getNetInfo();
         if (netInfo.notMatch(NODE_ENTER, MSG_COMMIT_ORDER)
@@ -118,8 +118,7 @@ public abstract class Order extends CacheNode {
                 resolveVerifyCallback(carrier);
                 logger.trace("已处理验证结果缓存，存入待拉取缓存");
             } catch (ControllableException e) {
-                logger.warn(e.getMessage());
-                sendBackError();
+                sendBackError(carrier, e.getMessage());
             }
         }
     }
@@ -135,9 +134,14 @@ public abstract class Order extends CacheNode {
         AttachInfo attachInfo = carrier.getAttachInfo();
         Carrier nextCarrier = genCarrier(verifiersAddress, MSG_COMMIT_VERIFIER, attachInfo);
         // 提交给verifier集群
-        commitToNetwork(nextCarrier, packer);
+        try {
+            commitToNetwork(nextCarrier, packer);
+        } catch (NodeBusyException e) {
+            nextCarrier.setPacker(packer);
+            sendBackError(nextCarrier, "commit verifier failed");
+        }
     }
-
+    
     private void resolveVerifyCallback(Carrier carrier) throws ControllableException {
         Packer packer = carrier.getPacker();
 
@@ -186,6 +190,7 @@ public abstract class Order extends CacheNode {
     }
 
     // 将交易错误的信息返回enter
-    protected void sendBackError() {
+    protected void sendBackError(Carrier carrier, String msg) {
+        logger.warn(msg);
     }
 }

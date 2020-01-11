@@ -31,7 +31,7 @@ public abstract class BaseNode extends Thread implements Node {
     // 线程执行间隔
     @Getter
     @Setter
-    protected long taskInterval = 10;
+    protected long taskInterval = 5;
 
     // 是否正在运行
     protected boolean runningTag = false;
@@ -65,7 +65,11 @@ public abstract class BaseNode extends Thread implements Node {
             try {
                 working();
                 if (runningTag) {
-                    Thread.sleep(taskInterval);
+                    if (taskInterval > 0) {
+                        Thread.sleep(taskInterval);
+                    } else {
+                        yield();
+                    }
                 }
             } catch (NodeStopException | InterruptedException e) {
                 logger.info(e.getMessage());
@@ -111,7 +115,6 @@ public abstract class BaseNode extends Thread implements Node {
     }
 
     // 在节点运行前的动作
-    @SuppressWarnings("RedundantThrows")
     protected void beforeWork() throws NodeRunningException {
     }
 
@@ -138,8 +141,10 @@ public abstract class BaseNode extends Thread implements Node {
         requestCheck(carrier);
         beforeFetch(carrier);
         Carrier ret = resolveFetch(carrier);
-        logger.trace("消息({})拉取了数据({})"
-            , carrier.getNetInfo(), ret.getNetInfo());
+        if (ret != null) {
+            logger.trace("消息({})拉取了数据({})"
+                , carrier.getNetInfo(), ret.getNetInfo());
+        }
         return ret;
     }
 
@@ -205,18 +210,26 @@ public abstract class BaseNode extends Thread implements Node {
         AttachInfo nextMsg = Optional.ofNullable(attach).orElseGet(AttachInfo::new).copy();
         return new Carrier(netInfo, nextMsg);
     }
-
-    protected void commitToNetwork(Carrier carrier, Packer packer) {
-        carrier.setPacker(packer);
+    
+    protected void commitToNetwork(Carrier carrier) throws NodeBusyException {
         network.commit(carrier);
     }
+    
+    protected void commitToNetwork(Carrier carrier, Packer packer) throws NodeBusyException {
+        carrier.setPacker(packer);
+        commitToNetwork(carrier);
+    }
 
-    protected Carrier fetchFromNetWork(Carrier fetchCarrier, Class<?> fetchClass) throws BadRequestException {
-        fetchCarrier.setFetchClass(fetchClass);
+    protected Carrier fetchFromNetWork(Carrier fetchCarrier) throws BadRequestException {
         Carrier carrier = network.fetch(fetchCarrier);
         if (carrier != null) {
             requestCheck(carrier);
         }
         return carrier;
+    }
+    
+    protected Carrier fetchFromNetWork(Carrier fetchCarrier, Class<?> fetchClass) throws BadRequestException {
+        fetchCarrier.setFetchClass(fetchClass);
+        return fetchFromNetWork(fetchCarrier);
     }
 }

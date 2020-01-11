@@ -46,8 +46,8 @@ public abstract class Center extends AutoStopNode {
     @Setter
     protected long periodTime = 1000;
     @Setter
-    protected long fetchInterval = 10;
-    
+    protected long fetchInterval = 5;
+
     private Queue<Carrier> transCache;
 
     @Override
@@ -56,14 +56,36 @@ public abstract class Center extends AutoStopNode {
         transCache.clear();
     }
 
+    private boolean fetchTag = true;
+
+    @Override
+    protected void resetGap() {
+        super.resetGap();
+        fetchTag = false;
+    }
+
     @Override
     protected void gapWorking() throws NodeRunningException {
+        // 记录节点在周期内是否拉取到交易
+        fetchTag = true;
         // 定时拉取并处理
         StopwatchUtils.Statistics fetchResult = StopwatchUtils.run(
             fetchTime, fetchInterval, stopper -> {
                 fetchLoop(Transaction.class, this::handleTransaction, stopper);
                 fetchLoop(AssetTrans.class, this::handleAssetTrans, stopper);
             });
+
+        // 若拉取不到交易则不生产区块
+        if (fetchTag) {
+            logger.warn("拉取交易持续了 {}ms ，未拉取到交易", fetchResult.getTotalRunTime());
+            try {
+                Thread.sleep(periodTime - fetchResult.getTotalRunTime());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                stopNode();
+            }
+            return;
+        }
 
         logger.trace("拉取交易持续了 {}ms ，预期持续时间为 {}ms 。"
             , fetchResult.getTotalRunTime()
@@ -94,7 +116,6 @@ public abstract class Center extends AutoStopNode {
         Packer[] transArr = transCache.stream().map(Carrier::getPacker).toArray(Packer[]::new);
         transCache.clear();
         Block block = centerContext.pack(hashGen.hash(transArr, Transaction.class), address);
-        logger.trace("已完成区块生产");
         resetGap();
         return block;
     }
@@ -107,12 +128,10 @@ public abstract class Center extends AutoStopNode {
         try {
             // 同步完，获取联合签名后的区块
             Packer consensusResult = consensusNetwork.signAndCommit(privateKey, block);
-            logger.trace("已完成同步");
             resetGap();
             // 若同步成功则提交写入
             if (consensusResult != null) {
                 centerContext.admit(consensusResult);
-                logger.trace("已完成写入");
                 resetGap();
             }
         } catch (ConsensusException | DaoException e) {
@@ -152,7 +171,7 @@ public abstract class Center extends AutoStopNode {
 
             // 必须存在验证者的签名，且必须验证通过
             if (packer.excludeSign(packer.getVerifier())
-                || attachM.getVerifiedResult()) {
+                || !attachM.getVerifiedResult()) {
                 throw new ControllableException("Failed verification");
             }
             return carrier;
@@ -161,32 +180,29 @@ public abstract class Center extends AutoStopNode {
             throw new ControllableException("Fetch format is incorrect");
         }
     }
-    
+
     private interface FetchHandler {
         void run(Carrier carrier) throws TransAdmitFailedException;
     }
-    
+
     private void fetchLoop(Class<?> fetchClass, FetchHandler handler, RunnerStopper stopper) {
         if (isStop()) {
             stopper.stop();
             return;
         }
+        
         try {
             Carrier carrier = fetchValidTrans(fetchClass);
             if (carrier != null) {
                 handler.run(carrier);
                 resetGap();
             }
-        } catch (ControllableException e) {
+        } catch (ControllableException | TransAdmitFailedException e) {
             logger.warn(e.getMessage());
-            resetGap();
-        } catch (TransAdmitFailedException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
-            resetGap();
         }
+
     }
-    
+
     private void handleTransaction(Carrier carrier) throws TransAdmitFailedException {
         Transaction transaction = (Transaction) carrier.getPacker().obj();
         centerContext.commit(transaction);
@@ -197,7 +213,7 @@ public abstract class Center extends AutoStopNode {
     }
 
     private void handleAssetTrans(Carrier carrier) throws TransAdmitFailedException {
-        AssetTrans assetTrans = (AssetTrans) carrier.getPacker().obj(); 
+        AssetTrans assetTrans = (AssetTrans) carrier.getPacker().obj();
         centerContext.commit(carrier.getPacker());
         logger.trace("已处理资产交易({})", assetTrans);
         resetGap();

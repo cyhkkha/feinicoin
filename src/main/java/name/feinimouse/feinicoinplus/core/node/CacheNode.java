@@ -30,14 +30,13 @@ public abstract class CacheNode extends AutoStopNode {
             throw new RequestNotSupportException(this, carrier.getNetInfo()
                 , "Class not support: " + carrier.getPacker().objClass());
         } catch (OverFlowException e) {
-            e.printStackTrace();
             throw new NodeBusyException(this);
         }
     }
 
     @Override
-    protected void requestCheck(Carrier carrier) throws BadRequestException {
-        super.requestCheck(carrier);
+    protected void beforeCommit(Carrier carrier) throws BadRequestException {
+        super.beforeCommit(carrier);
         // 必须携带packer
         if (carrier.getPacker() == null) {
             throw new RequestNotSupportException(this, carrier.getNetInfo(), "message without packer");

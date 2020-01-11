@@ -10,8 +10,13 @@ import name.feinimouse.feinicoinplus.core.sim.AccountManager;
 import name.feinimouse.feinicoinplus.core.sim.AssetManager;
 import name.feinimouse.feinicoinplus.core.node.exception.DaoException;
 import name.feinimouse.feinicoinplus.core.node.exception.TransAdmitFailedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Optional;
 
 public class BaseCenContext implements CenterContext {
+    Logger logger = LogManager.getLogger(BaseCenContext.class);
 
     protected AccountManager accountManager;
     protected AssetManager assetManager;
@@ -50,14 +55,20 @@ public class BaseCenContext implements CenterContext {
         PackerArr accountTree = accountManager.pack();
         PackerArr assetTree = assetManager.pack();
 
-        Block lastBlock = (Block) lastPacker.obj();
+        int id = Optional.ofNullable(lastPacker)
+            .map(Packer::obj)
+            .map(b -> ((Block) b).getId()).orElse(0);
+        
+        String hash = Optional.ofNullable(lastPacker)
+            .map(Packer::getHash).orElse("0000_0000_0000_0000_0000");
 
         Block block = new Block(accountTree, assetTree, transTree);
-        block.setId(lastBlock.getId());
-        block.setPreHash(lastPacker.getHash());
+        block.setId(id + 1);
+        block.setPreHash(hash);
         block.setProducer(producer);
         block.setTimestamp(System.currentTimeMillis());
 
+        logger.trace("区块打包成功");
         return block;
     }
 }

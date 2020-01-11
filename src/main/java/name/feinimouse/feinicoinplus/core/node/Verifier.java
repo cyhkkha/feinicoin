@@ -4,12 +4,10 @@ import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
-import name.feinimouse.feinicoinplus.core.node.exception.RequestNotSupportException;
+import name.feinimouse.feinicoinplus.core.node.exception.*;
 import name.feinimouse.lambda.CustomRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -33,11 +31,12 @@ public abstract class Verifier extends CacheNode {
     public Verifier() {
         // 默认缓存的初始容量为30
         super(NODE_VERIFIER, new CarrierAttachCMC(
-            new Class[]{Transaction.class, AssetTrans.class}, 30));
+            new Class[]{Transaction.class, AssetTrans.class}));
     }
 
     @Override
     protected void beforeCommit(Carrier carrier) throws BadRequestException {
+        super.beforeCommit(carrier);
         // NetInfo类型必须支持
         NetInfo netInfo = carrier.getNetInfo();
         if (netInfo.notMatch(NODE_ORDER, MSG_COMMIT_VERIFIER)) {
@@ -67,7 +66,17 @@ public abstract class Verifier extends CacheNode {
         signGen.sign(privateKey, packer, address);
         // 回调给Order
         Carrier nextCarrier = genCarrier(callbackAddress, MSG_CALLBACK_VERIFIER, attachInfo);
-        commitToNetwork(nextCarrier, packer);
+        try {
+            commitToNetwork(nextCarrier, packer);
+        } catch (NodeBusyException e) {
+            nextCarrier.setPacker(packer);
+            resolveOrderBusy(nextCarrier);
+        }
+
+    }
+    
+    protected void resolveOrderBusy(Carrier carrier) {
+        logger.warn("order busy !!");
     }
 
     // 验证资产交易

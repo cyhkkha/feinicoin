@@ -29,7 +29,7 @@ public abstract class AutoStopNode extends BaseNode {
             : stopTime - startTime;
     }
 
-    protected final void resetGap() {
+    protected  void resetGap() {
         gapStartTime = System.currentTimeMillis();
     }
 
@@ -44,7 +44,8 @@ public abstract class AutoStopNode extends BaseNode {
     }
 
     @Override
-    protected void beforeWork() {
+    protected void beforeWork() throws NodeRunningException {
+        super.beforeWork();
         startTime = System.currentTimeMillis();
         startTime = 0;
         resetGap();

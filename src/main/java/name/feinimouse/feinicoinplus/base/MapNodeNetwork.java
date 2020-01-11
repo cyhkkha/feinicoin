@@ -8,18 +8,31 @@ import name.feinimouse.feinicoinplus.core.node.Node;
 import name.feinimouse.feinicoinplus.core.node.NodeNetwork;
 import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
 import name.feinimouse.feinicoinplus.core.node.exception.NoSuchNodeException;
+import name.feinimouse.feinicoinplus.core.node.exception.NodeBusyException;
+import name.feinimouse.feinicoinplus.core.node.exception.NodeNotWorkingException;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MapNodeNetwork implements NodeNetwork {
+    @Setter
+    private long netDelayTime = 0;
+    
     @Setter @Getter
     private String address;
     private Map<String, Node> nodeMap;
 
     public MapNodeNetwork() {
         nodeMap = new ConcurrentHashMap<>();
+    }
+    
+    protected void netDelay() {
+        try {
+            Thread.sleep(netDelayTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private String checkCarrier(Carrier carrier) throws NoSuchNodeException {
@@ -34,10 +47,13 @@ public class MapNodeNetwork implements NodeNetwork {
     }
     
     @Override
-    public void commit(Carrier carrier) throws NoSuchNodeException {
+    public void commit(Carrier carrier) throws NoSuchNodeException, NodeBusyException {
         String receiver = checkCarrier(carrier);
         try {
+            netDelay();
             nodeMap.get(receiver).commit(carrier);
+        } catch (NodeBusyException e) {
+            throw e;
         } catch (BadRequestException e) {
             e.printStackTrace();
         }
@@ -47,7 +63,11 @@ public class MapNodeNetwork implements NodeNetwork {
     public Carrier fetch(Carrier carrier) throws NoSuchNodeException {
         String receiver = checkCarrier(carrier);
         try {
-            return nodeMap.get(receiver).fetch(carrier);
+            netDelay();
+            Carrier result = nodeMap.get(receiver).fetch(carrier);
+            netDelay();
+            return result;
+        } catch (NodeNotWorkingException ignored) {
         } catch (BadRequestException e) {
             e.printStackTrace();
         }

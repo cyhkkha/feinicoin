@@ -21,6 +21,7 @@ import java.util.Optional;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = BaseConfig.class)
 public class BaseTest {
+    Logger logger = LogManager.getLogger(this.getClass());
     
     @Autowired
     ApplicationContext context;
