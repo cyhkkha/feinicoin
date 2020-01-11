@@ -7,38 +7,50 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StopwatchUtils {
-    public static final long DEFAULT_INTERVAL_TIME = 10;
+    public static final long DEFAULT_INTERVAL_TIME = 0;
 
-    public static StopwatchResult<?> run(long maxRunTime, OrdinaryRunner runner) {
-        return run(maxRunTime, DEFAULT_INTERVAL_TIME, stopper -> { runner.run(); });
-    }
-    
-    public static StopwatchResult<?> run(long maxRunTime, long intervalTime, OrdinaryRunner runner) {
-        return run(maxRunTime, intervalTime, stopper -> { runner.run(); });
-    }
-
-    public static StopwatchResult<?> run(long maxRunTime, InputRunner<RunnerStopper> runner) {
+    public static Statistics run(long maxRunTime, OrdinaryRunner runner) {
         return run(maxRunTime, DEFAULT_INTERVAL_TIME, runner);
     }
 
-    public static <T> StopwatchResult<List<T>> run(long maxRunTime, CustomRunner<RunnerStopper, T> runner) {
+    public static Statistics run(long maxRunTime, long intervalTime, OrdinaryRunner runner) {
+        return run(maxRunTime, intervalTime, stopper -> {
+            runner.run();
+        });
+    }
+
+    public static <T> Result<T> run(long maxRunTime, ReturnRunner<T> runner) {
         return run(maxRunTime, DEFAULT_INTERVAL_TIME, runner);
     }
 
-    public static <T> StopwatchResult<List<T>> run(long maxRunTime, long intervalTime
+    public static <T> Result<T> run(long maxRunTime, long intervalTime, ReturnRunner<T> runner) {
+        return run(maxRunTime, intervalTime, stopper -> {
+            return runner.run();
+        });
+    }
+
+    public static Statistics run(long maxRunTime, InputRunner<RunnerStopper> runner) {
+        return run(maxRunTime, DEFAULT_INTERVAL_TIME, runner);
+    }
+
+    public static <T> Result<T> run(long maxRunTime, CustomRunner<RunnerStopper, T> runner) {
+        return run(maxRunTime, DEFAULT_INTERVAL_TIME, runner);
+    }
+
+    public static <T> Result<T> run(long maxRunTime, long intervalTime
         , CustomRunner<RunnerStopper, T> runner) {
         if (runner == null) {
             return null;
         }
         List<T> list = new LinkedList<>();
-        StopwatchResult<?> result = run(maxRunTime, intervalTime, stopper -> {
+        Statistics statistics = run(maxRunTime, intervalTime, stopper -> {
             T r = runner.run(stopper);
             list.add(r);
         });
-        return new InternalResult<>(list, result);
+        return new Result<>(statistics, list);
     }
 
-    public static StopwatchResult<?> run(long maxRunTime, long intervalTime
+    public static Statistics run(long maxRunTime, long intervalTime
         , InputRunner<RunnerStopper> runner) {
         if (runner == null) {
             return null;
@@ -58,7 +70,7 @@ public class StopwatchUtils {
             }
             try {
                 // 比较上一次的预测时间，若预测时间超出停止时间则不进行下一次任务，到时后自动停止
-                if (taskSumRunTime != 0 && taskStartTime + taskSumRunTime / taskRunTimeList.size() > stopTime) {
+                if (taskSumRunTime != 0 && (taskStartTime + (taskSumRunTime / taskRunTimeList.size())) > stopTime) {
                     Thread.sleep(stopTime - taskStartTime);
                     break;
                 }
@@ -95,43 +107,45 @@ public class StopwatchUtils {
                 break;
             }
         }
-        long realRunTime = startTime - System.currentTimeMillis();
-        return new InternalResult<>(null, realRunTime
+        long realRunTime = System.currentTimeMillis() - startTime;
+        return new Statistics(realRunTime
             , taskRunTimeList.stream().mapToLong(i -> i).toArray());
     }
 
-    public static class InternalResult<T> implements StopwatchResult<T> {
-        private T obj;
+    public static class Statistics {
         private long totalRunTime;
-        private long expectRunTime;
         private long[] runTimes;
 
-        public InternalResult(T obj, long totalRunTime, long[] runTimes) {
-            this.obj = obj;
+        public Statistics(long totalRunTime, long[] runTimes) {
             this.totalRunTime = totalRunTime;
             this.runTimes = runTimes;
         }
 
-        public InternalResult(T obj, StopwatchResult<?> stopwatchResult) {
-            this.obj = obj;
-            totalRunTime = stopwatchResult.getTotalRunTime();
-            runTimes = stopwatchResult.getRunTimes();
-        }
-
-        @Override
-        public T get() {
-            return obj;
-        }
-
-        @Override
         public long getTotalRunTime() {
             return totalRunTime;
         }
-
-
-        @Override
+        
         public long[] getRunTimes() {
             return runTimes;
         }
     }
+    
+    public static class Result<T> {
+        private Statistics statistics;
+        private List<T> result;
+        
+        public Result(Statistics statistics, List<T> result) {
+            this.statistics = statistics;
+            this.result = result;
+        }
+
+        public Statistics getStatistics() {
+            return statistics;
+        }
+
+        public List<T> get() {
+            return result;
+        }
+    }
+    
 }

@@ -1,46 +1,24 @@
 package name.feinimouse.utils;
 
-import name.feinimouse.lambda.CustomRunner;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestTimerUtils {
     @Test
     public void testTimerUtils() {
-        TimerResult<?> result1 = TimerUtils.run(() -> {
-            for (int i = 0; i < 10; i ++) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        System.out.println(result1.getTime());
-        System.out.println(result1.get());
-        
-        TimerResult<Integer> result2 = TimerUtils.run(() -> {
-            for (int i = 0; i < 10; i ++) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        long result1 = TimerUtils.run(this::myRun);
+        System.out.println(result1);
+
+        TimerUtils.Result<Integer> result2 = TimerUtils.run(() -> {
+            myRun();
             return 100;
         });
         System.out.println(result2.getTime());
         System.out.println(result2.get());
         Assert.assertEquals(result2.get().intValue(), 100);
 
-        TimerResult<String> result3 = TimerUtils.run(test -> {
-            for (int i = 0; i < 10; i ++) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        TimerUtils.Result<String> result3 = TimerUtils.run(test -> {
+            myRun();
             return test;
         }, "test");
         System.out.println(result3.getTime());
@@ -48,17 +26,22 @@ public class TestTimerUtils {
         Assert.assertEquals(result3.get(), "test");
 
         var runner = TimerUtils.getRunner(test -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            myRun();
             return "test" + test;
         });
-        TimerResult<String> result4 = runner.run("12345");
+        TimerUtils.Result<String> result4 = runner.run("12345");
         System.out.println(result4.getTime());
         System.out.println(result4.get());
     }
+    
+    private void myRun() {
+        for (int i = 0; i < 10; i++) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
 }

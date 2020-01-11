@@ -6,7 +6,8 @@ import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.node.exception.*;
 import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
 import name.feinimouse.lambda.RunnerStopper;
-import name.feinimouse.utils.*;
+import name.feinimouse.utils.StopwatchUtils;
+import name.feinimouse.utils.TimerUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,23 +59,23 @@ public abstract class Center extends AutoStopNode {
     @Override
     protected void gapWorking() throws NodeRunningException {
         // 定时拉取并处理
-        StopwatchResult<?> fetchResult = StopwatchUtils.run(
+        StopwatchUtils.Statistics fetchResult = StopwatchUtils.run(
             fetchTime, fetchInterval, stopper -> {
-            fetchLoop(Transaction.class, this::handleTransaction, stopper);
-            fetchLoop(AssetTrans.class, this::handleAssetTrans, stopper);
-        });
+                fetchLoop(Transaction.class, this::handleTransaction, stopper);
+                fetchLoop(AssetTrans.class, this::handleAssetTrans, stopper);
+            });
 
         logger.trace("拉取交易持续了 {}ms ，预期持续时间为 {}ms 。"
             , fetchResult.getTotalRunTime()
             , fetchTime);
 
         // 生产区块
-        TimerResult<Block> produceResult = TimerUtils.run(this::produceBlock);
+        TimerUtils.Result<Block> produceResult = TimerUtils.run(this::produceBlock);
         Block block = produceResult.get();
         long produceTime = produceResult.getTime();
 
         // 同步并存储区块
-        long syncTime = TimerUtils.run(this::synchronizeBlock, block).getTime();
+        long syncTime = TimerUtils.run(this::synchronizeBlock, block);
 
         // 至少留100ms的时间用于拉取，否则抛出异常
         if (periodTime < syncTime + produceTime + 100) {
