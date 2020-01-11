@@ -1,8 +1,7 @@
 package name.feinimouse.feinicoinplus.core.node;
 
-import name.feinimouse.feinicoinplus.core.data.Carrier;
+import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.node.exception.*;
-import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.utils.exception.OverFlowException;
 import name.feinimouse.utils.exception.UnrecognizedClassException;
 
@@ -10,28 +9,15 @@ import name.feinimouse.utils.exception.UnrecognizedClassException;
 // 一个提供消息缓存的节点基类
 public abstract class CacheNode extends AutoStopNode {
 
-    protected ClassMapContainer<Carrier> cacheWait;
+    protected CarrierAttachCMC cacheWait;
 
-    public CacheNode(String nodeType, ClassMapContainer<Carrier> cacheWait) {
+    public CacheNode(String nodeType) {
         super(nodeType);
-        this.cacheWait = cacheWait;
+        this.cacheWait = new CarrierAttachCMC(Transaction.class, AssetTrans.class);
     }
 
     public boolean setCacheWaitMax(int max) {
         return cacheWait.setMax(max);
-    }
-
-
-    public void pushContainer(ClassMapContainer<Carrier> container, Carrier carrier) throws BadRequestException {
-        try {
-            container.put(carrier);
-        } catch (UnrecognizedClassException e) {
-            e.printStackTrace();
-            throw new RequestNotSupportException(this, carrier.getNetInfo()
-                , "Class not support: " + carrier.getPacker().objClass());
-        } catch (OverFlowException e) {
-            throw new NodeBusyException(this);
-        }
     }
 
     @Override
@@ -45,7 +31,15 @@ public abstract class CacheNode extends AutoStopNode {
 
     @Override
     protected void resolveCommit(Carrier carrier) throws BadRequestException {
-        pushContainer(cacheWait, carrier);
+        try {
+            cacheWait.put(carrier);
+        } catch (UnrecognizedClassException e) {
+            e.printStackTrace();
+            throw new RequestNotSupportException(this, carrier.getNetInfo()
+                , "Class not support: " + carrier.getPacker().objClass());
+        } catch (OverFlowException e) {
+            throw new NodeBusyException(this);
+        }
     }
 
 

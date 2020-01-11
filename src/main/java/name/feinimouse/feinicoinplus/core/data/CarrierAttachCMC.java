@@ -5,7 +5,7 @@ import name.feinimouse.utils.ClassMapContainer;
 import java.util.Optional;
 
 public class CarrierAttachCMC extends ClassMapContainer<Carrier> {
-    public CarrierAttachCMC(Class<?>[] supportClass) {
+    public CarrierAttachCMC(Class<?> ...supportClass) {
         super(supportClass);
     }
 

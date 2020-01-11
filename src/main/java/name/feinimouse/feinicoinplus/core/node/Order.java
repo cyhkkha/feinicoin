@@ -3,7 +3,6 @@ package name.feinimouse.feinicoinplus.core.node;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.node.exception.*;
-import name.feinimouse.utils.ClassMapContainer;
 import name.feinimouse.utils.exception.OverFlowException;
 import name.feinimouse.utils.exception.UnrecognizedClassException;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +18,7 @@ public abstract class Order extends CacheNode {
     private Logger logger = LogManager.getLogger(Order.class);
 
     // 等待center拉取的交易
-    protected ClassMapContainer<Carrier> fetchWait;
+    protected CarrierFetchCMC fetchWait;
     // 已经发往verifier等待结果中的交易消息，String为该条消息携带交易的hash
     protected Map<String, Carrier> verifyWait;
 
@@ -29,10 +28,10 @@ public abstract class Order extends CacheNode {
     protected String verifiersAddress;
 
     public Order() {
-        // 缓存的默认容量是30
-        super(NODE_ORDER, new CarrierAttachCMC(new Class[]{Transaction.class, AssetTrans.class}));
+        // 缓存的默认容量是无限
+        super(NODE_ORDER);
         // 供拉取的缓存默认容量是无限
-        fetchWait = new CarrierFetchCMC(new Class[]{Transaction.class, AssetTrans.class});
+        fetchWait = new CarrierFetchCMC(Transaction.class, AssetTrans.class);
         verifyWait = new ConcurrentHashMap<>();
     }
 
@@ -47,7 +46,7 @@ public abstract class Order extends CacheNode {
     }
 
     @Override
-    protected Carrier resolveFetch(Carrier carrier) {
+    protected Carrier resolveFetch(Carrier carrier) throws BadRequestException {
         Carrier savedCarrier = fetchWait.poll(carrier.getFetchClass());
         if (savedCarrier == null) {
             return null;

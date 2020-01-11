@@ -8,6 +8,7 @@ public interface Node {
     String NODE_VERIFIER = "VERIFIER";
     String NODE_CENTER = "CENTER";
     String NODE_ENTER = "ENTER";
+    String NODE_CENTER_CLASSICAL = "CLASSICAL";
 
     String MSG_COMMIT_ORDER = "COMMIT_ORDER";
     String MSG_COMMIT_VERIFIER = "COMMIT_VERIFIER";

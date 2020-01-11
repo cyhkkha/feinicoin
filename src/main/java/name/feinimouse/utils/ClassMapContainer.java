@@ -20,7 +20,7 @@ public abstract class ClassMapContainer<T> {
     private int max = -1;
     private final AtomicInteger size;
 
-    public ClassMapContainer(Class<?>[] supportClass) {
+    public ClassMapContainer(Class<?> ...supportClass) {
         this.supportClass = supportClass;
         size = new AtomicInteger(0);
         map = new ConcurrentHashMap<>();
