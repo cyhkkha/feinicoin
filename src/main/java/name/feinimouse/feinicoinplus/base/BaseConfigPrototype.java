@@ -1,5 +1,6 @@
 package name.feinimouse.feinicoinplus.base;
 
+import name.feinimouse.feinicoinplus.core.TransactionGenerator;
 import name.feinimouse.feinicoinplus.core.crypt.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.crypt.SignGenerator;
 import name.feinimouse.feinicoinplus.core.node.CenterCore;
@@ -22,6 +23,7 @@ public class BaseConfigPrototype {
     protected PublicKeyHub publicKeyHub;
     protected SignGenerator signGenerator;
     protected NodeNetwork nodeNetwork;
+    protected TransactionGenerator transactionGenerator;
 
     protected CenterCore centerCore;
     protected VerifierCore verifierCore;
@@ -55,5 +57,10 @@ public class BaseConfigPrototype {
     @Autowired
     public void setAddressManager(AddressManager addressManager) {
         this.addressManager = addressManager;
+    }
+
+    @Autowired
+    public void setTransactionGenerator(TransactionGenerator transactionGenerator) {
+        this.transactionGenerator = transactionGenerator;
     }
 }
