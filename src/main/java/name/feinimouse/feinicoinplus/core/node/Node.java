@@ -1,7 +1,7 @@
 package name.feinimouse.feinicoinplus.core.node;
 
 import name.feinimouse.feinicoinplus.core.data.Carrier;
-import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
+import name.feinimouse.feinicoinplus.core.exception.BadRequestException;
 
 public interface Node {
     String NODE_ORDER = "ORDER";

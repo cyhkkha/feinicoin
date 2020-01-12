@@ -1,17 +1,20 @@
 package name.feinimouse.feinicoinplus.base;
 
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.core.HashGenerator;
-import name.feinimouse.feinicoinplus.core.SignGenerator;
+import name.feinimouse.feinicoinplus.core.crypt.HashGenerator;
+import name.feinimouse.feinicoinplus.core.crypt.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.node.Node;
 import name.feinimouse.feinicoinplus.core.sim.AccountManager;
 import name.feinimouse.feinicoinplus.core.sim.AssetManager;
 import name.feinimouse.feinicoinplus.core.TransactionGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.security.PrivateKey;
 import java.util.Random;
 
+@Component("transactionGenerator")
 public class SimpleTransGen implements TransactionGenerator {
     private AccountManager accountManager;
     private AssetManager assetManager;
@@ -22,15 +25,23 @@ public class SimpleTransGen implements TransactionGenerator {
     private String address;
     private Random random = new Random();
 
-    public SimpleTransGen(AccountManager accountManager
-        , AssetManager assetManager, HashGenerator hashGenerator
-        , SignGenerator signGenerator) {
+    @Autowired
+    public void setAccountManager(AccountManager accountManager) {
         this.accountManager = accountManager;
-        this.assetManager = assetManager;
+    }
+    @Autowired
+    public void setHashGenerator(HashGenerator hashGenerator) {
         this.hashGenerator = hashGenerator;
+    }
+    @Autowired
+    public void setSignGenerator(SignGenerator signGenerator) {
         this.signGenerator = signGenerator;
     }
-    
+    @Autowired
+    public void setAssetManager(AssetManager assetManager) {
+        this.assetManager = assetManager;
+    }
+
     private AssetTrans genA(String address, String operator, String receiver, int number) {
         if (!(accountManager.contain(operator) && accountManager.contain(receiver))) {
             throw new RuntimeException("can not find account: " + operator + ", " + receiver);

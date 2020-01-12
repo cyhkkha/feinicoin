@@ -2,37 +2,48 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
-import name.feinimouse.feinicoinplus.core.node.exception.ControllableException;
-import name.feinimouse.feinicoinplus.core.node.exception.NodeRunningException;
-import name.feinimouse.feinicoinplus.core.node.exception.TransAdmitFailedException;
+import name.feinimouse.feinicoinplus.core.exception.BadRequestException;
+import name.feinimouse.feinicoinplus.core.exception.ControllableException;
+import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
 import name.feinimouse.lambda.InputRunner;
 import name.feinimouse.lambda.RunnerStopper;
 import name.feinimouse.utils.StopwatchUtils;
-import name.feinimouse.utils.TimerUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class FetchCenter extends Center {
+public abstract class FetchCenter extends AutoStopNode {
     private Logger logger = LogManager.getLogger(FetchCenter.class);
-
-    // 为了使出块时间控制在1s内，因此需要通过判断上一次网络的同步时间来设置fetch时间
-    protected long fetchTime = 3 * 100;
     
+    @PropNeeded
+    @Setter
+    protected CenterCore centerCore;
+
+    // 拉取时间，为了使出块时间控制在1s内，因此需要通过判断上一次网络的同步时间来设置fetch时间
+    protected long fetchTime = 3 * 100;
     // 拉取间隔
     @Setter
     protected long fetchInterval = 5;
+    // 生产周期
+    @Setter
+    protected long periodTime = 1000;
 
     // 拉取地址
     @PropNeeded
     @Setter
     protected String ordersAddress;
 
-    public FetchCenter() {
+    public FetchCenter(CenterCore centerCore) {
         super(NODE_CENTER);
+        this.centerCore = centerCore;
+    }
+
+    @Override
+    protected void afterWork() {
+        super.afterWork();
+        centerCore.close();
     }
 
     // 工作内容
@@ -41,10 +52,10 @@ public abstract class FetchCenter extends Center {
         // 记录节点在周期内是否拉取到交易并处理成功
         AtomicBoolean fetchTag = new AtomicBoolean(true);
         // 定时拉取并处理
-        StopwatchUtils.Statistics fetchResult = StopwatchUtils.run(
+        var fetchResult = StopwatchUtils.run(
             fetchTime, fetchInterval, stopper -> {
-                fetchLoop(Transaction.class, this::handleTransaction, stopper, fetchTag);
-                fetchLoop(AssetTrans.class, this::handleAssetTrans, stopper, fetchTag);
+                fetchLoop(Transaction.class, centerCore::handleTransaction, stopper, fetchTag);
+                fetchLoop(AssetTrans.class, centerCore::handleAssetTrans, stopper, fetchTag);
             });
 
         // 若拉取不到交易则不生产区块，同时跳过间隔时间的重置
@@ -63,22 +74,16 @@ public abstract class FetchCenter extends Center {
             , fetchResult.getTotalRunTime()
             , fetchTime);
 
-        // 生产区块
-        TimerUtils.Result<Block> produceResult = TimerUtils.run(this::produceBlock);
-        Block block = produceResult.get();
-        long produceTime = produceResult.getTime();
-
-        // 同步并存储区块
-        long syncTime = TimerUtils.run(this::synchronizeBlock, block);
-
-        // 至少留100ms的时间用于拉取，否则抛出异常
-        if (periodTime < syncTime + produceTime + 100) {
-            throw new NodeRunningException("sync or produce timeout: "
-                + "[sync: " + syncTime + ", produce: " + produceTime + "]");
+        // 执行区块生产
+        long consumeTime = centerCore.executeProduce(address, privateKey);
+        
+        // 至少留100ms的时间用于其他处理，否则抛出异常
+        if (periodTime < consumeTime + 100) {
+            throw new NodeRunningException("produce timeout !!");
         }
-
+        
         // 根据同步时间和生产时间，更新下次的拉取时间
-        fetchTime = periodTime - syncTime + produceTime;
+        fetchTime = periodTime - consumeTime;
 
         // 重置间隔时间
         resetGap();

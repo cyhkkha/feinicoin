@@ -3,11 +3,12 @@ package name.feinimouse.feinicoinplus.core.node;
 import lombok.Getter;
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.node.exception.*;
+import name.feinimouse.feinicoinplus.core.exception.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
+import java.security.PrivateKey;
 import java.util.Optional;
 
 // 一个节点即是一个线程
@@ -27,6 +28,10 @@ public abstract class BaseNode extends Thread implements Node {
     @Getter
     @PropNeeded
     protected String address;
+
+    @Setter
+    @PropNeeded
+    protected PrivateKey privateKey;
 
     // 线程执行间隔
     @Getter

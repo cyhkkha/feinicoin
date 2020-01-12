@@ -1,13 +1,14 @@
 package name.feinimouse.feinicoinplus.base;
 
-import name.feinimouse.feinicoinplus.core.SignGenerator;
+import name.feinimouse.feinicoinplus.core.crypt.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.Carrier;
 import name.feinimouse.feinicoinplus.core.data.Packer;
-import name.feinimouse.feinicoinplus.core.node.Center;
+import name.feinimouse.feinicoinplus.core.exception.BadRequestException;
+import name.feinimouse.feinicoinplus.core.exception.NodeBusyException;
+import name.feinimouse.feinicoinplus.core.node.FetchCenter;
+import name.feinimouse.feinicoinplus.core.node.Node;
 import name.feinimouse.feinicoinplus.core.node.Order;
 import name.feinimouse.feinicoinplus.core.node.Verifier;
-import name.feinimouse.feinicoinplus.core.node.exception.BadRequestException;
-import name.feinimouse.feinicoinplus.core.node.exception.NodeBusyException;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,24 @@ public class BaseNodeTest extends BaseTest {
     @Autowired
     SignGenerator signGenerator;
 
-    @Autowired
     Verifier verifier;
-    @Autowired
     Order order;
+    FetchCenter center;
+
     @Autowired
-    Center center;
+    public void setVerifier(Node verifier) {
+        this.verifier = (Verifier) verifier;
+    }
+
+    @Autowired
+    public void setCenter(Node center) {
+        this.center = (FetchCenter) center;
+    }
+
+    @Autowired
+    public void setOrder(Node order) {
+        this.order = (Order) order;
+    }
 
     @Test
     public void testVerifier() throws InterruptedException, BadRequestException {

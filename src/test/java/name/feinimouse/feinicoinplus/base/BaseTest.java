@@ -1,6 +1,7 @@
 package name.feinimouse.feinicoinplus.base;
 
-import name.feinimouse.feinicoinplus.core.HashGenerator;
+import name.feinimouse.feinicoinplus.BaseRunner;
+import name.feinimouse.feinicoinplus.core.crypt.HashGenerator;
 import name.feinimouse.feinicoinplus.core.TransactionGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
 import name.feinimouse.feinicoinplus.core.sim.AccountManager;
@@ -19,7 +20,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = BaseConfig.class)
+@ContextConfiguration(classes = BaseRunner.class)
 public class BaseTest {
     Logger logger = LogManager.getLogger(this.getClass());
     

@@ -1,7 +1,7 @@
 package name.feinimouse.feinicoinplus.core.node;
 
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.node.exception.*;
+import name.feinimouse.feinicoinplus.core.exception.*;
 import name.feinimouse.utils.exception.OverFlowException;
 import name.feinimouse.utils.exception.UnrecognizedClassException;
 

@@ -4,8 +4,7 @@ import name.feinimouse.feinicoinplus.core.data.Block;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.data.PackerArr;
 import name.feinimouse.feinicoinplus.core.data.Transaction;
-import name.feinimouse.feinicoinplus.core.node.exception.DaoException;
-import name.feinimouse.feinicoinplus.core.node.exception.TransAdmitFailedException;
+import name.feinimouse.feinicoinplus.core.exception.TransAdmitFailedException;
 
 
 public interface CenterContext {
@@ -14,7 +13,7 @@ public interface CenterContext {
 
     void commit(Packer packer) throws TransAdmitFailedException;
 
-    void admit(Packer packer) throws DaoException;
+    void admit(Packer packer);
 
     Block pack(PackerArr transTree, String producer);
 }

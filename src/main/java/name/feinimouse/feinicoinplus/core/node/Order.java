@@ -2,7 +2,7 @@ package name.feinimouse.feinicoinplus.core.node;
 
 import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.node.exception.*;
+import name.feinimouse.feinicoinplus.core.exception.*;
 import name.feinimouse.utils.exception.OverFlowException;
 import name.feinimouse.utils.exception.UnrecognizedClassException;
 import org.apache.logging.log4j.LogManager;
@@ -58,15 +58,7 @@ public abstract class Order extends CacheNode {
         return nextCarrier;
     }
 
-    @Override
-    protected void beforeCommit(Carrier carrier) throws BadRequestException {
-        super.beforeCommit(carrier);
-        // NetInfo类型必须支持
-        NetInfo netInfo = carrier.getNetInfo();
-        if (netInfo.notMatch(NODE_ENTER, MSG_COMMIT_ORDER)
-            && netInfo.notMatch(NODE_VERIFIER, MSG_CALLBACK_VERIFIER)) {
-            throw new RequestNotSupportException(this, netInfo, "not support");
-        }
+    public static void checkCommit(Carrier carrier) throws BadRequestException {
         Packer packer = carrier.getPacker();
         // 必须有enter源
         if (packer.getEnter() == null) {
@@ -90,6 +82,18 @@ public abstract class Order extends CacheNode {
                 throw new BadRequestException("Invalid packer signature");
             }
         }
+    }
+    
+    @Override
+    protected void beforeCommit(Carrier carrier) throws BadRequestException {
+        super.beforeCommit(carrier);
+        // NetInfo类型必须支持
+        NetInfo netInfo = carrier.getNetInfo();
+        if (netInfo.notMatch(NODE_ENTER, MSG_COMMIT_ORDER)
+            && netInfo.notMatch(NODE_VERIFIER, MSG_CALLBACK_VERIFIER)) {
+            throw new RequestNotSupportException(this, netInfo, "not support");
+        }
+        checkCommit(carrier);
     }
 
     @Override
