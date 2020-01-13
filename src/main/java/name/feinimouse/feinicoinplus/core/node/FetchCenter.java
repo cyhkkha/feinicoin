@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class FetchCenter extends AutoStopNode {
     private Logger logger = LogManager.getLogger(FetchCenter.class);
@@ -49,17 +49,19 @@ public abstract class FetchCenter extends AutoStopNode {
     // 工作内容
     @Override
     protected void gapWorking() throws NodeRunningException {
-        // 记录节点在周期内是否拉取到交易并处理成功
-        AtomicBoolean fetchTag = new AtomicBoolean(true);
+        // 记录节点在周期内的拉取数量
+        AtomicInteger transNum = new AtomicInteger(0);
+        AtomicInteger assetTransNum = new AtomicInteger(0);
+
         // 定时拉取并处理
         var fetchResult = StopwatchUtils.run(
             fetchTime, fetchInterval, stopper -> {
-                fetchLoop(Transaction.class, centerCore::handleTransaction, stopper, fetchTag);
-                fetchLoop(AssetTrans.class, centerCore::handleAssetTrans, stopper, fetchTag);
+                fetchLoop(Transaction.class, centerCore::handleTransaction, stopper, transNum);
+                fetchLoop(AssetTrans.class, centerCore::handleAssetTrans, stopper, assetTransNum);
             });
 
         // 若拉取不到交易则不生产区块，同时跳过间隔时间的重置
-        if (fetchTag.get()) {
+        if (transNum.get() + assetTransNum.get() <= 0) {
             try {
                 logger.warn("拉取交易持续了 {}ms ，未拉取到交易", fetchResult.getTotalRunTime());
                 Thread.sleep(periodTime - fetchResult.getTotalRunTime());
@@ -70,9 +72,8 @@ public abstract class FetchCenter extends AutoStopNode {
             return;
         }
 
-        logger.trace("拉取交易持续了 {}ms ，预期持续时间为 {}ms 。"
-            , fetchResult.getTotalRunTime()
-            , fetchTime);
+        logger.trace("拉取交易持续了 {}ms", fetchResult.getTotalRunTime());
+        logger.trace("共拉取普通交易: {}个，资产交易： {}个", transNum.get(), assetTransNum.get());
 
         // 执行区块生产
         long consumeTime = centerCore.executeProduce(address, privateKey);
@@ -91,7 +92,7 @@ public abstract class FetchCenter extends AutoStopNode {
 
     // 拉取后的操作
     private void fetchLoop(Class<?> fetchClass, InputRunner<Carrier> handler
-        , RunnerStopper stopper, AtomicBoolean fetchTag) {
+        , RunnerStopper stopper, AtomicInteger fetchNum) {
         if (isStop()) {
             stopper.stop();
             return;
@@ -100,10 +101,8 @@ public abstract class FetchCenter extends AutoStopNode {
             Carrier carrier = fetchValidTrans(fetchClass);
             if (carrier != null) {
                 handler.run(carrier);
-                // 如果有一条交易处理成功都将生产区块
-                if (fetchTag.get()) {
-                    fetchTag.set(false);
-                }
+                // 拉取数量加一
+                fetchNum.getAndIncrement();
             }
         } catch (ControllableException e) {
             logger.info(e.getMessage());
