@@ -31,14 +31,14 @@ public class MapAssManager implements AssetManager, InitializingBean {
     @Value("${NUMBER_ASSET}")
     private int NUMBER_ASSET;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        genAsset(NUMBER_ASSET);
-    }
-    
     public MapAssManager() {
         assetAddressMap = new ConcurrentHashMap<>();
         dynamicTrans = new ConcurrentHashMap<>();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        genAsset(NUMBER_ASSET);
     }
 
     @Autowired
@@ -238,5 +238,5 @@ public class MapAssManager implements AssetManager, InitializingBean {
         }
         return false;
     }
-    
+
 }

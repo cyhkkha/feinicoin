@@ -8,59 +8,25 @@ import name.feinimouse.feinicoinplus.core.node.NodeNetwork;
 import name.feinimouse.feinicoinplus.core.node.VerifierCore;
 import name.feinimouse.feinicoinplus.core.sim.AddressManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class BaseConfigPrototype {
-    @Value("${NODE_INTERVAL}")
-    protected long NODE_INTERVAL;
+public abstract class BaseConfigPrototype {
 
-    @Value("${FETCH_INTERVAL}")
-    protected long FETCH_INTERVAL;
-
+    @Autowired
     protected AddressManager addressManager;
+    @Autowired
     protected PublicKeyHub publicKeyHub;
+    @Autowired
     protected SignGenerator signGenerator;
+    @Autowired
     protected NodeNetwork nodeNetwork;
+    @Autowired
     protected TransactionGenerator transactionGenerator;
 
+    @Autowired
     protected CenterCore centerCore;
+    @Autowired
     protected VerifierCore verifierCore;
-
-
-    @Autowired
-    public void setCenterCore(CenterCore centerCore) {
-        this.centerCore = centerCore;
-    }
-
-    @Autowired
-    public void setVerifierCore(VerifierCore verifierCore) {
-        this.verifierCore = verifierCore;
-    }
-
-    @Autowired
-    public void setSignGenerator(SignGenerator signGenerator) {
-        this.signGenerator = signGenerator;
-    }
-
-    @Autowired
-    public void setPublicKeyHub(PublicKeyHub publicKeyHub) {
-        this.publicKeyHub = publicKeyHub;
-    }
-
-    @Autowired
-    public void setNodeNetwork(NodeNetwork nodeNetwork) {
-        this.nodeNetwork = nodeNetwork;
-    }
-
-    @Autowired
-    public void setAddressManager(AddressManager addressManager) {
-        this.addressManager = addressManager;
-    }
-
-    @Autowired
-    public void setTransactionGenerator(TransactionGenerator transactionGenerator) {
-        this.transactionGenerator = transactionGenerator;
-    }
+    
 }

@@ -2,6 +2,7 @@ package name.feinimouse.feinicoinplus.base.sim;
 
 import name.feinimouse.feinicoinplus.core.sim.AddressManager;
 import name.feinimouse.utils.HexUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -9,17 +10,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component("addressManager")
-public class SetAddManager implements AddressManager {
+public class SetAddManager implements AddressManager, InitializingBean {
     private ConcurrentHashMap<String, Object> addressSet;
     private ConcurrentLinkedQueue<String> waitUse;
     private ConcurrentHashMap<String, Object> using;
 
     private static final Object PRESENT = new Object();
 
-    public SetAddManager(@Value("${NUMBER_ADDRESS}") int NUMBER_ADDRESS) {
+    @Value("${NUMBER_ADDRESS}")
+    private int NUMBER_ADDRESS;
+
+    public SetAddManager() {
         addressSet = new ConcurrentHashMap<>();
         waitUse = new ConcurrentLinkedQueue<>();
         using = new ConcurrentHashMap<>();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
         genAddress(NUMBER_ADDRESS);
     }
 

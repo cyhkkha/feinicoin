@@ -20,12 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component("accountManager")
 public class ListMapAccMan implements AccountManager, InitializingBean {
-    
+
     private HashGenerator hashGenerator;
     private AddressManager addressManager;
     private PublicKeyHub publicKeyHub;
     private SignGenerator signGenerator;
-    
+
     private List<String> accountList;
     private Map<String, Account> accountMap;
     private Map<String, PrivateKey> keyMap;
@@ -35,18 +35,17 @@ public class ListMapAccMan implements AccountManager, InitializingBean {
 
     @Value("${NUMBER_ACCOUNT}")
     private int NUMBER_ACCOUNT;
-    
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        genAccount(NUMBER_ACCOUNT);
-    }
-    
+
     public ListMapAccMan() {
         accountList = Collections.synchronizedList(new ArrayList<>());
         accountMap = new ConcurrentHashMap<>();
         keyMap = new ConcurrentHashMap<>();
     }
-    
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        genAccount(NUMBER_ACCOUNT);
+    }
 
     @Autowired
     public void setAddressManager(AddressManager addressManager) {
@@ -92,6 +91,7 @@ public class ListMapAccMan implements AccountManager, InitializingBean {
         String address = accountList.get(index);
         return get(address);
     }
+
     @Override
     public Account getRandomEx(Account account) {
         Account accountNext = getRandom();
@@ -116,10 +116,12 @@ public class ListMapAccMan implements AccountManager, InitializingBean {
     public Account get(String address) {
         return accountMap.get(address);
     }
+
     @Override
     public boolean contain(String address) {
         return accountMap.containsKey(address);
     }
+
     @Override
     public synchronized boolean put(Account account) {
         String address = account.getAddress();
@@ -130,10 +132,12 @@ public class ListMapAccMan implements AccountManager, InitializingBean {
         accountList.add(address);
         return true;
     }
+
     @Override
     public int size() {
         return accountList.size();
     }
+
     @Override
     public synchronized boolean remove(String address) {
         if (contain(address)) {
