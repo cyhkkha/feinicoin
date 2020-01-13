@@ -134,6 +134,22 @@
         
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resource</directory>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/java</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${basedir}/src/test/resource</directory>
+            </testResource>
+            <testResource>
+                <directory>${basedir}/src/test/java</directory>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
