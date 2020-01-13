@@ -1,9 +1,12 @@
 package name.feinimouse.feinicoinplus.base;
 
 import name.feinimouse.feinicoinplus.base.node.BaseCenter;
+import name.feinimouse.feinicoinplus.base.node.BaseClasCenter;
 import name.feinimouse.feinicoinplus.base.node.BaseOrder;
 import name.feinimouse.feinicoinplus.base.node.BaseVerifier;
+import name.feinimouse.feinicoinplus.core.ConsensusNetwork;
 import name.feinimouse.feinicoinplus.core.node.BaseNode;
+import name.feinimouse.feinicoinplus.core.node.ClassicalCenter;
 import name.feinimouse.feinicoinplus.core.node.FetchCenter;
 import name.feinimouse.feinicoinplus.core.node.Node;
 import org.springframework.beans.factory.InitializingBean;
@@ -21,6 +24,18 @@ public class BaseConfig extends BaseConfigPrototype implements InitializingBean 
 
     @Value("${FETCH_INTERVAL}")
     protected long FETCH_INTERVAL;
+    
+    @Value("${COLLECT_INTERVAL}")
+    protected long COLLECT_INTERVAL;
+    
+    @Value("${CONSENSUS_TIME}")
+    protected long CONSENSUS_TIME;
+    
+    @Value("${BLOCK_SAVE_TIME}")
+    protected long BLOCK_SAVE_TIME;
+    
+    @Value("${CACHE_CLASSICAL}")
+    protected int CACHE_CLASSICAL;
     
     private Node initNode(BaseNode node) {
         String address = addressManager.getAddress();
@@ -54,11 +69,26 @@ public class BaseConfig extends BaseConfigPrototype implements InitializingBean 
         center.setOrdersAddress(order().getAddress());
         return initNode(center);
     }
+    
+    @Bean
+    public Node classicalCenter() {
+        ClassicalCenter center = new BaseClasCenter(centerCore, verifierCore);
+        center.setCollectInterval(COLLECT_INTERVAL);
+        center.setCacheWaitMax(CACHE_CLASSICAL);
+        return initNode(center);
+    }
 
     @Override
     public void afterPropertiesSet() {
         // 初始化交易生成器
         SimpleTransGen simpleTransGen = (SimpleTransGen) transactionGenerator;
         simpleTransGen.setAddress(addressManager.getAddress());
+        
+        // 初始化共识层
+        SleepConsensusNet consensusNet = (SleepConsensusNet) consensusNetwork;
+        consensusNet.setConsensusDelay(CONSENSUS_TIME);
+        // 初始化存储层
+        SleepBlockDao dao = (SleepBlockDao) blockDao;
+        dao.setDaoDelay(BLOCK_SAVE_TIME);
     }
 }

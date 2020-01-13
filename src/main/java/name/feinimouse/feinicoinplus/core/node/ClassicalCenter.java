@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class ClassicalCenter extends CacheNode {
     private Logger logger = LogManager.getLogger(ClassicalCenter.class);
-    
+
     @PropNeeded
     @Setter
     protected VerifierCore verifierCore;
@@ -29,6 +29,8 @@ public abstract class ClassicalCenter extends CacheNode {
     // 生产周期
     @Setter
     protected long periodTime = 1000;
+    @Setter
+    protected long collectInterval = 5;
 
     public ClassicalCenter(CenterCore centerCore, VerifierCore verifierCore) {
         super(NODE_CENTER_CLASSICAL);
@@ -43,7 +45,7 @@ public abstract class ClassicalCenter extends CacheNode {
         AtomicInteger transNum = new AtomicInteger(0);
         AtomicInteger assetTransNum = new AtomicInteger(0);
         var collectResult = StopwatchUtils.run(
-            collectTime, stopper -> {
+            collectTime, collectInterval, stopper -> {
                 collectLoop(Transaction.class, this::handlerTrans, stopper, transNum);
                 collectLoop(AssetTrans.class, this::handlerAssetTrans, stopper, assetTransNum);
             });

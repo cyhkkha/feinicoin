@@ -1,5 +1,7 @@
 package name.feinimouse.feinicoinplus.base;
 
+import name.feinimouse.feinicoinplus.core.BlockDao;
+import name.feinimouse.feinicoinplus.core.ConsensusNetwork;
 import name.feinimouse.feinicoinplus.core.TransactionGenerator;
 import name.feinimouse.feinicoinplus.core.crypt.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.crypt.SignGenerator;
@@ -28,5 +30,10 @@ public abstract class BaseConfigPrototype {
     protected CenterCore centerCore;
     @Autowired
     protected VerifierCore verifierCore;
+
+    @Autowired
+    protected ConsensusNetwork consensusNetwork;
+    @Autowired
+    protected BlockDao blockDao;
     
 }

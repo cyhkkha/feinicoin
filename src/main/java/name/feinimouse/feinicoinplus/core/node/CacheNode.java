@@ -59,6 +59,7 @@ public abstract class CacheNode extends AutoStopNode {
     }
 
     // 处理Transaction
-    protected void resolveCache() throws NodeRunningException {}
+    protected void resolveCache() throws NodeRunningException {
+    }
 
 }

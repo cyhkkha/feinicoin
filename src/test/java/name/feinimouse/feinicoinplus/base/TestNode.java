@@ -5,15 +5,14 @@ import name.feinimouse.feinicoinplus.core.data.Carrier;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.exception.BadRequestException;
 import name.feinimouse.feinicoinplus.core.exception.NodeBusyException;
-import name.feinimouse.feinicoinplus.core.node.FetchCenter;
-import name.feinimouse.feinicoinplus.core.node.Node;
-import name.feinimouse.feinicoinplus.core.node.Order;
-import name.feinimouse.feinicoinplus.core.node.Verifier;
+import name.feinimouse.feinicoinplus.core.node.*;
+import name.feinimouse.utils.LoopUtils;
+import name.feinimouse.utils.TimerUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class BaseNodeTest extends BaseTest {
+public class TestNode extends BaseTest {
     
     @Autowired
     SignGenerator signGenerator;
@@ -21,6 +20,7 @@ public class BaseNodeTest extends BaseTest {
     Verifier verifier;
     Order order;
     FetchCenter center;
+    ClassicalCenter classicalCenter;
 
     @Autowired
     public void setVerifier(Node verifier) {
@@ -37,6 +37,11 @@ public class BaseNodeTest extends BaseTest {
         this.order = (Order) order;
     }
 
+    @Autowired
+    public void setClassicalCenter(Node classicalCenter) {
+        this.classicalCenter = (ClassicalCenter) classicalCenter;
+    }
+
     @Test
     public void testVerifier() throws InterruptedException, BadRequestException {
         order.start();
@@ -51,7 +56,7 @@ public class BaseNodeTest extends BaseTest {
     }
     
     @Test
-    public void testCenter() throws InterruptedException, BadRequestException {
+    public void testCenter() throws Exception {
         order.start();
         verifier.start();
         center.start();
@@ -61,17 +66,29 @@ public class BaseNodeTest extends BaseTest {
         for (int i = 0; i < 500; i++) {
             Packer packer = transactionGenerator.genRandomTrans();
             Carrier carrier = transactionGenerator.genCarrier(packer, orderAddress);
-            try {
-                order.commit(carrier);
-            } catch (NodeBusyException e) {
-                Thread.sleep(50);
-                order.commit(carrier);
-            }
+            LoopUtils.loopExec(50, 10, () -> order.commit(carrier));
         }
         logger.info("交易发送完毕，运行时间 {} ms", System.currentTimeMillis() - start);
         order.join();
         verifier.join();
         center.join();
+        logger.info("总计运行时间 {} ms", System.currentTimeMillis() - start);
+    }
+    
+    @Test
+    public void testClassicalCenter() throws Exception {
+        classicalCenter.start();
+        String centerAddress = classicalCenter.getAddress();
+        Thread.sleep(1000);
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 500; i++) {
+            Packer packer = transactionGenerator.genRandomTrans();
+            Carrier carrier = transactionGenerator.genCarrier(packer, centerAddress);
+            carrier.getNetInfo().setMsgType(Node.MSG_COMMIT_CENTER);
+            LoopUtils.loopExec(50, 10, () -> classicalCenter.commit(carrier));
+        }
+        logger.info("交易发送完毕，运行时间 {} ms", System.currentTimeMillis() - start);
+        classicalCenter.join();
         logger.info("总计运行时间 {} ms", System.currentTimeMillis() - start);
     }
     

@@ -1,5 +1,8 @@
 package name.feinimouse.utils;
 
+import name.feinimouse.lambda.OrdExcRunner;
+import name.feinimouse.lambda.RetExcRunner;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,6 +14,33 @@ import java.util.List;
  * Description :
  */
 public class LoopUtils {
+    
+    public static void loopExec(int i, long interval, OrdExcRunner runner) throws Exception {
+        try {
+            runner.run();
+        } catch (Exception e) {
+            if (i > 0) {
+                Thread.sleep(interval);
+                loopExec(i - 1, interval, runner);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    public static<T> T loopExec(int i, long interval, RetExcRunner<T> runner) throws Exception {
+        try {
+            return runner.run();
+        } catch (Exception e) {
+            if (i > 0) {
+                Thread.sleep(interval);
+                return loopExec(i - 1, interval, runner);
+            } else {
+                throw e;
+            }
+        }
+    }
+    
     public static void loop(int i, LoopFunction lf) {
         for(var j = 0; j < i; j++) {
             lf.doLoop();
@@ -22,7 +52,7 @@ public class LoopUtils {
         }
     }
 
-    public static void loopBreak(int i, LoopIndexClassFunction lf) {
+    public static void loopBreak(int i, LoopIndexClassFunction<?> lf) {
         for(var j = 0; j < i; j++) {
             var res = lf.doLoop(j);
             if (res == null || !(Boolean) res) {
@@ -30,7 +60,7 @@ public class LoopUtils {
             }
         }
     }
-    public static void loopBreak(int i, LoopClassFunction lf) {
+    public static void loopBreak(int i, LoopClassFunction<?> lf) {
         for(var j = 0; j < i; j++) {
             var res = lf.doLoop();
             if (res == null || !(Boolean) res) {
