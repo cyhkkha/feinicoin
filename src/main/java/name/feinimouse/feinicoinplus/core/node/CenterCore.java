@@ -6,7 +6,7 @@ import name.feinimouse.feinicoinplus.core.ConsensusNetwork;
 import name.feinimouse.feinicoinplus.core.crypt.HashGenerator;
 import name.feinimouse.feinicoinplus.core.crypt.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.*;
-import name.feinimouse.feinicoinplus.core.exception.ConsensusException;
+import name.feinimouse.feinicoinplus.consensus.ConsensusException;
 import name.feinimouse.feinicoinplus.core.exception.DaoException;
 import name.feinimouse.feinicoinplus.core.exception.TransAdmitFailedException;
 import name.feinimouse.utils.TimerUtils;
