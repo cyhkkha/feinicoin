@@ -1,62 +1,46 @@
 package name.feinimouse.feinicoinplus.core.data;
 
-import lombok.Data;
-import org.json.JSONObject;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Data
-public abstract class MapSignObj implements HashSignCover {
-    protected Map<String, String> sign;
-
-    private String enter;
-    private String order;
-    private String verifier;
-
+public class MapSignObj implements SignObj {
+    @Getter
+    @Setter
+    protected Map<String, String> signMap;
     public MapSignObj() {
-        sign = new ConcurrentHashMap<>();
+        signMap = new ConcurrentHashMap<>();
     }
-    
+
     public MapSignObj(Map<String, String> signMap) {
-        sign = signMap;
+        this.signMap = signMap;
     }
-    
+
     @Override
-    public MapSignObj putSign(String signer, String sign) {
-        this.sign.put(signer, sign);
+    public SignObj putSign(String signer, String sign) {
+        signMap.put(signer, sign);
         return this;
     }
 
     @Override
     public String getSign(String signer) {
-        return sign.get(signer);
+        return signMap.get(signer);
     }
 
     @Override
     public String deleteSign(String signer) {
-        return sign.remove(signer);
+        return signMap.remove(signer);
     }
 
     @Override
     public int signSize() {
-        return sign.size();
+        return signMap.size();
     }
 
     @Override
     public boolean excludeSign(String signer) {
-        return !sign.containsKey(signer);
-    }
-
-    public JSONObject genJson() {
-        JSONObject object = new JSONObject().put("hash", getHash());
-        Optional.ofNullable(getEnter()).ifPresent(e -> object.put("enter", e));
-        Optional.ofNullable(getOrder()).ifPresent(e -> object.put("order", e));
-        Optional.ofNullable(getVerifier()).ifPresent(e -> object.put("verifier", e));
-        if (!sign.isEmpty()) {
-            object.put("sign", sign);
-        }
-        return object;
+        return !signMap.containsKey(signer);
     }
 }

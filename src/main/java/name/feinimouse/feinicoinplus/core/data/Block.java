@@ -35,7 +35,7 @@ public class Block implements BlockObj {
 
     @Override
     public String genSummary() {
-        return BlockObj.genJson(this)
+        return genJson()
             .put("accounts", accounts.getHash())
             .put("assets", assets.getHash())
             .put("transactions", transactions.getHash())

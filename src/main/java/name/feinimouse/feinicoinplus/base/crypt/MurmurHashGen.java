@@ -4,6 +4,7 @@ import de.greenrobot.common.hash.Murmur3A;
 import de.greenrobot.common.hash.Murmur3F;
 import name.feinimouse.feinicoinplus.core.crypt.HashGenerator;
 import name.feinimouse.feinicoinplus.core.data.BlockObj;
+import name.feinimouse.feinicoinplus.core.data.HashBlockObj;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.data.PackerArr;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,20 @@ public class MurmurHashGen implements HashGenerator {
     public Packer hash(BlockObj blockObj) {
         Packer packer = new Packer(blockObj);
         packer.setHash(hash(blockObj.genSummary()));
+        return packer;
+    }
+
+    @Override
+    public <T extends HashBlockObj> T hash(T hashBlockObj) {
+        String hash = hash(hashBlockObj.genSummary());
+        hashBlockObj.setHash(hash);
+        return hashBlockObj;
+    }
+
+    @Override
+    public Packer hash(Packer packer) {
+        String summary = ((BlockObj) packer.obj()).genSummary();
+        packer.setHash(hash(summary));
         return packer;
     }
 

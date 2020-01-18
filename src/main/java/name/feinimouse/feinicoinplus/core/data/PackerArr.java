@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PackerArr extends MapSignObj implements Cloneable {
+public class PackerArr extends MapSignHashCover implements Cloneable {
     @Getter
     @Setter
     private String hash;
@@ -42,7 +42,7 @@ public class PackerArr extends MapSignObj implements Cloneable {
             PackerArr result = (PackerArr) clone();
             result.setArr(arr.clone());
             // map的克隆
-            Optional.ofNullable(sign).ifPresent(sign -> {
+            Optional.ofNullable(signMap).ifPresent(sign -> {
                 Class<?> mapClass = sign.getClass();
                 Map<String, String> map = null;
                 try { // 使用原有的map类型来克隆
@@ -50,7 +50,7 @@ public class PackerArr extends MapSignObj implements Cloneable {
                     if (con != null) {
                         //noinspection unchecked
                         map = (Map<String, String>) con.newInstance(sign);
-                        result.setSign(map);
+                        result.setSignMap(map);
                     }
                 } catch (ClassCastException | NoSuchMethodException 
                     | IllegalAccessException | InstantiationException 
@@ -60,7 +60,7 @@ public class PackerArr extends MapSignObj implements Cloneable {
                 if (map == null) {
                     map = new ConcurrentHashMap<>(sign);
                 }
-                result.setSign(map);
+                result.setSignMap(map);
             });
             return result;
         } catch (CloneNotSupportedException e) {

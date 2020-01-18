@@ -12,7 +12,7 @@ public interface BlockObj {
     String OPERA_TYPE_INIT = "init";
     String DEFAULT_ISSUER = "0000_0000_0000_0000";
     String DEFAULT_TYPE = "COIN";
-    
+
     static JSONObject genJson(BlockObj blockObj) {
         JSONObject json = new JSONObject();
         Class<?> c = blockObj.getClass();
@@ -48,19 +48,19 @@ public interface BlockObj {
         }
         return json;
     }
-    
+
     static JSONArray genJson(BlockObj[] blockObjs) {
         JSONArray array = new JSONArray();
         for (BlockObj blockObj : blockObjs) {
-            array.put(genJson(blockObj));
+            array.put(blockObj.genJson());
         }
         return array;
     }
-    
+
     default String genSummary() {
         return genJson().toString();
     }
-    
+
     default JSONObject genJson() {
         return genJson(this);
     }

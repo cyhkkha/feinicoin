@@ -75,7 +75,8 @@ public class CenterCore {
 
         // 签名区块
         Packer packer = hashGenerator.hash(block);
-        signGenerator.sign(key, packer, "center");
+        signGenerator.sign(key, packer, address);
+        packer.setCenter(address);
 
         // 同步区块
         var syncResult = TimerUtils.run(this::synchronizeBlock, packer);

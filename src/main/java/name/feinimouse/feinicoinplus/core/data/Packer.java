@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
-public class Packer extends MapSignObj {
+public class Packer extends MapSignHashCover {
 
     @Getter
     @Setter
@@ -43,6 +43,6 @@ public class Packer extends MapSignObj {
 
     @Override
     public JSONObject genJson() {
-        return super.genJson().put("obj", BlockObj.genJson(obj));
+        return super.genJson().put("obj", obj.genJson());
     }
 }
