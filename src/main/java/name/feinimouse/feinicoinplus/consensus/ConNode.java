@@ -4,6 +4,8 @@ public interface ConNode {
     String TYPE_CALLBACK = "CALLBACK";
     String TYPE_CONSENSUS = "CONSENSUS";
     String TYPE_CONFIRM = "CONFIRM";
+    
+    String ADDRESS_NET = "0000_0000_0000_0000";
 
     String getAddress();
 
@@ -12,4 +14,8 @@ public interface ConNode {
     void callback(ConMessage message) throws ConsensusException;
 
     void confirm(ConMessage message) throws ConsensusException;
+    
+    void endRound(ConMessage message);
+    
+    boolean isConfirm();
 }

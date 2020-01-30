@@ -44,4 +44,9 @@ public class ConMessage extends MapSignObj implements HashBlockObj, HashSignObj 
             .put("packer", packer.getHash());
     }
     
+    public boolean equals(ConMessage message) {
+        return message != null 
+            && message.id == id 
+            && message.hash.equals(hash);
+    }
 }
