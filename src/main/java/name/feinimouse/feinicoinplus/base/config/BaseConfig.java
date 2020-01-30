@@ -1,5 +1,6 @@
-package name.feinimouse.feinicoinplus.base;
+package name.feinimouse.feinicoinplus.base.config;
 
+import name.feinimouse.feinicoinplus.base.consensus.ConNodeNet;
 import name.feinimouse.feinicoinplus.core.BlockDao;
 import name.feinimouse.feinicoinplus.core.ConsensusNetwork;
 import name.feinimouse.feinicoinplus.core.TransactionGenerator;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public abstract class BaseConfigPrototype {
+public abstract class BaseConfig {
 
     @Autowired
     protected AddressManager addressManager;
@@ -25,6 +26,8 @@ public abstract class BaseConfigPrototype {
     protected NodeNetwork nodeNetwork;
     @Autowired
     protected TransactionGenerator transactionGenerator;
+    @Autowired
+    protected ConNodeNet conNodeNet;
 
     @Autowired
     protected CenterCore centerCore;
@@ -35,5 +38,4 @@ public abstract class BaseConfigPrototype {
     protected ConsensusNetwork consensusNetwork;
     @Autowired
     protected BlockDao blockDao;
-    
 }
