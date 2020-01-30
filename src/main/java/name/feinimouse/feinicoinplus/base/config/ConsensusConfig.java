@@ -1,6 +1,7 @@
 package name.feinimouse.feinicoinplus.base.config;
 
 import name.feinimouse.feinicoinplus.base.consensus.BaseConNode;
+import name.feinimouse.feinicoinplus.consensus.ConNode;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +14,7 @@ public class ConsensusConfig extends BaseConfig {
     
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) // 非单例
-    public BaseConNode conNode() {
+    public ConNode conNode() {
         BaseConNode baseConNode = new BaseConNode();
         baseConNode.setNet(conNodeNet);
         

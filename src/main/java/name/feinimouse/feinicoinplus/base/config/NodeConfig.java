@@ -4,10 +4,7 @@ import name.feinimouse.feinicoinplus.base.node.BaseCenter;
 import name.feinimouse.feinicoinplus.base.node.BaseClasCenter;
 import name.feinimouse.feinicoinplus.base.node.BaseOrder;
 import name.feinimouse.feinicoinplus.base.node.BaseVerifier;
-import name.feinimouse.feinicoinplus.core.node.AbstractNode;
-import name.feinimouse.feinicoinplus.core.node.ClassicalCenter;
-import name.feinimouse.feinicoinplus.core.node.FetchCenter;
-import name.feinimouse.feinicoinplus.core.node.Node;
+import name.feinimouse.feinicoinplus.core.node.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +26,7 @@ public class NodeConfig extends BaseConfig {
     @Value("${CACHE_CLASSICAL}")
     protected int CACHE_CLASSICAL;
     
-    private Node initNode(AbstractNode node) {
+    private <T extends AbstractNode> T initNode(T node) {
         String address = addressManager.getAddress();
         KeyPair keyPair = signGenerator.genKeyPair();
         publicKeyHub.setKey(address, keyPair.getPublic());
@@ -42,20 +39,20 @@ public class NodeConfig extends BaseConfig {
     }
     
     @Bean
-    public Node order() {
+    public Order order() {
         BaseOrder order = new BaseOrder();
         order.setVerifiersAddress(verifier().getAddress());
         return initNode(order);
     }
 
     @Bean
-    public Node verifier() {
+    public Verifier verifier() {
         BaseVerifier verifier = new BaseVerifier(verifierCore);
         return initNode(verifier);
     }
 
     @Bean
-    public Node center() {
+    public FetchCenter fetchCenter() {
         FetchCenter center = new BaseCenter(centerCore);
         center.setFetchInterval(FETCH_INTERVAL);
         center.setOrdersAddress(order().getAddress());
@@ -63,7 +60,7 @@ public class NodeConfig extends BaseConfig {
     }
     
     @Bean
-    public Node classicalCenter() {
+    public ClassicalCenter classicalCenter() {
         ClassicalCenter center = new BaseClasCenter(centerCore, verifierCore);
         center.setCollectInterval(COLLECT_INTERVAL);
         center.setCacheWaitMax(CACHE_CLASSICAL);

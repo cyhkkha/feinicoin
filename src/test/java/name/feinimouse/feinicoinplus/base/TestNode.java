@@ -4,10 +4,8 @@ import name.feinimouse.feinicoinplus.core.crypt.SignGenerator;
 import name.feinimouse.feinicoinplus.core.data.Carrier;
 import name.feinimouse.feinicoinplus.core.data.Packer;
 import name.feinimouse.feinicoinplus.core.exception.BadRequestException;
-import name.feinimouse.feinicoinplus.core.exception.NodeBusyException;
 import name.feinimouse.feinicoinplus.core.node.*;
 import name.feinimouse.utils.LoopUtils;
-import name.feinimouse.utils.TimerUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,30 +15,14 @@ public class TestNode extends BaseTest {
     @Autowired
     SignGenerator signGenerator;
 
+    @Autowired
     Verifier verifier;
+    @Autowired
     Order order;
-    FetchCenter center;
+    @Autowired
+    FetchCenter fetchCenter;
+    @Autowired
     ClassicalCenter classicalCenter;
-
-    @Autowired
-    public void setVerifier(Node verifier) {
-        this.verifier = (Verifier) verifier;
-    }
-
-    @Autowired
-    public void setCenter(Node center) {
-        this.center = (FetchCenter) center;
-    }
-
-    @Autowired
-    public void setOrder(Node order) {
-        this.order = (Order) order;
-    }
-
-    @Autowired
-    public void setClassicalCenter(Node classicalCenter) {
-        this.classicalCenter = (ClassicalCenter) classicalCenter;
-    }
 
     @Test
     public void testVerifier() throws InterruptedException, BadRequestException {
@@ -59,7 +41,7 @@ public class TestNode extends BaseTest {
     public void testCenter() throws Exception {
         order.start();
         verifier.start();
-        center.start();
+        fetchCenter.start();
         String orderAddress = order.getAddress();
         Thread.sleep(1000);
         long start = System.currentTimeMillis();
@@ -71,7 +53,7 @@ public class TestNode extends BaseTest {
         logger.info("交易发送完毕，运行时间 {} ms", System.currentTimeMillis() - start);
         order.join();
         verifier.join();
-        center.join();
+        fetchCenter.join();
         logger.info("总计运行时间 {} ms", System.currentTimeMillis() - start);
     }
     
@@ -96,7 +78,7 @@ public class TestNode extends BaseTest {
     public void after() {
         order.stopNode();
         verifier.stopNode();
-        center.stopNode();
+        fetchCenter.stopNode();
     }
 
 }
