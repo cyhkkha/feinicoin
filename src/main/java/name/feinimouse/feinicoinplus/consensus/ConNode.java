@@ -15,6 +15,7 @@ public interface ConNode {
 
     void confirm(ConMessage message) throws ConsensusException;
     
+    
     void endRound(ConMessage message);
     
     boolean isConfirm();
