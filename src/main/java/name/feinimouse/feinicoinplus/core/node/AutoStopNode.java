@@ -6,7 +6,7 @@ import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.exception.NodeRunningException;
 import name.feinimouse.feinicoinplus.core.exception.NodeStopException;
 
-public abstract class AutoStopNode extends BaseNode {
+public abstract class AutoStopNode extends AbstractNode {
 
     @Getter
     private long startTime;

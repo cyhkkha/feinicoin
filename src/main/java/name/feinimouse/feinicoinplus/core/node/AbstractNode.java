@@ -12,8 +12,8 @@ import java.security.PrivateKey;
 import java.util.Optional;
 
 // 一个节点即是一个线程
-public abstract class BaseNode extends Thread implements Node {
-    private Logger logger = LogManager.getLogger(BaseNode.class);
+public abstract class AbstractNode extends Thread implements Node {
+    private Logger logger = LogManager.getLogger(AbstractNode.class);
     // 节点类型
     @Getter
     protected String nodeType;
@@ -42,7 +42,7 @@ public abstract class BaseNode extends Thread implements Node {
     protected boolean runningTag = false;
 
     // 节点必须有类型
-    public BaseNode(String nodeType) {
+    public AbstractNode(String nodeType) {
         this.nodeType = nodeType;
     }
 

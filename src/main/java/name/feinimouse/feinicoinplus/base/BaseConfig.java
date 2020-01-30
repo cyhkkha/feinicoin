@@ -4,8 +4,7 @@ import name.feinimouse.feinicoinplus.base.node.BaseCenter;
 import name.feinimouse.feinicoinplus.base.node.BaseClasCenter;
 import name.feinimouse.feinicoinplus.base.node.BaseOrder;
 import name.feinimouse.feinicoinplus.base.node.BaseVerifier;
-import name.feinimouse.feinicoinplus.core.ConsensusNetwork;
-import name.feinimouse.feinicoinplus.core.node.BaseNode;
+import name.feinimouse.feinicoinplus.core.node.AbstractNode;
 import name.feinimouse.feinicoinplus.core.node.ClassicalCenter;
 import name.feinimouse.feinicoinplus.core.node.FetchCenter;
 import name.feinimouse.feinicoinplus.core.node.Node;
@@ -37,7 +36,7 @@ public class BaseConfig extends BaseConfigPrototype implements InitializingBean 
     @Value("${CACHE_CLASSICAL}")
     protected int CACHE_CLASSICAL;
     
-    private Node initNode(BaseNode node) {
+    private Node initNode(AbstractNode node) {
         String address = addressManager.getAddress();
         KeyPair keyPair = signGenerator.genKeyPair();
         publicKeyHub.setKey(address, keyPair.getPublic());
