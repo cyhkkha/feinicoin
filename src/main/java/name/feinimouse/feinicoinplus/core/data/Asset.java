@@ -37,21 +37,18 @@ public class Asset implements BlockObj, Cloneable {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        Asset sub = (Asset) super.clone();
-        if (histories != null) {
-            sub.setHistories(histories.copy());
-        }
-        sub.setExFunc(new HashMap<>(exFunc));
-        return sub;
-    }
-
-    public Asset copy() {
+    public Asset clone() {
+        Asset sub;
         try {
-            return (Asset) clone();
+            sub = (Asset) super.clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
+        if (histories != null) {
+            sub.setHistories(histories.clone());
+        }
+        sub.setExFunc(new HashMap<>(exFunc));
+        return sub;
     }
 }

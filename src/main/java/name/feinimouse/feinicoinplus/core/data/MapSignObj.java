@@ -6,7 +6,7 @@ import lombok.Setter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapSignObj implements SignObj {
+public class MapSignObj implements SignObj, Cloneable {
     @Getter
     @Setter
     protected Map<String, String> signMap;
@@ -42,5 +42,15 @@ public class MapSignObj implements SignObj {
     @Override
     public boolean excludeSign(String signer) {
         return !signMap.containsKey(signer);
+    }
+
+    @Override
+    public MapSignObj clone() {
+        try {
+            return (MapSignObj) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 }

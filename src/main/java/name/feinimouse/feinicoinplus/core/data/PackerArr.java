@@ -15,19 +15,20 @@ public class PackerArr extends MapSignHashCover implements Cloneable {
     @Getter
     @Setter
     private String hash;
-    
+
     @PropIgnore
     @Setter
     private Packer[] arr;
-    
+
     @PropIgnore
     @Setter
     private Class<?> objClass;
-    
+
     public PackerArr(Packer[] arr, Class<?> objClass) {
         this.arr = arr;
         this.objClass = objClass;
     }
+
     public PackerArr(String hash, Packer[] arr, Class<?> objClass) {
         this(arr, objClass);
         this.hash = hash;
@@ -36,37 +37,33 @@ public class PackerArr extends MapSignHashCover implements Cloneable {
     public int size() {
         return arr.length;
     }
-    
-    public PackerArr copy() {
-        try {
-            PackerArr result = (PackerArr) clone();
-            result.setArr(arr.clone());
-            // map的克隆
-            Optional.ofNullable(signMap).ifPresent(sign -> {
-                Class<?> mapClass = sign.getClass();
-                Map<String, String> map = null;
-                try { // 使用原有的map类型来克隆
-                    Constructor<?> con = mapClass.getConstructor(Map.class);
-                    if (con != null) {
-                        //noinspection unchecked
-                        map = (Map<String, String>) con.newInstance(sign);
-                        result.setSignMap(map);
-                    }
-                } catch (ClassCastException | NoSuchMethodException 
-                    | IllegalAccessException | InstantiationException 
-                    | InvocationTargetException e) {
-                    e.printStackTrace();
+
+    @Override
+    public PackerArr clone() {
+        PackerArr result = (PackerArr) super.clone();
+        result.setArr(arr.clone());
+        // map的克隆
+        Optional.ofNullable(signMap).ifPresent(sign -> {
+            Class<?> mapClass = sign.getClass();
+            Map<String, String> map = null;
+            try { // 使用原有的map类型来克隆
+                Constructor<?> con = mapClass.getConstructor(Map.class);
+                if (con != null) {
+                    //noinspection unchecked
+                    map = (Map<String, String>) con.newInstance(sign);
+                    result.setSignMap(map);
                 }
-                if (map == null) {
-                    map = new ConcurrentHashMap<>(sign);
-                }
-                result.setSignMap(map);
-            });
-            return result;
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        return null;
+            } catch (ClassCastException | NoSuchMethodException
+                | IllegalAccessException | InstantiationException
+                | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            if (map == null) {
+                map = new ConcurrentHashMap<>(sign);
+            }
+            result.setSignMap(map);
+        });
+        return result;
     }
 
     @Override

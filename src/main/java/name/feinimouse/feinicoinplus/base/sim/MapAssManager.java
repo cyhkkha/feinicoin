@@ -212,7 +212,7 @@ public class MapAssManager implements AssetManager, InitializingBean {
             Asset receiver = get(assetAdd, receiverAdd);
             // 若接收方没有对应资产则创建
             if (receiver == null) {
-                receiver = sender.copy();
+                receiver = sender.clone();
                 receiver.setOwner(receiverAdd);
                 receiver.setNumber(0);
                 put(receiver);

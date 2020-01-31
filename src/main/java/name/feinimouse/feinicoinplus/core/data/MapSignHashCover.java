@@ -7,7 +7,7 @@ import org.json.JSONObject;
 import java.util.Map;
 import java.util.Optional;
 
-public abstract class MapSignHashCover extends MapSignObj implements HashSignObj, HashBlockObj, CoverObj {
+public abstract class MapSignHashCover extends MapSignObj implements HashSignObj, HashBlockObj, CoverObj, Cloneable {
 
     @Getter
     @Setter
@@ -41,5 +41,10 @@ public abstract class MapSignHashCover extends MapSignObj implements HashSignObj
             object.put("sign", signMap);
         }
         return object;
+    }
+
+    @Override
+    public MapSignHashCover clone() {
+        return (MapSignHashCover) super.clone();
     }
 }
