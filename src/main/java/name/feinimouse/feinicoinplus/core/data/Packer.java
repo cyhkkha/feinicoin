@@ -45,4 +45,9 @@ public class Packer extends MapSignHashCover {
     public JSONObject genJson() {
         return super.genJson().put("obj", obj.genJson());
     }
+
+    @Override
+    public Packer clone() {
+        return (Packer) super.clone();
+    }
 }
