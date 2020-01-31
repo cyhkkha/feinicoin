@@ -1,7 +1,7 @@
 package name.feinimouse.feinicoinplus.base.config;
 
-import name.feinimouse.feinicoinplus.base.consensus.BaseConNode;
-import name.feinimouse.feinicoinplus.consensus.ConNode;
+import name.feinimouse.feinicoinplus.base.consensus.ClassicalConNode;
+import name.feinimouse.feinicoinplus.base.consensus.OptimizedConNode;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,25 +12,36 @@ import java.security.KeyPair;
 @Configuration
 public class ConsensusConfig extends BaseConfig {
     
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) // 非单例
-    public ConNode conNode() {
-        BaseConNode baseConNode = new BaseConNode();
-        baseConNode.setNet(conNodeNet);
-        
+    private <T extends ClassicalConNode> void setupNode(T node) {
+        node.setNet(conNodeNet);
+
         String address = addressManager.getAddress();
-        baseConNode.setAddress(address);
-        
+        node.setAddress(address);
+
         KeyPair keyPair = signGenerator.genKeyPair();
         publicKeyHub.setKey(address, keyPair.getPublic());
-        baseConNode.setPrivateKey(keyPair.getPrivate());
-        
-        baseConNode.setPublicKeyHub(publicKeyHub);
-        
-        baseConNode.setSignGenerator(signGenerator);
-        
-        baseConNode.setHashGenerator(hashGenerator);
-        
-        return baseConNode;
+        node.setPrivateKey(keyPair.getPrivate());
+
+        node.setPublicKeyHub(publicKeyHub);
+
+        node.setSignGenerator(signGenerator);
+
+    }
+    
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) // 非单例
+    public OptimizedConNode optimizedConNode() {
+        OptimizedConNode optimizedConNode = new OptimizedConNode();
+        setupNode(optimizedConNode);
+        optimizedConNode.setHashGenerator(hashGenerator);
+        return optimizedConNode;
+    }
+    
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public ClassicalConNode classicalConNode() {
+        ClassicalConNode classicalConNode = new ClassicalConNode();
+        setupNode(classicalConNode);
+        return classicalConNode;
     }
 }

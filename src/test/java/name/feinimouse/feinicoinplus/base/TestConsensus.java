@@ -1,6 +1,6 @@
 package name.feinimouse.feinicoinplus.base;
 
-import name.feinimouse.feinicoinplus.base.consensus.BaseConNode;
+import name.feinimouse.feinicoinplus.base.consensus.ClassicalConNode;
 import name.feinimouse.feinicoinplus.base.consensus.ConNodeNet;
 import name.feinimouse.feinicoinplus.consensus.ConMessage;
 import name.feinimouse.feinicoinplus.consensus.ConNode;
@@ -42,8 +42,8 @@ public class TestConsensus extends BaseTest {
     
     @Test
     public void testConNode() {
-        ConNode conNode1 = (ConNode) context.getBean("conNode");
-        ConNode conNode2 = (ConNode) context.getBean("conNode");
+        ConNode conNode1 = (ConNode) context.getBean("optimizedConNode");
+        ConNode conNode2 = (ConNode) context.getBean("optimizedConNode");
         System.out.println(conNode1);
         System.out.println(conNode2);
         Assert.assertNotEquals(conNode1, conNode2);
@@ -58,10 +58,9 @@ public class TestConsensus extends BaseTest {
         return conMessage;
     }
     
-    @Test
-    public void testConNodeNet() throws InterruptedException {
+    private void testConNodeNet(String nodeName) throws InterruptedException {
         for (int i = 0; i < NODE_NUM; i ++) {
-            BaseConNode conNode = (BaseConNode) context.getBean("conNode");
+            ClassicalConNode conNode = (ClassicalConNode) context.getBean(nodeName);
             conNode.setNodeNum(NODE_NUM);
             conNodeNet.putNode(conNode);
         }
@@ -70,11 +69,22 @@ public class TestConsensus extends BaseTest {
         Thread.sleep(1000);
         while (!conNodeNet.isConfirm()) {
             Thread.sleep(1000);
-            if (System.currentTimeMillis() - now > 10 * 1000) {
+            if (System.currentTimeMillis() - now > 20 * 1000) {
                 logger.info("超时");
                 break;
             }
         }
         logger.info("耗时 {}ms", System.currentTimeMillis() - now);
     }
+    
+    @Test
+    public void testOptimizedNet() throws InterruptedException {
+        testConNodeNet("optimizedConNode");
+    }
+    
+    @Test
+    public void testClassicalNet() throws InterruptedException {
+        testConNodeNet("classicalConNode");
+    }
+    
 }
