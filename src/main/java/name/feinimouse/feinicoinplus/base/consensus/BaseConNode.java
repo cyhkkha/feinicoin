@@ -47,17 +47,13 @@ public class BaseConNode implements ConNode {
         String center = packer.getCenter();
         PublicKey publicKey = publicKeyHub.getKey(center);
         if (signGenerator.verify(publicKey, packer, center)) {
-            nowTask = new ConMessage(message, TYPE_CONFIRM);
-            ConMessage nextMessage = new ConMessage(message, TYPE_CALLBACK);
-            
+            // 记录当前的任务状况
+            nowTask = message.clone(TYPE_CONFIRM, address);
+            signGenerator.sign(privateKey, nowTask, address);
             taskId = nowTask.getId();
             
-            nowTask.setSender(address);
-            nextMessage.setSender(address);
-            
-            signGenerator.sign(privateKey, nowTask, address);
-            signGenerator.sign(privateKey, nextMessage, address);
-            
+            // 将回应信息转发
+            ConMessage nextMessage = nowTask.clone(TYPE_CALLBACK);
             logger.trace("节点 {} 共识（id: {}）开始", address, message.getId());
             consensusStartTime = System.currentTimeMillis();
             net.callback(nextMessage);
@@ -71,7 +67,7 @@ public class BaseConNode implements ConNode {
             consensus(message);
         }
         // 是否和当前是同一个任务
-        if (!nowTask.equals(message)) {
+        if (nowTask.notSameTask(message)) {
             return;
         }
 
@@ -102,7 +98,7 @@ public class BaseConNode implements ConNode {
             consensus(message);
         }
         // 是否和当前是同一个任务
-        if (!nowTask.equals(message)) {
+        if (nowTask.notSameTask(message)) {
             return;
         }
 

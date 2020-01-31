@@ -26,17 +26,26 @@ public class ConMessage extends MapSignObj implements HashBlockObj, HashSignObj 
     @Setter
     private String sender;
     
-    public ConMessage(int id, String type) {
+    public ConMessage(int id) {
         this.id = id;
-        this.type = type;
+    }
+
+    public ConMessage clone() {
+        return (ConMessage) super.clone();
     }
     
-    public ConMessage(ConMessage message, String type) {
-        this(message.id, type);
-        this.packer = message.packer;
-        this.hash = message.hash;
+    public ConMessage clone(String type) {
+        ConMessage conMessage = clone();
+        conMessage.setType(type);
+        return conMessage;
     }
     
+    public ConMessage clone(String type, String sender) {
+        ConMessage conMessage = clone(type);
+        conMessage.setSender(sender);
+        return conMessage;
+    }
+
     @Override
     public JSONObject genJson() {
         return new JSONObject()
@@ -44,9 +53,9 @@ public class ConMessage extends MapSignObj implements HashBlockObj, HashSignObj 
             .put("packer", packer.getHash());
     }
     
-    public boolean equals(ConMessage message) {
-        return message != null 
-            && message.id == id 
-            && message.hash.equals(hash);
+    public boolean notSameTask(ConMessage message) {
+        return message == null
+            || message.id != id
+            || !message.hash.equals(hash);
     }
 }
