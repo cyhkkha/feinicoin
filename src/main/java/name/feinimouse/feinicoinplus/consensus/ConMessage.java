@@ -5,8 +5,9 @@ import lombok.Setter;
 import name.feinimouse.feinicoinplus.core.data.HashBlockObj;
 import name.feinimouse.feinicoinplus.core.data.HashSignObj;
 import name.feinimouse.feinicoinplus.core.data.MapSignObj;
-import name.feinimouse.feinicoinplus.core.data.Packer;
 import org.json.JSONObject;
+
+import java.util.Optional;
 
 public class ConMessage extends MapSignObj implements HashBlockObj, HashSignObj {
     @Getter
@@ -20,7 +21,7 @@ public class ConMessage extends MapSignObj implements HashBlockObj, HashSignObj 
     private String type;
     @Getter
     @Setter
-    private Packer packer;
+    private ConfirmTag confirmTag;
     
     @Getter
     @Setter
@@ -31,7 +32,9 @@ public class ConMessage extends MapSignObj implements HashBlockObj, HashSignObj 
     }
 
     public ConMessage clone() {
-        return (ConMessage) super.clone();
+        ConMessage conMessage = (ConMessage) super.clone();
+        Optional.ofNullable(confirmTag).ifPresent(c -> conMessage.setConfirmTag(c.clone()));
+        return conMessage;
     }
     
     public ConMessage clone(String type) {
@@ -50,7 +53,7 @@ public class ConMessage extends MapSignObj implements HashBlockObj, HashSignObj 
     public JSONObject genJson() {
         return new JSONObject()
             .put("id", id)
-            .put("packer", packer.getHash());
+            .put("packer", confirmTag.getHash());
     }
     
     public boolean notSameTask(ConMessage message) {

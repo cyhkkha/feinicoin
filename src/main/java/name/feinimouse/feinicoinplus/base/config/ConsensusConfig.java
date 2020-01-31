@@ -29,6 +29,8 @@ public class ConsensusConfig extends BaseConfig {
         
         baseConNode.setSignGenerator(signGenerator);
         
+        baseConNode.setHashGenerator(hashGenerator);
+        
         return baseConNode;
     }
 }

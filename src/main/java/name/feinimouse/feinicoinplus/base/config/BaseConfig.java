@@ -4,6 +4,7 @@ import name.feinimouse.feinicoinplus.base.consensus.ConNodeNet;
 import name.feinimouse.feinicoinplus.core.BlockDao;
 import name.feinimouse.feinicoinplus.core.ConsensusNetwork;
 import name.feinimouse.feinicoinplus.core.TransactionGenerator;
+import name.feinimouse.feinicoinplus.core.crypt.HashGenerator;
 import name.feinimouse.feinicoinplus.core.crypt.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.crypt.SignGenerator;
 import name.feinimouse.feinicoinplus.core.node.CenterCore;
@@ -22,6 +23,8 @@ public abstract class BaseConfig {
     protected PublicKeyHub publicKeyHub;
     @Autowired
     protected SignGenerator signGenerator;
+    @Autowired
+    protected HashGenerator hashGenerator;
     @Autowired
     protected NodeNetwork nodeNetwork;
     @Autowired

@@ -20,12 +20,18 @@ public class ConNodeNet implements ConNode {
     private String address = ADDRESS_NET;
 
     private ArrayList<ConNode> nodeList;
-    
-    private ThreadPoolExecutor threadPool;
+
+    private ThreadPoolExecutor consensusPool;
+    private ThreadPoolExecutor callbackPool;
+    private ThreadPoolExecutor confirmPool;
 
     public ConNodeNet() {
         nodeList = new ArrayList<>();
-        threadPool = new ThreadPoolExecutor(8, Integer.MAX_VALUE
+        consensusPool = new ThreadPoolExecutor(2, Integer.MAX_VALUE
+            , 100L, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
+        callbackPool = new ThreadPoolExecutor(3, Integer.MAX_VALUE
+            , 100L, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
+        confirmPool = new ThreadPoolExecutor(3, Integer.MAX_VALUE
             , 100L, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
     }
 
@@ -43,10 +49,10 @@ public class ConNodeNet implements ConNode {
         Collections.shuffle(operateList);
         return operateList;
     }
-    
+
     @Override
     public void consensus(ConMessage message) {
-        threadPool.execute(() -> randomNodes().forEach(node -> {
+        consensusPool.execute(() -> randomNodes().forEach(node -> {
             try {
                 node.consensus(message);
             } catch (ConsensusException e) {
@@ -57,7 +63,7 @@ public class ConNodeNet implements ConNode {
 
     @Override
     public void callback(ConMessage message) {
-        threadPool.execute(() -> randomNodes().forEach(node -> {
+        callbackPool.execute(() -> randomNodes().forEach(node -> {
             try {
                 node.callback(message);
             } catch (ConsensusException e) {
@@ -68,7 +74,7 @@ public class ConNodeNet implements ConNode {
 
     @Override
     public void confirm(ConMessage message) {
-        threadPool.execute(() -> randomNodes().forEach(node -> {
+        confirmPool.execute(() -> randomNodes().forEach(node -> {
             try {
                 node.confirm(message);
             } catch (ConsensusException e) {
@@ -79,7 +85,7 @@ public class ConNodeNet implements ConNode {
 
     @Override
     public void endRound(ConMessage message) {
-        threadPool.execute(() -> randomNodes().forEach(node -> node.endRound(message)));
+        randomNodes().forEach(node -> consensusPool.execute(() -> node.endRound(message)));
     }
 
     @Override
