@@ -42,7 +42,12 @@ public class MapSignObj implements SignObj, Cloneable {
 
     @Override
     public boolean excludeSign(String signer) {
-        return !signMap.containsKey(signer);
+        return !hasSign(signer);
+    }
+
+    @Override
+    public boolean hasSign(String signer) {
+        return signMap.containsKey(signer);
     }
 
     @Override

@@ -8,6 +8,8 @@ public interface SignObj {
     SignObj putSign(String signer, String sign);
 
     boolean excludeSign(String signer);
+    
+    boolean hasSign(String signer);
 
     int signSize();
 }
