@@ -64,7 +64,7 @@ public class MurmurHashGen implements HashGenerator {
     public PackerArr hash(BlockObj[] objArr, Class<?> aClass) {
         int length = objArr.length;
         if (length <= 0 || !objArr[0].getClass().equals(aClass)) {
-            return null;
+            return new PackerArr("0000000000000000", new Packer[]{}, aClass);
         }
         if (length == 1) {
             Packer packer = hash(objArr[0]);
@@ -84,7 +84,7 @@ public class MurmurHashGen implements HashGenerator {
     public PackerArr hash(Packer[] objArr, Class<?> aClass) {
         int length = objArr.length;
         if (length <= 0 || !objArr[0].objClass().equals(aClass)) {
-            return null;
+            return new PackerArr("0000000000000000", objArr, aClass);
         }
         if (length == 1) {
             return new PackerArr(objArr[0].getHash(), objArr, aClass);
