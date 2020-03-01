@@ -35,14 +35,14 @@ public class BaseCenContext implements CenterContext {
     }
 
     @Override
-    public void commit(Transaction trans) throws TransAdmitFailedException {
+    public void commitTrans(Transaction trans) throws TransAdmitFailedException {
         if (!accountManager.commit(trans)) {
             throw new TransAdmitFailedException();
         }
     }
 
     @Override
-    public void commit(Packer packer) throws TransAdmitFailedException {
+    public void commitAssetTrans(Packer packer) throws TransAdmitFailedException {
         if (!assetManager.commit(packer)) {
             throw new TransAdmitFailedException();
         }

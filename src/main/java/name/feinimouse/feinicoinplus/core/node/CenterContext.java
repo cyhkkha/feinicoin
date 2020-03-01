@@ -9,9 +9,9 @@ import name.feinimouse.feinicoinplus.core.exception.TransAdmitFailedException;
 
 public interface CenterContext {
 
-    void commit(Transaction trans) throws TransAdmitFailedException;
+    void commitTrans(Transaction trans) throws TransAdmitFailedException;
 
-    void commit(Packer packer) throws TransAdmitFailedException;
+    void commitAssetTrans(Packer packer) throws TransAdmitFailedException;
 
     void admit(Packer packer);
 

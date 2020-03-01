@@ -47,7 +47,7 @@ public class CenterCore {
     public void handleTransaction(Carrier carrier) {
         Transaction transaction = (Transaction) carrier.getPacker().obj();
         try {
-            centerContext.commit(transaction);
+            centerContext.commitTrans(transaction);
         } catch (TransAdmitFailedException e) {
             logger.warn(e.getMessage());
         }
@@ -59,7 +59,7 @@ public class CenterCore {
     public void handleAssetTrans(Carrier carrier) {
         AssetTrans assetTrans = (AssetTrans) carrier.getPacker().obj();
         try {
-            centerContext.commit(carrier.getPacker());
+            centerContext.commitAssetTrans(carrier.getPacker());
         } catch (TransAdmitFailedException e) {
             logger.warn(e.getMessage());
         }
