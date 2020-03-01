@@ -55,7 +55,8 @@ public abstract class ClassicalCenter extends CacheNode {
         if (transNum.get() + assetTransNum.get() <= 0) {
             try {
                 logger.warn("交易等待持续了 {}ms ，未获得交易", collectResult.getTotalRunTime());
-                Thread.sleep(periodTime - collectResult.getTotalRunTime());
+                long sleepTime = periodTime - collectResult.getTotalRunTime();
+                Thread.sleep(sleepTime >= 0 ? sleepTime : 0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 stopNode();

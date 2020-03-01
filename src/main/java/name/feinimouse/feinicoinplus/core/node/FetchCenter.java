@@ -64,7 +64,8 @@ public abstract class FetchCenter extends AutoStopNode {
         if (transNum.get() + assetTransNum.get() <= 0) {
             try {
                 logger.warn("拉取交易持续了 {}ms ，未拉取到交易", fetchResult.getTotalRunTime());
-                Thread.sleep(periodTime - fetchResult.getTotalRunTime());
+                long sleepTime = periodTime - fetchResult.getTotalRunTime();
+                Thread.sleep(sleepTime >= 0 ? sleepTime : 0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 stopNode();
