@@ -14,32 +14,61 @@ import java.util.List;
  * Description :
  */
 public class LoopUtils {
-    
     public static void loopExec(int i, long interval, OrdExcRunner runner) throws Exception {
-        try {
-            runner.run();
-        } catch (Exception e) {
-            if (i > 0) {
+        for (int j = 0; j < i; j ++) {
+            try {
+                runner.run();
+                break;
+            } catch (Exception e) {
+                if (j == i - 1) {
+                    throw e;
+                }
                 Thread.sleep(interval);
-                loopExec(i - 1, interval, runner);
-            } else {
-                throw e;
             }
         }
     }
+    
+//    public static void loopExec(int i, long interval, OrdExcRunner runner) throws Exception {
+//        try {
+//            runner.run();
+//        } catch (Exception e) {
+//            if (i > 0) {
+//                Thread.sleep(interval);
+//                loopExec(i - 1, interval, runner);
+//            } else {
+//                throw e;
+//            }
+//        }
+//    }
 
     public static<T> T loopExec(int i, long interval, RetExcRunner<T> runner) throws Exception {
-        try {
-            return runner.run();
-        } catch (Exception e) {
-            if (i > 0) {
+        T t = null;
+        for (int j = 0; j < i; j ++) {
+            try {
+                t = runner.run();
+                break;
+            } catch (Exception e) {
+                if (j == i - 1) {
+                    throw e;
+                }
                 Thread.sleep(interval);
-                return loopExec(i - 1, interval, runner);
-            } else {
-                throw e;
             }
         }
+        return t;
     }
+    
+//    public static<T> T loopExec(int i, long interval, RetExcRunner<T> runner) throws Exception {
+//        try {
+//            return runner.run();
+//        } catch (Exception e) {
+//            if (i > 0) {
+//                Thread.sleep(interval);
+//                return loopExec(i - 1, interval, runner);
+//            } else {
+//                throw e;
+//            }
+//        }
+//    }
     
     public static void loop(int i, LoopFunction lf) {
         for(var j = 0; j < i; j++) {
