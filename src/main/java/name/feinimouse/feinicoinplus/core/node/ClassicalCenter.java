@@ -36,6 +36,7 @@ public abstract class ClassicalCenter extends CacheNode {
         super(NODE_CENTER_CLASSICAL);
         this.centerCore = centerCore;
         this.verifierCore = verifierCore;
+        // 缓存的默认大小
         setCacheWaitMax(50);
     }
 
@@ -50,7 +51,7 @@ public abstract class ClassicalCenter extends CacheNode {
                 collectLoop(AssetTrans.class, this::handlerAssetTrans, stopper, assetTransNum);
             });
 
-        // 若拉取不到交易则不生产区块，同时跳过间隔时间的重置
+        // 若缓存中已经没有交易则不生产区块，同时跳过间隔时间的重置
         if (transNum.get() + assetTransNum.get() <= 0) {
             try {
                 logger.warn("交易等待持续了 {}ms ，未获得交易", collectResult.getTotalRunTime());
