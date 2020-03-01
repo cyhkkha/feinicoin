@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.security.PrivateKey;
+import java.util.Optional;
 import java.util.Random;
 
 @Component("transactionGenerator")
@@ -54,8 +55,15 @@ public class SimpleTransGen implements TransactionGenerator {
     }
 
     private Packer sign(AssetTrans assetTrans) {
-        PrivateKey key = accountManager.getPrivateKey(assetTrans.getOperator());
         Packer packer = hashGenerator.hash(assetTrans);
+        // 如果有附加普通交易，则普通交易发送者要进行签名
+        Optional.ofNullable(assetTrans.getTransaction())
+            .ifPresent(transaction -> {
+                PrivateKey key = accountManager.getPrivateKey(transaction.getSender());
+                signGenerator.sign(key, packer, transaction.getSender());
+            });
+        // 对资产交易本身进行签名
+        PrivateKey key = accountManager.getPrivateKey(assetTrans.getOperator());
         signGenerator.sign(key, packer, assetTrans.getOperator());
         packer.setEnter(this.address);
         return packer;
