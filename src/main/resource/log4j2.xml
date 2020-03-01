@@ -16,7 +16,7 @@
         </Console>
         <!--文件输出-->
         <!--append表示是否直接追加-->
-        <File name="file" fileName="C:\Workspace\feinicoin.log" append="false">
+        <File name="file" fileName="C:\Workspace\feinicoin.log" append="true">
             <PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss,SSS} [%t] %-5level %logger{10} - %msg%n"/>
         </File>
     </Appenders>
@@ -28,11 +28,16 @@
         <logger name="org.springframework" level="INFO" additivity="false">
             <AppenderRef ref="console"/>
         </logger>
+        <logger name="name.feinimouse.feinicoinplus.BaseRunner" level="info" additivity="false">
+            <AppenderRef ref="debug"/>
+            <AppenderRef ref="file"/>
+        </logger>
         <!--默认日志-->
-        <Root level="TRACE">
+        <Root level="error">
             <!--ref引用对应的appender-->
 <!--        <AppenderRef ref="console"/>-->
             <AppenderRef ref="debug"/>
+<!--            <AppenderRef ref="file"/>-->
         </Root>
     </Loggers>
 </Configuration>
