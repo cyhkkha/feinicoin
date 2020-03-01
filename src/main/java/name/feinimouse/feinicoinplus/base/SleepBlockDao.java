@@ -28,8 +28,8 @@ public class SleepBlockDao implements BlockDao {
             Thread.sleep(daoDelay);
             logger.info("区块(交易{}笔，资产{}笔，账户{}笔)写入成功，编号 {}"
                 , block.getTransactions().size()
-                , block.getAccounts().size()
                 , block.getAssets().size()
+                , block.getAccounts().size()
                 , block.getId()
             );
         } catch (InterruptedException e) {
