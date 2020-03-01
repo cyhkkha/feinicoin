@@ -6,8 +6,10 @@ import name.feinimouse.feinicoinplus.base.node.BaseOrder;
 import name.feinimouse.feinicoinplus.base.node.BaseVerifier;
 import name.feinimouse.feinicoinplus.core.node.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import java.security.KeyPair;
 
@@ -39,6 +41,7 @@ public class NodeConfig extends BaseConfig {
     }
     
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public Order order() {
         BaseOrder order = new BaseOrder();
         order.setVerifiersAddress(verifier().getAddress());
@@ -46,12 +49,14 @@ public class NodeConfig extends BaseConfig {
     }
 
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public Verifier verifier() {
         BaseVerifier verifier = new BaseVerifier(verifierCore);
         return initNode(verifier);
     }
 
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public FetchCenter fetchCenter() {
         FetchCenter center = new BaseCenter(centerCore);
         center.setFetchInterval(FETCH_INTERVAL);
@@ -60,6 +65,7 @@ public class NodeConfig extends BaseConfig {
     }
     
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public ClassicalCenter classicalCenter() {
         ClassicalCenter center = new BaseClasCenter(centerCore, verifierCore);
         center.setCollectInterval(COLLECT_INTERVAL);

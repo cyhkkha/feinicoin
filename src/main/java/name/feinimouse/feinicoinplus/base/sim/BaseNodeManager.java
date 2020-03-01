@@ -12,12 +12,15 @@ import name.feinimouse.utils.TimerUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component("nodeManager")
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BaseNodeManager implements NodeManager {
     protected Logger logger = LogManager.getLogger(BaseNodeManager.class);
 
@@ -32,6 +35,17 @@ public class BaseNodeManager implements NodeManager {
     protected ClassicalCenter classicalCenter;
 
     protected TransactionGenerator transactionGenerator;
+
+    @Autowired
+    public BaseNodeManager(Verifier verifier, Order order
+        , FetchCenter fetchCenter, ClassicalCenter classicalCenter
+        , TransactionGenerator transactionGenerator) {
+        this.verifier = verifier;
+        this.order = order;
+        this.fetchCenter = fetchCenter;
+        this.classicalCenter = classicalCenter;
+        this.transactionGenerator = transactionGenerator;
+    }
 
     public void startFetchNode() {
         order.start();
@@ -97,26 +111,5 @@ public class BaseNodeManager implements NodeManager {
     
     public long sendRandomMixTransFetch(int count, double rate) {
         return commitTrans(count, fetchCenter, () -> getMixTrans(rate));
-    }
-
-    @Autowired
-    public void setVerifier(Verifier verifier) {
-        this.verifier = verifier;
-    }
-    @Autowired
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-    @Autowired
-    public void setFetchCenter(FetchCenter fetchCenter) {
-        this.fetchCenter = fetchCenter;
-    }
-    @Autowired
-    public void setClassicalCenter(ClassicalCenter classicalCenter) {
-        this.classicalCenter = classicalCenter;
-    }
-    @Autowired
-    public void setTransactionGenerator(TransactionGenerator transactionGenerator) {
-        this.transactionGenerator = transactionGenerator;
     }
 }
