@@ -73,6 +73,43 @@ public class TestNode extends BaseTest {
         classicalCenter.join();
         logger.info("总计运行时间 {} ms", System.currentTimeMillis() - start);
     }
+
+    @Test
+    public void testCenterAsset() throws Exception {
+        order.start();
+        verifier.start();
+        fetchCenter.start();
+        String orderAddress = order.getAddress();
+        Thread.sleep(1000);
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 500; i++) {
+            Packer packer = transactionGenerator.genRandomAssetTrans();
+            Carrier carrier = transactionGenerator.genCarrier(packer, orderAddress);
+            LoopUtils.loopExec(50, 10, () -> order.commit(carrier));
+        }
+        logger.info("交易发送完毕，运行时间 {} ms", System.currentTimeMillis() - start);
+        order.join();
+        verifier.join();
+        fetchCenter.join();
+        logger.info("总计运行时间 {} ms", System.currentTimeMillis() - start);
+    }
+
+    @Test
+    public void testClassicalCenterAsset() throws Exception {
+        classicalCenter.start();
+        String centerAddress = classicalCenter.getAddress();
+        Thread.sleep(1000);
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 500; i++) {
+            Packer packer = transactionGenerator.genRandomAssetTrans();
+            Carrier carrier = transactionGenerator.genCarrier(packer, centerAddress);
+            carrier.getNetInfo().setMsgType(Node.MSG_COMMIT_CENTER);
+            LoopUtils.loopExec(50, 10, () -> classicalCenter.commit(carrier));
+        }
+        logger.info("交易发送完毕，运行时间 {} ms", System.currentTimeMillis() - start);
+        classicalCenter.join();
+        logger.info("总计运行时间 {} ms", System.currentTimeMillis() - start);
+    }
     
     @After
     public void after() {
