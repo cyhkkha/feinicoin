@@ -80,4 +80,9 @@ public class MapNodeNetwork implements NodeNetwork {
     public void registerNode(Node node) {
         nodeMap.put(node.getAddress(), node);
     }
+
+    @Override
+    public void removeNode(Node node) {
+        nodeMap.remove(node.getAddress());
+    }
 }

@@ -10,4 +10,5 @@ public interface NodeNetwork {
     void commit(Carrier carrier) throws NoSuchNodeException, NodeBusyException;
     Carrier fetch(Carrier carrier) throws NoSuchNodeException;
     void registerNode(Node node);
+    void removeNode(Node node);
 }
