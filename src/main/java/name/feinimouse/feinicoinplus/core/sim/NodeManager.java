@@ -1,15 +1,20 @@
 package name.feinimouse.feinicoinplus.core.sim;
 
-import name.feinimouse.feinicoinplus.core.data.Carrier;
-import name.feinimouse.feinicoinplus.core.node.*;
-import name.feinimouse.lambda.ReturnRunner;
+import name.feinimouse.feinicoinplus.core.node.ClassicalCenter;
+import name.feinimouse.feinicoinplus.core.node.FetchCenter;
+import name.feinimouse.feinicoinplus.core.node.Order;
+import name.feinimouse.feinicoinplus.core.node.Verifier;
 
 public interface NodeManager {
     Order getOrder();
+
     Verifier getVerifier();
+
     FetchCenter getFetchCenter();
+
     ClassicalCenter getClassicalCenter();
-    long commitTrans(int count, Node node, ReturnRunner<Carrier> generator);
+
     void startFetchNode();
+
     void startClassicalNode();
 }
