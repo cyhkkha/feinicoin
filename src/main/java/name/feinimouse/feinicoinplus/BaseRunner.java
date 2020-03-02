@@ -70,10 +70,12 @@ public class BaseRunner implements SimRunner {
         preRun();
         logger.info("----------预实验结束----------");
         
-        sendRandomMixTransClassical(0);
+//        sendRandomMixTransClassical(0);
 //        sendRandomMixTransClassical(1);
 //        sendRandomMixTransClassical(0.2);
 //        sendRandomMixTransFetch(0.2);
+        sendRandomMixTransClassical(0.5);
+//        sendRandomMixTransFetch(0.5);
 
         return null;
     }
