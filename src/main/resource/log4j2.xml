@@ -17,7 +17,7 @@
         <!--文件输出-->
         <!--append表示是否直接追加-->
         <File name="file" fileName="C:\Workspace\feinicoin.log" append="true">
-            <PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss,SSS} [%t] %-5level %logger{10} - %msg%n"/>
+            <PatternLayout pattern="%d{yyyy/MM/dd HH:mm:ss,SSS} [%t] %-5level - %msg%n"/>
         </File>
     </Appenders>
     
@@ -33,7 +33,7 @@
             <AppenderRef ref="file"/>
         </logger>
         <!--默认日志-->
-        <Root level="error">
+        <Root level="trace">
             <!--ref引用对应的appender-->
 <!--        <AppenderRef ref="console"/>-->
             <AppenderRef ref="debug"/>

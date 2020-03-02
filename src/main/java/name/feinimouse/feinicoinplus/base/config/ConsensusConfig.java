@@ -2,6 +2,7 @@ package name.feinimouse.feinicoinplus.base.config;
 
 import name.feinimouse.feinicoinplus.base.consensus.ClassicalConNode;
 import name.feinimouse.feinicoinplus.base.consensus.OptimizedConNode;
+import name.feinimouse.feinicoinplus.base.consensus.PBFTConNode;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,22 @@ public class ConsensusConfig extends BaseConfig {
 
         node.setSignGenerator(signGenerator);
 
+    }
+
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) // 非单例
+    public PBFTConNode pbftConNode() {
+        PBFTConNode pbftConNode = new PBFTConNode();
+        String address = addressManager.getAddress();
+        KeyPair keyPair = signGenerator.genKeyPair();
+        publicKeyHub.setKey(address, keyPair.getPublic());
+        
+        pbftConNode.setAddress(address);
+        pbftConNode.setPublicKeyHub(publicKeyHub);
+        pbftConNode.setPrivateKey(keyPair.getPrivate());
+        pbftConNode.setSignGenerator(signGenerator);
+        
+        return pbftConNode;
     }
     
     @Bean
