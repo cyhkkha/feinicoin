@@ -65,7 +65,7 @@ public abstract class FetchCenter extends AutoStopNode {
             try {
                 logger.warn("拉取交易持续了 {}ms ，未拉取到交易", fetchResult.getTotalRunTime());
                 long sleepTime = periodTime - fetchResult.getTotalRunTime();
-                Thread.sleep(sleepTime >= 0 ? sleepTime : 0);
+                Thread.sleep(sleepTime > 0 ? sleepTime : 0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 stopNode();
@@ -78,14 +78,16 @@ public abstract class FetchCenter extends AutoStopNode {
 
         // 执行区块生产
         long consumeTime = centerCore.executeProduce(address, privateKey);
-        
-        // 至少留100ms的时间用于其他处理，否则抛出异常
-        if (periodTime < consumeTime + 100) {
-            throw new NodeRunningException("produce timeout !!");
-        }
+
+        // 优先保障区块生成
+//        // 至少留100ms的时间用于其他处理，否则抛出异常
+//        if (periodTime < consumeTime + 100) {
+//            throw new NodeRunningException("produce timeout !!");
+//        }
         
         // 根据同步时间和生产时间，更新下次的拉取时间
         fetchTime = periodTime - consumeTime;
+        fetchTime = fetchTime > 0 ? fetchTime : 0;
 
         // 重置间隔时间
         resetGap();
