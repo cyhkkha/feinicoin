@@ -3,6 +3,7 @@ package name.feinimouse.feinicoinplus.base.consensus;
 import lombok.Getter;
 import name.feinimouse.feinicoinplus.consensus.BFTConNode;
 import name.feinimouse.feinicoinplus.consensus.BFTMessage;
+import name.feinimouse.feinicoinplus.consensus.BFTNet;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,14 +18,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component("pbftNet")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class PBFTNet implements BFTConNode {
+public class PBFTNet implements BFTNet {
     @Getter
-    private String address = ADDRESS_NET;
+    protected String address = ADDRESS_NET;
     
-    private ArrayList<PBFTConNode> nodeList = new ArrayList<>();
-    private AtomicInteger replyNum = new AtomicInteger(0);
-    
-    private Random random = new Random();
+    protected ArrayList<PBFTConNode> nodeList = new ArrayList<>();
+    protected AtomicInteger replyNum = new AtomicInteger(0);
+
+    protected Random random = new Random();
     
     public void putNode(PBFTConNode pbftConNode) {
         if (!nodeList.contains(pbftConNode)) {
@@ -40,7 +41,7 @@ public class PBFTNet implements BFTConNode {
     private ThreadPoolExecutor commitPool = new ThreadPoolExecutor(3, Integer.MAX_VALUE
         , 100L, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
     
-    public ArrayList<BFTConNode> broadcastList() {
+    private ArrayList<BFTConNode> broadcastList() {
         @SuppressWarnings("unchecked")
         ArrayList<BFTConNode> list = (ArrayList<BFTConNode>)nodeList.clone();
         Collections.shuffle(list);
@@ -70,10 +71,12 @@ public class PBFTNet implements BFTConNode {
         replyNum.incrementAndGet();
     }
     
+    @Override
     public boolean isConsensus() {
         return replyNum.get() >= nodeList.size();
     }
     
+    @Override
     public void destroy() {
         preparePool.shutdown();
         commitPool.shutdown();
