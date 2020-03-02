@@ -44,7 +44,6 @@ public class NodeConfig extends BaseConfig {
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public Order order() {
         BaseOrder order = new BaseOrder();
-        order.setVerifiersAddress(verifier().getAddress());
         return initNode(order);
     }
 
@@ -60,7 +59,6 @@ public class NodeConfig extends BaseConfig {
     public FetchCenter fetchCenter() {
         FetchCenter center = new BaseCenter(centerCore);
         center.setFetchInterval(FETCH_INTERVAL);
-        center.setOrdersAddress(order().getAddress());
         return initNode(center);
     }
     

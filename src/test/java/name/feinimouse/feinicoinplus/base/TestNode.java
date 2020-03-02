@@ -7,6 +7,7 @@ import name.feinimouse.feinicoinplus.core.exception.BadRequestException;
 import name.feinimouse.feinicoinplus.core.node.*;
 import name.feinimouse.utils.LoopUtils;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +25,12 @@ public class TestNode extends BaseTest {
     @Autowired
     ClassicalCenter classicalCenter;
 
+    @Before
+    public void setupNode() {
+        order.setVerifiersAddress(verifier.getAddress());
+        fetchCenter.setOrdersAddress(order.getAddress());
+    }
+    
     @Test
     public void testVerifier() throws InterruptedException, BadRequestException {
         order.start();

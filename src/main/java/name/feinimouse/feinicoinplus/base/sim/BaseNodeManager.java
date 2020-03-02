@@ -38,6 +38,8 @@ public class BaseNodeManager implements NodeManager {
 
     @Override
     public void startFetchNode() {
+        order.setVerifiersAddress(verifier.getAddress());
+        fetchCenter.setOrdersAddress(order.getAddress());
         order.start();
         verifier.start();
         fetchCenter.start();
