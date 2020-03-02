@@ -15,6 +15,7 @@ import name.feinimouse.utils.TimerUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,13 +23,13 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration("simRunner")
 @ComponentScan("name.feinimouse.feinicoinplus.base")
-@PropertySource("classpath:feinicoinplus-config-test.properties")
+@PropertySource("classpath:feinicoinplus-config-base.properties")
 public class BaseRunner implements SimRunner {
     //////////////////////////////////////////////////////////////////
     // 可能会用到的的注解：
     // @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) // 非单例的bean注解
     // @ComponentScan("name.feinimouse.feinicoinplus.base")
-    // @PropertySource("classpath:feinicoinplus-config-test.properties")
+    // @PropertySource("classpath:feinicoinplus-config-base.properties")
     // @Value("${coin.hash.seed}")
     //////////////////////////////////////////////////////////////////
 
@@ -38,15 +39,20 @@ public class BaseRunner implements SimRunner {
     protected TransactionGenerator transactionGenerator;
 
     // 试验次数
-    public static final int RUN_TIMES = 20;
+    @Value("${SIM_RUN_TIMES}")
+    private int SIM_RUN_TIMES;
     // 起始发送的交易次数
-    public static final int TRANS_START_NUM = 100;
+    @Value("${SIM_TRANS_START_NUM}")
+    private int SIM_TRANS_START_NUM;
     // 交易递增次数
-    public static final int TRANS_INCREASE_NUM = 100;
+    @Value("${SIM_TRANS_INCREASE_NUM}")
+    private int SIM_TRANS_INCREASE_NUM;
     // 重试次数
-    public static final int RETRY_TIMES = 50;
+    @Value("${SIM_RETRY_TIMES}")
+    private int SIM_RETRY_TIMES;
     // 发送间隔
-    public static final int SEND_INTERVAL = 10;
+    @Value("${SIM_SEND_INTERVAL}")
+    private int SIM_SEND_INTERVAL;
 
     @Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
@@ -65,6 +71,7 @@ public class BaseRunner implements SimRunner {
         return null;
     }
 
+    // 按照配置发送一定比例的随机混合交易到传统模式
     public void sendRandomMixTransClassical(double rate) {
         runCircle(nodeManager -> {
             nodeManager.startClassicalNode();
@@ -76,7 +83,8 @@ public class BaseRunner implements SimRunner {
             return carrier;
         });
     }
-
+    
+    // 按照配置发送一定比例的随机混合交易到改进模式
     public void SendRandomMixTransFetch(double rate) {
         runCircle(nodeManger -> {
             nodeManger.startFetchNode();
@@ -89,16 +97,19 @@ public class BaseRunner implements SimRunner {
 
     public void runCircle(CustomRunner<NodeManager, AbstractNode> init, CustomRunner<Node, Carrier> generator) {
         // 实验的重复次数
-        for (int i = 0; i < RUN_TIMES; i++) {
+        for (int i = 0; i < SIM_RUN_TIMES; i++) {
+            // 生成新的一套节点
             NodeManager nodeManager = (NodeManager)
                 applicationContext.getBean("nodeManager");
             final AbstractNode node = init.run(nodeManager);
-            final int count = TRANS_START_NUM + i * TRANS_INCREASE_NUM;
+            // 计算交易发送数量
+            final int count = SIM_TRANS_START_NUM + i * SIM_TRANS_INCREASE_NUM;
             long time = TimerUtils.run(() -> {
                 // 交易的发送次数
                 for (int j = 0; j < count; j++) {
                     try {
-                        LoopUtils.loopExec(RETRY_TIMES, SEND_INTERVAL,
+                        // 重试执行提交
+                        LoopUtils.loopExec(SIM_RETRY_TIMES, SIM_SEND_INTERVAL,
                             () -> node.commit(generator.run(node)));
                     } catch (Exception e) {
                         logger.error("交易提交失败");
@@ -106,6 +117,7 @@ public class BaseRunner implements SimRunner {
                     }
                 }
                 try {
+                    // 等待节点运行完毕
                     node.join();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
