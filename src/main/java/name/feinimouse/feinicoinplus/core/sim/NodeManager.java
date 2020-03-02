@@ -18,5 +18,7 @@ public interface NodeManager {
 
     void startClassicalNode();
     
-    void waitAndDestroy();
+    void destroy();
+    
+    void waitNode();
 }

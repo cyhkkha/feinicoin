@@ -84,14 +84,19 @@ public class BaseNodeManager implements NodeManager {
         logger.info("classical node 启动成功");
     }
 
-    public void waitAndDestroyNode(AbstractNode node) {
-        if (node.isAlive()) {
-            try {
-                node.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    @Override
+    public void waitNode() {
+        try {
+            order.join();
+            verifier.join();
+            fetchCenter.join();
+            classicalCenter.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+    }
+
+    public void destroyNode(AbstractNode node) {
         if (!node.isStop()) {
             node.stopNode();
         }
@@ -100,11 +105,11 @@ public class BaseNodeManager implements NodeManager {
     }
     
     @Override
-    public void waitAndDestroy() {
-        waitAndDestroyNode(order);
-        waitAndDestroyNode(verifier);
-        waitAndDestroyNode(fetchCenter);
-        waitAndDestroyNode(classicalCenter);
+    public void destroy() {
+        destroyNode(order);
+        destroyNode(verifier);
+        destroyNode(fetchCenter);
+        destroyNode(classicalCenter);
     }
 
 }

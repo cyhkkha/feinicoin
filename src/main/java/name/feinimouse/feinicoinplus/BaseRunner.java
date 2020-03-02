@@ -71,9 +71,9 @@ public class BaseRunner implements SimRunner {
         logger.info("----------预实验结束----------");
         
         sendRandomMixTransClassical(0);
-        sendRandomMixTransClassical(1);
-        sendRandomMixTransClassical(0.2);
-        sendRandomMixTransFetch(0.2);
+//        sendRandomMixTransClassical(1);
+//        sendRandomMixTransClassical(0.2);
+//        sendRandomMixTransFetch(0.2);
 
         return null;
     }
@@ -137,7 +137,8 @@ public class BaseRunner implements SimRunner {
                     }
                 }
                 // 等待节点运行完毕
-                nodeManager.waitAndDestroy();
+                nodeManager.waitNode();
+                nodeManager.destroy();
             });
             logger.info("处理{}笔交易，总计运行时间 {} ms", count, time);
         }
