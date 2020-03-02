@@ -1,6 +1,6 @@
 package name.feinimouse.feinicoinplus.base;
 
-import name.feinimouse.feinicoinplus.base.consensus.BFTNet;
+import name.feinimouse.feinicoinplus.base.consensus.PBFTNet;
 import name.feinimouse.feinicoinplus.base.consensus.ClassicalConNode;
 import name.feinimouse.feinicoinplus.base.consensus.ConNodeNet;
 import name.feinimouse.feinicoinplus.base.consensus.PBFTConNode;
@@ -93,22 +93,23 @@ public class TestConsensus extends BaseTest {
     
     @Test
     public void testPBFT() throws InterruptedException {
-        BFTNet bftNet= (BFTNet) context.getBean("bftNet");
+        PBFTNet PBFTNet = (PBFTNet) context.getBean("pbftNet");
         LoopUtils.loop(20, () -> {
             PBFTConNode pbftConNode = (PBFTConNode) context.getBean("pbftConNode");
-            bftNet.putNode(pbftConNode);
+            PBFTNet.putNode(pbftConNode);
         });
         BFTMessage bftMessage = new BFTMessage();
         bftMessage.setMessage("testssssss");
         long startTime = System.currentTimeMillis();
-        bftNet.start(bftMessage);
-        while (!bftNet.isConsensus()) {
+        PBFTNet.start(bftMessage);
+        while (!PBFTNet.isConsensus()) {
             Thread.sleep(10);
             if (System.currentTimeMillis() - startTime > 10 * 1000) {
                 break;
             }
         }
         logger.info("共识时间：{} ms", System.currentTimeMillis() - startTime);
+        PBFTNet.destroy();
     }
     
 }

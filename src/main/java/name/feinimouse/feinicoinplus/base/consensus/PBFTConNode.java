@@ -22,7 +22,7 @@ public class PBFTConNode implements BFTConNode {
     protected String address;
 
     @Setter
-    protected BFTConNode net;
+    protected PBFTNet net;
     @Setter
     protected SignGenerator signGenerator;
 
@@ -35,7 +35,7 @@ public class PBFTConNode implements BFTConNode {
     @Setter
     private int nodeNum = 1;
 
-    private BFTMessage prePrepareMessage;
+    private BFTMessage prepareMessage;
 
     private ConcurrentLinkedQueue<String> preparedNode = new ConcurrentLinkedQueue<>();
 
@@ -46,16 +46,16 @@ public class PBFTConNode implements BFTConNode {
     @Override
     public synchronized void start(BFTMessage bftMessage) {
         // 生成prePrepareMessage
-        prePrepareMessage = bftMessage.clone();
-        prePrepareMessage.setSign(signGenerator.sign(privateKey, prePrepareMessage.getMessage()));
-        prePrepareMessage.setSigner(address);
-        prePrepareMessage.setAttachSignMap(new ConcurrentHashMap<>());
+        prepareMessage = bftMessage.clone();
+        prepareMessage.setSign(signGenerator.sign(privateKey, prepareMessage.getMessage()));
+        prepareMessage.setSigner(address);
+        prepareMessage.setAttachSignMap(new ConcurrentHashMap<>());
 
         // 切换状态 STAGE_PREPARE 并广播验证结果
         stage = STAGE_PREPARE;
         
         logger.trace("节点@{} 收到原始消息进入 STAGE_PREPARE 状态", address);
-        net.prepare(prePrepareMessage);
+        net.prepare(prepareMessage);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class PBFTConNode implements BFTConNode {
         }
 
         // 如果是停止的节点已经是 STAGE_PREPARE 状态则进行对其他节点 STAGE_PREPARE 状态收集
-        if (stage.equals(STAGE_PREPARE) && bftMessage.getMessage().equals(prePrepareMessage.getMessage())) {
+        if (stage.equals(STAGE_PREPARE) && bftMessage.getMessage().equals(prepareMessage.getMessage())) {
             // 先对消息进行验证
             BFTMessage message = bftMessage.clone();
             PublicKey publicKey = publicKeyHub.getKey(message.getSigner());
@@ -75,9 +75,9 @@ public class PBFTConNode implements BFTConNode {
             String signer = message.getSigner();
             if (signGenerator.verify(publicKey, sign, message.getMessage())) {
                 // 将消息加入收集
-                prePrepareMessage.getAttachSignMap().put(signer, sign);
+                prepareMessage.getAttachSignMap().put(signer, sign);
                 // 若收集到 2/3 + 1 个 STAGE_PREPARE状态的签名则自然转换到 STAGE_COMMIT 状态
-                if (prePrepareMessage.getAttachSignMap().size() >= nodeNum * 2 / 3 + 1) {
+                if (prepareMessage.getAttachSignMap().size() >= nodeNum * 2 / 3 + 1) {
                     turn2Commit();
                 }
             }
@@ -89,13 +89,13 @@ public class PBFTConNode implements BFTConNode {
         // 若非 STAGE_PREPARE 或 STAGE_COMMIT 状态的节点接到消息将直接返回
         if (!stage.equals(STAGE_PREPARE)
             && !stage.equals(STAGE_COMMIT)
-            | !bftMessage.getMessage().equals(prePrepareMessage.getMessage())) {
+            | !bftMessage.getMessage().equals(prepareMessage.getMessage())) {
             return;
         }
         BFTMessage message = bftMessage.clone();
         String signer = message.getSigner();
         ConcurrentHashMap<String, String> receivedMap = message.getAttachSignMap();
-        ConcurrentHashMap<String, String> myMap = prePrepareMessage.getAttachSignMap();
+        ConcurrentHashMap<String, String> myMap = prepareMessage.getAttachSignMap();
 
         // 首先将消息中的签名合并到本地
         receivedMap.forEach((key, value) -> {
@@ -133,7 +133,7 @@ public class PBFTConNode implements BFTConNode {
     public void reply() {
         // 返回停止状态等待下一轮共识
         stage = STAGE_STOP;
-        prePrepareMessage = null;
+        prepareMessage = null;
         preparedNode.clear();
     }
 
@@ -150,9 +150,9 @@ public class PBFTConNode implements BFTConNode {
                 message.setSign(signGenerator.sign(privateKey, message.getMessage()));
 
                 // 生成 prePrepareMessage
-                prePrepareMessage = message.clone();
-                prePrepareMessage.setAttachSignMap(new ConcurrentHashMap<>());
-                prePrepareMessage.getAttachSignMap().put(signer, sign);
+                prepareMessage = message.clone();
+                prepareMessage.setAttachSignMap(new ConcurrentHashMap<>());
+                prepareMessage.getAttachSignMap().put(signer, sign);
 
                 // 进入 STAGE_PREPARE 状态并广播
                 stage = STAGE_PREPARE;
@@ -165,14 +165,14 @@ public class PBFTConNode implements BFTConNode {
     private synchronized void turn2Commit() {
         if (stage.equals(STAGE_PREPARE)) {
             // 将自己的签名也放入 prePrepareMessage
-            String sign = prePrepareMessage.getSign();
-            String signer = prePrepareMessage.getSigner();
-            prePrepareMessage.getAttachSignMap().put(signer, sign);
+            String sign = prepareMessage.getSign();
+            String signer = prepareMessage.getSigner();
+            prepareMessage.getAttachSignMap().put(signer, sign);
             
             // 进入commit状态并广播
             stage = STAGE_COMMIT;
             logger.trace("节点@{} 收集到 2/3 的 prepare 消息进入 STAGE_COMMIT 状态", address);
-            net.commit(prePrepareMessage);
+            net.commit(prepareMessage);
         }
     }
     

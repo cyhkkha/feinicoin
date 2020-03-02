@@ -15,23 +15,23 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Component("bftNet")
+@Component("pbftNet")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class BFTNet implements BFTConNode {
+public class PBFTNet implements BFTConNode {
     @Getter
     private String address = ADDRESS_NET;
     
-    private ArrayList<BFTConNode> nodeList = new ArrayList<>();
+    private ArrayList<PBFTConNode> nodeList = new ArrayList<>();
     private AtomicInteger replyNum = new AtomicInteger(0);
     
     private Random random = new Random();
     
-    public void putNode(BFTConNode bftConNode) {
-        if (!nodeList.contains(bftConNode)) {
-            nodeList.add(bftConNode);
+    public void putNode(PBFTConNode pbftConNode) {
+        if (!nodeList.contains(pbftConNode)) {
+            nodeList.add(pbftConNode);
             int size = nodeList.size();
             nodeList.forEach(node -> node.setNodeNum(size));
-            bftConNode.setNet(this);
+            pbftConNode.setNet(this);
         }
     }
     
@@ -77,16 +77,6 @@ public class BFTNet implements BFTConNode {
     public void destroy() {
         preparePool.shutdown();
         commitPool.shutdown();
-    }
-
-    @Override
-    public void setNodeNum(int num) {
-        
-    }
-
-    @Override
-    public void setNet(BFTConNode nodeNet) {
-        
     }
 
 }

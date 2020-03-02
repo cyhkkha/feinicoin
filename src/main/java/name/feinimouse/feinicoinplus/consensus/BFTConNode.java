@@ -18,8 +18,4 @@ public interface BFTConNode {
     void commit(BFTMessage bftMessage);
     
     void reply();
-    
-    void setNodeNum(int num);
-    
-    void setNet(BFTConNode nodeNet);
 }
