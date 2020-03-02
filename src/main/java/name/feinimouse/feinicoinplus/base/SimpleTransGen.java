@@ -108,6 +108,21 @@ public class SimpleTransGen implements TransactionGenerator {
     }
 
     @Override
+    public Packer genRandomMixTrans(double rate) {
+        if (rate > 1 || rate < 0) {
+            throw new RuntimeException("rate can not be " + rate);
+        }
+        int i = random.nextInt(100);
+        Packer packer;
+        if (i < rate * 100) {
+            packer = genRandomAssetTrans();
+        } else {
+            packer = genRandomTrans();
+        }
+        return packer;
+    }
+
+    @Override
     public Carrier genCarrier(Packer packer, String receiver) {
         NetInfo netInfo = new NetInfo(Node.NODE_ENTER, null);
         netInfo.setMsgType(Node.MSG_COMMIT_ORDER);

@@ -9,6 +9,9 @@ public interface TransactionGenerator {
 
     Packer genRandomAssetTrans();
 
+    // rate 为Asset Trans的占比 0 <= rate <= 100
+    Packer genRandomMixTrans(double rate);
+    
     Carrier genCarrier(Packer packer, String receiver);
 
     Packer genTrans(String sender, String receiver, int coin);
