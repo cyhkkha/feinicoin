@@ -66,14 +66,25 @@ public class BaseRunner implements SimRunner {
 
     @Override
     public ResultManager start(InitParam initParam) {
+        logger.info("----------这里是预实验--------");
+        preRun();
+        logger.info("----------预实验结束----------");
         
+        sendRandomMixTransClassical(0);
+        sendRandomMixTransClassical(1);
+        sendRandomMixTransClassical(0.2);
+        sendRandomMixTransFetch(0.2);
 
         return null;
     }
 
     // 按照配置发送一定比例的随机混合交易到传统模式
     public void sendRandomMixTransClassical(double rate) {
-        runCircle(nodeManager -> {
+        logger.info("-------- 开始传统节点实验，资产比例：{} --------", rate);
+        sendRandomMixTransClassical(SIM_RUN_TIMES, rate);
+    }
+    public void sendRandomMixTransClassical(int runTimes, double rate) {
+        runCircle(runTimes, nodeManager -> {
             nodeManager.startClassicalNode();
             return nodeManager.getClassicalCenter();
         }, node -> {
@@ -85,8 +96,12 @@ public class BaseRunner implements SimRunner {
     }
     
     // 按照配置发送一定比例的随机混合交易到改进模式
-    public void SendRandomMixTransFetch(double rate) {
-        runCircle(nodeManger -> {
+    public void sendRandomMixTransFetch(double rate) {
+        logger.info("-------- 开始改进节点实验，资产比例：{} --------", rate);
+        sendRandomMixTransFetch(SIM_RUN_TIMES, rate);
+    }
+    public void sendRandomMixTransFetch(int runTimes, double rate) {
+        runCircle(runTimes, nodeManger -> {
             nodeManger.startFetchNode();
             return nodeManger.getOrder();
         }, node -> {
@@ -94,10 +109,15 @@ public class BaseRunner implements SimRunner {
             return transactionGenerator.genCarrier(packer, node.getAddress());
         });
     }
-
-    public void runCircle(CustomRunner<NodeManager, AbstractNode> init, CustomRunner<Node, Carrier> generator) {
+    
+    public void preRun() {
+        sendRandomMixTransClassical(1, 0.5);
+        sendRandomMixTransFetch(1, 0.5);
+    }
+    
+    public void runCircle(int runTimes, CustomRunner<NodeManager, AbstractNode> init, CustomRunner<Node, Carrier> generator) {
         // 实验的重复次数
-        for (int i = 0; i < SIM_RUN_TIMES; i++) {
+        for (int i = 0; i < runTimes; i++) {
             // 生成新的一套节点
             NodeManager nodeManager = (NodeManager)
                 applicationContext.getBean("nodeManager");
@@ -116,12 +136,8 @@ public class BaseRunner implements SimRunner {
                         e.printStackTrace();
                     }
                 }
-                try {
-                    // 等待节点运行完毕
-                    node.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                // 等待节点运行完毕
+                nodeManager.waitAndDestroy();
             });
             logger.info("处理{}笔交易，总计运行时间 {} ms", count, time);
         }
