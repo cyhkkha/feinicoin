@@ -17,4 +17,6 @@ public interface NodeManager {
     void startFetchNode();
 
     void startClassicalNode();
+    
+    void waitAndDestroy();
 }

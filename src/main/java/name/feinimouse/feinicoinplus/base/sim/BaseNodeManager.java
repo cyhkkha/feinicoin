@@ -1,10 +1,8 @@
 package name.feinimouse.feinicoinplus.base.sim;
 
 import lombok.Getter;
-import name.feinimouse.feinicoinplus.core.node.ClassicalCenter;
-import name.feinimouse.feinicoinplus.core.node.FetchCenter;
-import name.feinimouse.feinicoinplus.core.node.Order;
-import name.feinimouse.feinicoinplus.core.node.Verifier;
+import name.feinimouse.feinicoinplus.core.crypt.PublicKeyHub;
+import name.feinimouse.feinicoinplus.core.node.*;
 import name.feinimouse.feinicoinplus.core.sim.NodeManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,14 +24,38 @@ public class BaseNodeManager implements NodeManager {
     protected FetchCenter fetchCenter;
     @Getter
     protected ClassicalCenter classicalCenter;
+    
+    protected PublicKeyHub publicKeyHub;
+    protected NodeNetwork nodeNetwork;
 
     @Autowired
-    public BaseNodeManager(Verifier verifier, Order order
-        , FetchCenter fetchCenter, ClassicalCenter classicalCenter) {
+    public void setVerifier(Verifier verifier) {
         this.verifier = verifier;
+    }
+
+    @Autowired
+    public void setOrder(Order order) {
         this.order = order;
+    }
+
+    @Autowired
+    public void setFetchCenter(FetchCenter fetchCenter) {
         this.fetchCenter = fetchCenter;
+    }
+
+    @Autowired
+    public void setClassicalCenter(ClassicalCenter classicalCenter) {
         this.classicalCenter = classicalCenter;
+    }
+
+    @Autowired
+    public void setPublicKeyHub(PublicKeyHub publicKeyHub) {
+        this.publicKeyHub = publicKeyHub;
+    }
+
+    @Autowired
+    public void setNodeNetwork(NodeNetwork nodeNetwork) {
+        this.nodeNetwork = nodeNetwork;
     }
 
     @Override
@@ -60,6 +82,29 @@ public class BaseNodeManager implements NodeManager {
             e.printStackTrace();
         }
         logger.info("classical node 启动成功");
+    }
+
+    public void waitAndDestroyNode(AbstractNode node) {
+        if (node.isAlive()) {
+            try {
+                node.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if (!node.isStop()) {
+            node.stopNode();
+        }
+        nodeNetwork.removeNode(node);
+        publicKeyHub.deleteKey(node.getAddress());
+    }
+    
+    @Override
+    public void waitAndDestroy() {
+        waitAndDestroyNode(order);
+        waitAndDestroyNode(verifier);
+        waitAndDestroyNode(fetchCenter);
+        waitAndDestroyNode(classicalCenter);
     }
 
 }
