@@ -28,6 +28,9 @@ public class NodeConfig extends BaseConfig {
     @Value("${CACHE_CLASSICAL}")
     protected int CACHE_CLASSICAL;
     
+    @Value("${BLOCK_PERIOD_TIME}")
+    protected int BLOCK_PERIOD_TIME;
+    
     private <T extends AbstractNode> T initNode(T node) {
         String address = addressManager.getAddress();
         KeyPair keyPair = signGenerator.genKeyPair();
@@ -59,6 +62,7 @@ public class NodeConfig extends BaseConfig {
     public FetchCenter fetchCenter() {
         FetchCenter center = new BaseCenter(centerCore);
         center.setFetchInterval(FETCH_INTERVAL);
+        center.setPeriodTime(BLOCK_PERIOD_TIME);
         return initNode(center);
     }
     
@@ -68,6 +72,7 @@ public class NodeConfig extends BaseConfig {
         ClassicalCenter center = new BaseClasCenter(centerCore, verifierCore);
         center.setCollectInterval(COLLECT_INTERVAL);
         center.setCacheWaitMax(CACHE_CLASSICAL);
+        center.setPeriodTime(BLOCK_PERIOD_TIME);
         return initNode(center);
     }
 }
