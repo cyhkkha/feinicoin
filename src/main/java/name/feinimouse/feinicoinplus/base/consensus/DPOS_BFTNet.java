@@ -24,7 +24,12 @@ public class DPOS_BFTNet extends PBFTNet {
 
     @Override
     public void destroy() {
-        super.destroy();
         prePreparePool.shutdown();
+        try {
+            prePreparePool.awaitTermination(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        super.destroy();
     }
 }

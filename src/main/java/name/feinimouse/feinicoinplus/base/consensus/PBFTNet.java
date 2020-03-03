@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 @Component("pbftNet")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PBFTNet extends AbstractBFTNet {
-    
+
     protected ThreadPoolExecutor preparePool = new ThreadPoolExecutor(2, Integer.MAX_VALUE
         , 100L, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
     protected ThreadPoolExecutor commitPool = new ThreadPoolExecutor(2, Integer.MAX_VALUE
@@ -29,7 +29,7 @@ public class PBFTNet extends AbstractBFTNet {
 
     @Override
     public void prePrepare(BFTMessage bftMessage) {
-        
+
     }
 
     @Override
@@ -41,12 +41,19 @@ public class PBFTNet extends AbstractBFTNet {
     public void commit(BFTMessage bftMessage) {
         broadcast(commitPool, node -> node.commit(bftMessage));
     }
-    
+
     @Override
     public void destroy() {
-        super.destroy();
         preparePool.shutdown();
         commitPool.shutdown();
+        try {
+            preparePool.awaitTermination(10, TimeUnit.SECONDS);
+            commitPool.awaitTermination(10, TimeUnit.SECONDS);
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        super.destroy();
     }
 
 }
