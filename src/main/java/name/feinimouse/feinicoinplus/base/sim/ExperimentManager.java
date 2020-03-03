@@ -50,7 +50,7 @@ public class ExperimentManager {
         });
     }
     public void preRunConsensus() {
-        runConsensusCircle(5, 20
+        runConsensusCircle(3, 20
             , 10, 30000
             , () -> (PBFTNet) applicationContext.getBean("pbftNet")
             , () -> (PBFTNode) applicationContext.getBean("pbftNode"));
