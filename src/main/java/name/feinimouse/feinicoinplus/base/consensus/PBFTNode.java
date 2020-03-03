@@ -65,8 +65,10 @@ public class PBFTNode extends AbstractBFTNode {
     public void commit(BFTMessage bftMessage) {
         // 若非 STAGE_PREPARE 或 STAGE_COMMIT 状态的节点接到消息将直接返回
         if (!stage.equals(STAGE_PREPARE)
-            && !stage.equals(STAGE_COMMIT)
-            | !bftMessage.getMessage().equals(prepareMessage.getMessage())) {
+            && !stage.equals(STAGE_COMMIT)) {
+            return;
+        }
+        if (!bftMessage.getMessage().equals(prepareMessage.getMessage())) {
             return;
         }
         BFTMessage message = bftMessage.clone();
