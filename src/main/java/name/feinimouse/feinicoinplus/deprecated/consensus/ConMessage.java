@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.consensus;
+package name.feinimouse.feinicoinplus.deprecated.consensus;
 
 import lombok.Getter;
 import lombok.Setter;

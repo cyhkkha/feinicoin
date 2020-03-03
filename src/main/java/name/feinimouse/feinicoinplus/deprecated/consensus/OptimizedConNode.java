@@ -1,9 +1,6 @@
-package name.feinimouse.feinicoinplus.base.consensus;
+package name.feinimouse.feinicoinplus.deprecated.consensus;
 
 import lombok.Setter;
-import name.feinimouse.feinicoinplus.consensus.ConMessage;
-import name.feinimouse.feinicoinplus.consensus.ConNode;
-import name.feinimouse.feinicoinplus.consensus.ConfirmTag;
 import name.feinimouse.feinicoinplus.core.crypt.HashGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

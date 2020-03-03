@@ -2,21 +2,25 @@ package name.feinimouse.feinicoinplus.base;
 
 import name.feinimouse.feinicoinplus.base.consensus.*;
 import name.feinimouse.feinicoinplus.consensus.BFTMessage;
-import name.feinimouse.feinicoinplus.consensus.ConMessage;
-import name.feinimouse.feinicoinplus.consensus.ConNode;
+import name.feinimouse.feinicoinplus.deprecated.consensus.ClassicalConNode;
+import name.feinimouse.feinicoinplus.deprecated.consensus.ConMessage;
+import name.feinimouse.feinicoinplus.deprecated.consensus.ConNode;
 import name.feinimouse.feinicoinplus.core.crypt.PublicKeyHub;
 import name.feinimouse.feinicoinplus.core.crypt.SignGenerator;
 import name.feinimouse.feinicoinplus.core.sim.AddressManager;
+import name.feinimouse.feinicoinplus.deprecated.consensus.ConNodeNet;
 import name.feinimouse.utils.LoopUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 
+@ContextConfiguration(classes = name.feinimouse.feinicoinplus.deprecated.consensus.ConsensusConfig.class)
 public class TestConsensus extends BaseTest {
     @Autowired
     ConNodeNet conNodeNet;

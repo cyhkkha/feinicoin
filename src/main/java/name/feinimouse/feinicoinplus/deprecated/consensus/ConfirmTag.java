@@ -1,4 +1,4 @@
-package name.feinimouse.feinicoinplus.consensus;
+package name.feinimouse.feinicoinplus.deprecated.consensus;
 
 import lombok.Data;
 import name.feinimouse.feinicoinplus.core.data.HashObj;

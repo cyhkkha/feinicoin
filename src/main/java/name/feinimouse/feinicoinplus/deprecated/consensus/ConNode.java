@@ -1,4 +1,6 @@
-package name.feinimouse.feinicoinplus.consensus;
+package name.feinimouse.feinicoinplus.deprecated.consensus;
+
+import name.feinimouse.feinicoinplus.consensus.ConsensusException;
 
 public interface ConNode {
     String TYPE_CALLBACK = "CALLBACK";

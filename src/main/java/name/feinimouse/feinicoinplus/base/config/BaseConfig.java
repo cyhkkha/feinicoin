@@ -1,6 +1,5 @@
 package name.feinimouse.feinicoinplus.base.config;
 
-import name.feinimouse.feinicoinplus.base.consensus.ConNodeNet;
 import name.feinimouse.feinicoinplus.core.BlockDao;
 import name.feinimouse.feinicoinplus.core.ConsensusNetwork;
 import name.feinimouse.feinicoinplus.core.TransactionGenerator;
@@ -29,8 +28,6 @@ public abstract class BaseConfig {
     protected NodeNetwork nodeNetwork;
     @Autowired
     protected TransactionGenerator transactionGenerator;
-    @Autowired
-    protected ConNodeNet conNodeNet;
 
     @Autowired
     protected CenterCore centerCore;
