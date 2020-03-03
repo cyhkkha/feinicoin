@@ -2,6 +2,8 @@ package name.feinimouse.feinicoinplus.base.consensus;
 
 import name.feinimouse.feinicoinplus.consensus.AbstractBFTNet;
 import name.feinimouse.feinicoinplus.consensus.BFTMessage;
+import name.feinimouse.feinicoinplus.core.crypt.PublicKeyHub;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -18,7 +20,12 @@ public class PBFTNet extends AbstractBFTNet {
         , 100L, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
     protected ThreadPoolExecutor commitPool = new ThreadPoolExecutor(2, Integer.MAX_VALUE
         , 100L, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
-    
+
+    @Override
+    @Autowired
+    public void setPublicKeyHub(PublicKeyHub publicKeyHub) {
+        super.setPublicKeyHub(publicKeyHub);
+    }
 
     @Override
     public void prePrepare(BFTMessage bftMessage) {
