@@ -1,46 +1,18 @@
 package name.feinimouse.feinicoinplus.base.consensus;
 
-import lombok.Getter;
-import lombok.Setter;
-import name.feinimouse.feinicoinplus.consensus.BFTConNode;
+import name.feinimouse.feinicoinplus.consensus.AbstractBFTNode;
 import name.feinimouse.feinicoinplus.consensus.BFTMessage;
-import name.feinimouse.feinicoinplus.core.crypt.PublicKeyHub;
-import name.feinimouse.feinicoinplus.core.crypt.SignGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class PBFTConNode implements BFTConNode {
-    private Logger logger = LogManager.getLogger(PBFTConNode.class);
-
-    @Setter
-    @Getter
-    protected String address;
-
-    @Setter
-    protected PBFTNet net;
-    @Setter
-    protected SignGenerator signGenerator;
-
-    @Setter
-    protected PublicKeyHub publicKeyHub;
-
-    @Setter
-    protected PrivateKey privateKey;
-
-    @Setter
-    private int nodeNum = 1;
-
-    private BFTMessage prepareMessage;
+public class PBFTNode extends AbstractBFTNode {
+    private Logger logger = LogManager.getLogger(PBFTNode.class);
 
     private ConcurrentLinkedQueue<String> preparedNode = new ConcurrentLinkedQueue<>();
-
-    private String stage = STAGE_STOP;
-
     
     
     @Override
@@ -55,7 +27,12 @@ public class PBFTConNode implements BFTConNode {
         stage = STAGE_PREPARE;
         
         logger.trace("节点@{} 收到原始消息进入 STAGE_PREPARE 状态", address);
-        net.prepare(prepareMessage);
+        net.prepare(prepareMessage.clone());
+    }
+
+    @Override
+    public void prePrepare(BFTMessage bftMessage) {
+        // 无该状态
     }
 
     @Override
@@ -172,7 +149,7 @@ public class PBFTConNode implements BFTConNode {
             // 进入commit状态并广播
             stage = STAGE_COMMIT;
             logger.trace("节点@{} 收集到 2/3 的 prepare 消息进入 STAGE_COMMIT 状态", address);
-            net.commit(prepareMessage);
+            net.commit(prepareMessage.clone());
         }
     }
     
