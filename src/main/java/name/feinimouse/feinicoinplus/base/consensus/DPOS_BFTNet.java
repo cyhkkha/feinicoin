@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 
-@Component("dbftNet")
+@Component("dpos_bftNet")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DPOS_BFTNet extends PBFTNet {
 
