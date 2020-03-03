@@ -3,7 +3,6 @@ package name.feinimouse.feinicoinplus;
 import name.feinimouse.feinicoinplus.base.sim.ExperimentManager;
 import name.feinimouse.feinicoinplus.core.SimRunner;
 import name.feinimouse.feinicoinplus.core.data.InitParam;
-import name.feinimouse.feinicoinplus.core.data.SimResult;
 import name.feinimouse.feinicoinplus.core.sim.ResultManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,8 +30,9 @@ public class BaseRunner implements SimRunner {
 
     @Override
     public ResultManager start(InitParam initParam) {
+        logger.info("----------实验开始--------");
         logger.info("----------这里是预实验--------");
-        experimentManager.preRunBlockchainNode();
+        experimentManager.preRunConsensus();
         logger.info("----------预实验结束----------");
         
 //        experimentManager.sendRandomMixTransClassical(0);
@@ -42,6 +42,10 @@ public class BaseRunner implements SimRunner {
 //        experimentManager.sendRandomMixTransClassical(0.5);
 //        experimentManager.sendRandomMixTransFetch(0.5);
 
+        experimentManager.runPBFT();
+//        logger.info("----------测试DPOS_BFT--------");
+//        experimentManager.runDPOS_BFT();
+        
         return null;
     }
 

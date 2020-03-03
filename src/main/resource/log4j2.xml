@@ -32,8 +32,12 @@
             <AppenderRef ref="debug"/>
             <AppenderRef ref="file"/>
         </logger>
+        <logger name="name.feinimouse.feinicoinplus.base.sim.ExperimentManager" level="info" additivity="false">
+            <AppenderRef ref="debug"/>
+            <AppenderRef ref="file"/>
+        </logger>
         <!--默认日志-->
-        <Root level="trace">
+        <Root level="error">
             <!--ref引用对应的appender-->
 <!--        <AppenderRef ref="console"/>-->
             <AppenderRef ref="debug"/>
