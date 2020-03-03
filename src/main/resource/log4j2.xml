@@ -28,14 +28,14 @@
         <logger name="org.springframework" level="INFO" additivity="false">
             <AppenderRef ref="console"/>
         </logger>
-        <logger name="name.feinimouse.feinicoinplus.BaseRunner" level="info" additivity="false">
-            <AppenderRef ref="debug"/>
-            <AppenderRef ref="file"/>
-        </logger>
-        <logger name="name.feinimouse.feinicoinplus.base.sim.ExperimentManager" level="info" additivity="false">
-            <AppenderRef ref="debug"/>
-            <AppenderRef ref="file"/>
-        </logger>
+<!--        <logger name="name.feinimouse.feinicoinplus.BaseRunner" level="info" additivity="false">-->
+<!--            <AppenderRef ref="debug"/>-->
+<!--            <AppenderRef ref="file"/>-->
+<!--        </logger>-->
+<!--        <logger name="name.feinimouse.feinicoinplus.base.sim.ExperimentManager" level="info" additivity="false">-->
+<!--            <AppenderRef ref="debug"/>-->
+<!--            <AppenderRef ref="file"/>-->
+<!--        </logger>-->
         <!--默认日志-->
         <Root level="info">
             <!--ref引用对应的appender-->
