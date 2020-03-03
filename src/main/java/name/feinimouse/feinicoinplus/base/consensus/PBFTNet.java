@@ -37,6 +37,7 @@ public class PBFTNet extends AbstractBFTNet {
     
     @Override
     public void destroy() {
+        super.destroy();
         preparePool.shutdown();
         commitPool.shutdown();
     }

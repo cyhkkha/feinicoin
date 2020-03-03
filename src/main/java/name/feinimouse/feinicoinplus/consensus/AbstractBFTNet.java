@@ -1,6 +1,8 @@
 package name.feinimouse.feinicoinplus.consensus;
 
 import lombok.Getter;
+import lombok.Setter;
+import name.feinimouse.feinicoinplus.core.crypt.PublicKeyHub;
 import name.feinimouse.lambda.InputRunner;
 
 import java.util.ArrayList;
@@ -12,6 +14,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class AbstractBFTNet implements BFTNet {
     @Getter
     protected String address = ADDRESS_NET;
+    
+    @Setter
+    protected PublicKeyHub publicKeyHub;
 
     protected ArrayList<AbstractBFTNode> nodeList = new ArrayList<>();
     protected AtomicInteger replyNum = new AtomicInteger(0);
@@ -51,5 +56,10 @@ public abstract class AbstractBFTNet implements BFTNet {
     @Override
     public boolean isConsensus() {
         return replyNum.get() >= nodeList.size();
+    }
+
+    @Override
+    public void destroy() {
+        nodeList.forEach(node -> publicKeyHub.deleteKey(node.getAddress()));
     }
 }
