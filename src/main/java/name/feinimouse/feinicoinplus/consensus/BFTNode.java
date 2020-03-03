@@ -1,6 +1,6 @@
 package name.feinimouse.feinicoinplus.consensus;
 
-public interface BFTConNode {
+public interface BFTNode {
     
     String STAGE_STOP = "STAGE_STOP";
     String STAGE_PREPARE = "STAGE_PRE_PREPARE";
@@ -12,6 +12,8 @@ public interface BFTConNode {
     String getAddress();
     
     void start(BFTMessage bftMessage);
+    
+    void prePrepare(BFTMessage bftMessage);
 
     void prepare(BFTMessage bftMessage);
 
