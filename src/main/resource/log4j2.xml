@@ -37,7 +37,7 @@
             <AppenderRef ref="file"/>
         </logger>
         <!--默认日志-->
-        <Root level="error">
+        <Root level="info">
             <!--ref引用对应的appender-->
 <!--        <AppenderRef ref="console"/>-->
             <AppenderRef ref="debug"/>
